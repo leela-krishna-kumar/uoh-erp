@@ -1,0 +1,10 @@
+Git’s remote push commands for GitLab :
+
+For GitLab users who simply want a quick overview of the commands to run in the existing project to push to GitLab, here they are.
+
+    git init
+    git add .
+    git add --all -- ':!config/database.php'
+    git commit -m "Push existing project to GitLab 1"
+    git remote add source https://github.com/supportedunxt/erp-ednxt.git
+    git push -u -f source leela
