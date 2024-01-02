@@ -229,12 +229,12 @@ class StudentController extends Controller
             $students->where('section_id', $section);            
         }
 
-        if($status == '5'){
+        if($request->status == '5'){
             $students->where('is_transfer', '1');
-        }elseif($status == '6'){
+        }elseif($request->status == '6'){
             $students->where('is_transfer', '2');
         }else{
-            $students->where('status', $status);
+            $students->where('status', $request->status);
         }
 
 
