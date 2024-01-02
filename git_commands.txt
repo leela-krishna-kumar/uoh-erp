@@ -6,5 +6,8 @@ For GitLab users who simply want a quick overview of the commands to run in the 
     git add .
     git add --all -- ':!config/database.php'
     git commit -m "Push existing project to GitLab 1"
-    git remote add source https://github.com/supportedunxt/erp-ednxt.git
-    git push -u -f source leela
+    git remote add source https://gitlab.com/leela5/tmp-client.git
+    git push -u -f source master
+
+    git remote add source https://gitlab.com/leela5/secureitlab-website.git
+
