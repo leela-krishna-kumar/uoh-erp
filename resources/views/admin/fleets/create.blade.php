@@ -1,0 +1,84 @@
+@extends('admin.layouts.master')
+@section('title', $title)
+@section('content')
+
+<!-- Start Content-->
+<div class="main-body">
+    <div class="page-wrapper">
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- [ Card ] start -->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ __('modal_add') }} {{ $title }}</h5>
+                    </div>
+                    <div class="card-block">
+                        <a href="{{ route($route.'.index') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> {{ __('btn_back') }}</a>
+
+                        <a href="{{ route($route.'.create') }}" class="btn btn-info"><i class="fas fa-sync-alt"></i> {{ __('btn_refresh') }}</a>
+                    </div>
+
+                </div>
+            </div>
+            <form class="needs-validation" novalidate action="{{ route($route.'.store') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-block">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="vehicle_id">{{ __('field_vehicle') }} <span>*</span></label>
+                                    <select class="form-control" name="vehicle_id" id="vehicle_id" required>
+                                        <option value="">{{ __('select') }}</option>
+                                        @isset($vehicles)
+                                        @foreach( $vehicles as $vehicle )
+                                        <option value="{{ $vehicle->id }}" @if(old('vehicle') == $vehicle->id) selected @endif>{{ $vehicle->number }} - {{ $vehicle->type }}</option>
+                                        @endforeach
+                                        @endisset
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                    {{ __('required_field') }} {{ __('field_vehicle') }}
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-md-6">
+                                    <label for="driver_id">Driver Name</label>
+                                        <select class="form-control" name="driver_id" id="driver_id">
+                                            <option value="">{{ __('select') }}</option>
+                                            @foreach ($users as $key => $user)
+                                            <option value="{{$user->id}}">{{ $user->first_name }} {{ $user->last_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    <div class="invalid-feedback"> {{ __('field_status') }}
+                                    </div>
+                                </div>
+                                {{-- <div class="form-group col-md-6">
+                                    <label for="status">Status</label>
+                                        <select class="form-control" name="status" id="status"disabled>
+                                            @foreach ($statuses as $key => $status)
+                                            <option value="{{$key}}"@if($key == 1) selected @endif>{{ $status['label'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    <div class="invalid-feedback"> {{ __('field_status') }}
+                                    </div>
+                                </div>     --}}
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+             
+        
+            <!-- [ Card ] end -->
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+<!-- End Content-->
+
+@endsection

@@ -1,0 +1,195 @@
+@extends('admin.layouts.master')
+@section('title', $title)
+@section('content')
+
+<!-- Start Content-->
+<div class="main-body">
+    <div class="page-wrapper">
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- [ Card ] start -->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ __('modal_add') }} {{ $title }} for {{$event->title}}</h5>
+                    </div>
+                    <div class="card-block">
+                        <a href="{{ route($previous_route.'.index') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> {{ __('btn_back') }}</a>
+                        @if($event->role_id == 0)
+                            <a href="{{ route($route.'.create',['event_id' =>$event->id]) }}" class="btn btn-info"><i class="fas fa-sync-alt"></i> {{ __('btn_refresh') }}</a>
+                        @endif
+                    </div>
+                    @if($event->role_id == 0)
+                    <div class="card-block">
+                        <form class="needs-validation" novalidate method="get" action="{{ route($route.'.create') }}">
+                            <div class="row gx-2">
+                                <input type="hidden" name="event_id" value="{{$event->id}}">
+                               @include('common.inc.student_search_filter')
+                                <div class="form-group col-md-3">
+                                    <button type="submit" class="btn btn-info btn-filter"><i class="fas fa-search"></i> {{ __('btn_filter') }}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    @else
+                    @if(isset($rows))
+                        @if(count($rows) > 0)
+                            <div class="col-sm-12">
+                                <form class="needs-validation" novalidate action="{{route($route.'.store')}}" method="post" enctype="multipart/form-data">
+                                    @csrf
+                                    <input type="hidden" name="event_id" value="{{$event->id}}">
+                                    <div class="card-block">
+                                        <div class="table-responsive">
+                                            <table class="display table nowrap table-striped table-hover" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            #
+                                                        </th>
+                                                        <th>{{ __('field_user') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($rows as $key => $row)
+                                                    @php 
+                                                    $event_user = App\Models\EventUser::where('event_id', $event->id)
+                                                    ->where('role_id', $row->id)->first();
+                                                    @endphp
+                                                    <tr>
+                                                        <td>
+                                                            <div class="checkbox checkbox-primary d-inline">
+                                                                <input type="checkbox" name="user_id[]" @if($event_user) checked @endif id="checkbox-{{$row->id}}" value="{{$row->id}}">
+                                                                <label for="checkbox-{{$row->id}}" class="cr"></label>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $row->first_name ?? '' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
+                                        </div>
+                                        <!-- [ Data table ] end -->
+                                    </div>
+                                </form>
+                            </div>
+                            @else
+                            <div class="col-sm-12">
+                                    <div class="card-block">
+                                        <div class="text-center">
+                                            <h6>No User Found..</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        @endif
+                    @endif
+                </div>
+
+            </div>
+            <!-- [ Card ] end -->
+            @if($event->role_id == 0)
+                @if(isset($rows))
+                @if(count($rows) > 0)
+                    <div class="col-sm-12">
+                        <form class="needs-validation" novalidate action="{{route($route.'.store')}}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="event_id" value="{{$event->id}}">
+                            <div class="card">
+                                <div class="card-block">
+                                    <input type="text" name="faculty" value="{{ $selected_faculty }}" hidden>
+                                    <input type="text" name="program" value="{{ $selected_program }}" hidden>
+                                    <input type="text" name="session" value="{{ $selected_session }}" hidden>
+                                    <input type="text" name="semester" value="{{ $selected_semester }}" hidden>
+                                    <input type="text" name="section" value="{{ $selected_section }}" hidden>
+
+
+                                    <!-- [ Data table ] start -->
+                                    <div class="table-responsive">
+                                        <table class="display table nowrap table-striped table-hover" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        #
+                                                    </th>
+                                                    <th>{{ __('field_student_id') }}</th>
+                                                    <th>{{ __('field_student') }}</th>
+                                                    <th>{{ __('field_credit_hour_short') }}</th>
+                                                    <th>{{ __('field_program') }}</th>
+                                                    <th>{{ __('field_session') }}</th>
+                                                    <th>{{ __('field_semester') }}</th>
+                                                    <th>{{ __('field_section') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($rows as $key => $row)
+                                                @php 
+                                                $event_user = App\Models\EventUser::where('event_id', $event->id)
+                                                ->where('role_user_id', $row->student_id)->first();
+                                                @endphp
+                                                <tr>
+                                                    <td>
+                                                        <div class="checkbox checkbox-primary d-inline">
+                                                            <input type="checkbox" name="user_id[]" @if($event_user) checked @endif id="checkbox-{{$row->id}}" value="{{$row->student_id}}">
+                                                            <label for="checkbox-{{$row->id}}" class="cr"></label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('admin.student.show', $row->student->id) }}">
+                                                        #{{ $row->student->student_id ?? ''}}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ $row->student->name ?? '' }}</td>
+                                                    <td>
+                                                        @php
+                                                            $total_credits = 0;
+                                                            foreach($row->subjects as $subject){
+                                                                $total_credits = $total_credits + $subject->credit_hour;
+                                                            }
+                                                        @endphp
+                                                        {{ $total_credits }}
+                                                    </td>
+                                                    <td>{{ $row->program->shortcode ?? '' }}</td>
+                                                    <td>{{ $row->session->title ?? '' }}</td>
+                                                    <td>{{ $row->semester->title ?? '' }}</td>
+                                                    <td>{{ $row->section->title ?? '' }}</td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
+                                    </div>
+                                    <!-- [ Data table ] end -->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    @else
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-block">
+                                <div class="text-center">
+                                    <h6>No Student Found..</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                @endif
+            @endif
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+<!-- End Content-->
+
+@endsection
+@section('page_js')
+
+@yield('sub-script')
+@endsection
