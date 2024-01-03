@@ -459,6 +459,10 @@
                 <li class="pcoded-mtext {{ Request::is('admin/fees-master*') ? 'active' : '' }}"><a href="{{ route('admin.fees-master.index') }}" class="">{{ trans_choice('module_fees_master', 2) }}</a></li>
                 @endcanany
 
+                @canany(['fees-master-view', 'fees-master-create'])
+                <li class="pcoded-mtext {{ Request::is('admin/fees-master-bulk') ? 'active' : '' }}"><a href="{{ route('admin.fees-master-bulk.index') }}" class="">Assign Fees Bulk</a></li>
+                @endcanany
+
                 @canany(['fees-fine-view', 'fees-fine-create', 'fees-receipt-view'])
                 <li class="pcoded-mtext nav-item pcoded-hasmenu
                     @if(Request::is(['admin/fees-fine*','admin/college-bank*']) || Request::is('admin/fees-receipt*') || Request::is('admin/fees-type-master*') || Request::is('admin/fees-discount*'))

@@ -13,7 +13,7 @@ class Fee extends Model
      * @var array
      */
     protected $fillable = [
-        'student_enroll_id', 'category_id', 'fee_amount', 'fine_amount', 'discount_amount', 'paid_amount', 'assign_date', 'due_date', 'pay_date', 'payment_method', 'note', 'status', 'created_by', 'updated_by',
+        'student_enroll_id', 'category_id', 'fee_master_id', 'fee_amount', 'fine_amount', 'discount_amount', 'paid_amount', 'assign_date', 'due_date', 'pay_date', 'payment_method', 'note', 'status', 'created_by', 'updated_by',
     ];
   
     public function studentEnroll()

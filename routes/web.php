@@ -396,6 +396,9 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
      
 
     // Fees Routes
+    Route::get('fees-master-bulk', 'FeesMasterController@bulkCreate')->name('fees-master-bulk.index');
+    Route::post('fees-master-bulk', 'FeesMasterController@bulkStore')->name('fees-master-bulk.bulkStore');
+
     Route::resource('fees-master', 'FeesMasterController');
     Route::resource('fees-type-master', 'FeesTypeMasterController');
     Route::resource('fees-discount', 'FeesDiscountController');

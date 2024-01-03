@@ -84,17 +84,32 @@ class PlacementCategoryController extends Controller
         }
     }
 
-    public function update(Request $request, PlacementCategory  $placementCategory)
+    public function update(Request $request, $id, PlacementCategory  $placementCategory)
     {
         try{
             // Field Validation
             $request->validate([
                 'name' => 'required',
             ]);
+
+          //  dd($id);
+
+            $placementCat = PlacementCategory::where('name', $request->name)->first();
+
+            if(!$placementCat){
+
+            $placementCategory = PlacementCategory::find($id);
+
             $placementCategory->name = $request->name;
-            $placementCategory->save();
-            
+            $placementCategory->update();
+
             Toastr::success(__('msg_updated_successfully'), __('msg_success'));
+
+            }else{
+            Toastr::error(__('duplicate entry not allowed'), __('msg_success'));
+
+            }
+            
             return redirect()->back()->with( __('msg_success'), __('msg_updated_successfully'));
         }
         catch(\Exception $e){

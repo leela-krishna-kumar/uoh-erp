@@ -278,12 +278,6 @@ class FeesMasterController extends Controller
         return view($this->view.'.create', $data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //Validation
@@ -356,6 +350,273 @@ class FeesMasterController extends Controller
             return redirect()->route($this->view.'.index');
         }
         catch(\Exception $e){
+
+            Toastr::error(__('msg_created_error'), __('msg_error'));
+
+            return redirect()->back();
+        }
+    }
+
+    public function bulkCreate(Request $request)
+    {
+        //
+        $data['title'] = $this->title;
+        $data['route'] = $this->route;
+        $data['view'] = $this->view;
+        $data['path'] = $this->path;
+        $data['access'] = $this->access;
+
+        
+        if(!empty($request->faculty) || $request->faculty != null){
+            $data['selected_faculty'] = $faculty = $request->faculty;
+        }
+        else{
+            $data['selected_faculty'] = '0';
+        }
+
+        if(!empty($request->session) || $request->session != null){
+            $data['selected_session'] = $session = $request->session;
+        }
+        else{
+            $data['selected_session'] = '0';
+        }
+
+        if(!empty($request->program) || $request->program != null){
+            $data['selected_program'] = $program = $request->program;
+        }
+        else{
+            $data['selected_program'] = '0';
+        }
+
+        if(!empty($request->semester) || $request->semester != null){
+            $data['selected_semester'] = $semester = $request->semester;
+        }
+        else{
+            $data['selected_semester'] = '0';
+        }
+
+        if(!empty($request->section) || $request->section != null){
+            $data['selected_section'] = $section = $request->section;
+        }
+        else{
+            $data['selected_section'] = '0';
+        }
+
+
+        // Filter Search
+        $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
+        $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
+
+
+        if(!empty($request->faculty) && $request->faculty != '0'){
+        $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();}
+
+        if(!empty($request->program) && $request->program != '0'){
+        $sessions = Session::where('status', 1);
+        $sessions->with('programs')->whereHas('programs', function ($query) use ($program){
+            $query->where('program_id', $program);
+        });
+        $data['sessions'] = $sessions->orderBy('id', 'desc')->get();}
+
+        if(!empty($request->program) && $request->program != '0'){
+        $semesters = Semester::where('status', 1);
+        $semesters->with('programs')->whereHas('programs', function ($query) use ($program){
+            $query->where('program_id', $program);
+        });
+        $data['semesters'] = $semesters->orderBy('id', 'asc')->get();}
+
+        if(!empty($request->program) && $request->program != '0' && !empty($request->semester) && $request->semester != '0'){
+        $sections = Section::where('status', 1);
+        $sections->with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($program, $semester){
+            $query->where('program_id', $program);
+            $query->where('semester_id', $semester);
+        });
+        $data['sections'] = $sections->orderBy('title', 'asc')->get();}
+
+        $data['seat_types'] = SeatType::select('id','name')->get();
+        // Filter Student
+        if(isset($request->faculty) || isset($request->program)){
+            $enrolls = StudentEnroll::where('status', '1');
+
+            if(!empty($request->faculty) && $request->faculty != '0'){
+                $enrolls->with('program')->whereHas('program', function ($query) use ($faculty){
+                    $query->where('faculty_id', $faculty);
+                });
+            }
+            if(!empty($request->program) && $request->program != '0'){
+                $enrolls->where('program_id', $program);
+            }
+            if(!empty($request->session) && $request->session != '0'){
+                $enrolls->where('session_id', $session);
+            }
+            if(!empty($request->semester) && $request->semester != '0'){
+                $enrolls->where('semester_id', $semester);
+            }
+            if(!empty($request->section) && $request->section != '0'){
+                $enrolls->where('section_id', $section);
+            }
+            if(!empty($request->seat_type_id) && $request->seat_type_id != '0'){
+                $enrolls->with('student')->whereHas('student', function ($query){
+                    $query->where('status', '1');
+                    $query->where('seat_type_id', request()->seat_type_id);
+                });
+            }
+
+            $enrolls->with('student')->whereHas('student', function ($query){
+                $query->where('status', '1');
+                $query->orderBy('student_id', 'asc');
+            });
+
+            $data['rows'] = $enrolls->get();
+        }
+
+
+        return view($this->view.'.bulk_create', $data);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function bulkStore(Request $request)
+    {
+     //   dd($request->all());
+
+
+        //Validation
+        // $request->validate([
+        //     'faculty' => 'required',
+        //     'program' => 'required',
+        //     'session' => 'required',
+        //     'semester' => 'required',
+        //     'section' => 'required',
+        //     'amount' => 'required|numeric',
+        //     'type' => 'required|numeric',
+        //     'assign_date' => 'required|date|after_or_equal:today',
+        //     'due_date' => 'required|date|after_or_equal:assign_date',
+        //     'category' => 'required',
+        //     'students' => 'required',
+        // ]);
+      
+
+        try{
+
+             // Assign Fees
+             $i=0; 
+
+             foreach($request->categorys as $category){
+
+                $fee_master_exist = 0;
+
+                $feesMaster = FeesMaster::where('faculty_id', $request->faculty)
+                ->where('program_id', $request->program)
+                ->where('session_id', $request->session)
+                ->where('semester_id', $request->semester)
+                ->where('section_id', $request->section)
+                ->where('category_id', $category)
+                ->first();
+
+                if($feesMaster != null){
+
+                $fee_master_exist = 1;
+
+                $fees = Fee::where('fee_master_id', $feesMaster->id)
+                                    ->where('category_id', $category)
+                                    ->where('status', '<>', '1')
+                                    ->get();
+
+                         //           dd($fees);
+
+                foreach($fees as $fee){
+                    $fee->delete();
+                }
+                    
+                }
+                
+
+               
+              //  dd( $request->type[$i]);
+
+            DB::beginTransaction();
+            
+            if($fee_master_exist != 1){
+
+            $feesMaster = new FeesMaster;
+            $feesMaster->faculty_id = $request->faculty;
+            $feesMaster->program_id = $request->program;
+            $feesMaster->session_id = $request->session;
+            $feesMaster->semester_id = $request->semester;
+            $feesMaster->section_id = $request->section;
+            $feesMaster->category_id = $category;
+            $feesMaster->assign_date = $request->assign_date[$i];
+            $feesMaster->due_date = $request->due_date[$i];
+            $feesMaster->amount = $request->amount[$i];
+            $feesMaster->type = $request->type[$i];
+            $feesMaster->created_by = Auth::guard('web')->user()->id;
+            $feesMaster->save();
+            }
+
+          //  dd($feesMaster->id);
+
+
+           
+                
+            foreach($request->students as $student){
+                $total_credits = 0;
+
+                if($request->type[$i] == 1){
+                    $fee_amount = $request->amount[$i];
+                }
+                else {
+                    $enroll = StudentEnroll::find($student);
+                    foreach($enroll->subjects as $subject){
+                        $total_credits = $total_credits + $subject->credit_hour;
+                    }
+
+                    $fee_amount = $total_credits * $request->amount;
+                }
+
+                $fees = Fee::where('fee_master_id', $feesMaster->id)
+                                ->where('category_id', $category)
+                                ->where('student_enroll_id', $student)
+                                ->where('status','1')
+                                ->first();
+
+                if($fees == null){                
+               
+                $fees = new Fee;
+                $fees->fee_master_id = $feesMaster->id;
+                $fees->student_enroll_id = $student;
+                $fees->category_id = $category;
+                $fees->fee_amount = $fee_amount;
+                $fees->assign_date = $request->assign_date[$i];
+                $fees->due_date = $request->due_date[$i];
+                $fees->created_by = Auth::guard('web')->user()->id;
+                $fees->save();
+                }
+            }
+
+             //   dd($fees);
+            
+
+
+            // Attach
+            $feesMaster->studentEnrolls()->attach($request->students);
+            DB::commit();
+
+            $i++;
+
+             }
+
+            Toastr::success(__('msg_created_successfully'), __('msg_success'));
+
+            return redirect()->back();
+        }
+        catch(\Exception $e){
+
+        //    dd($e);
 
             Toastr::error(__('msg_created_error'), __('msg_error'));
 

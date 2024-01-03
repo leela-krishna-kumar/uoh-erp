@@ -263,10 +263,12 @@ class FeesStudentController extends Controller
         // Net Amount Calculation
         $net_amount = ($fee->fee_amount - $discount_amount) + $fine_amount;
 
-        
+        $trans_id = Str::random(16);
+
         DB::beginTransaction();
         // Update Data              
         // $fee->fee_amount = $request->fee_amount;
+        $fee->transaction_id = $trans_id;
         $fee->discount_amount = $discount_amount;
         $fee->fine_amount = $fine_amount;
         $fee->paid_amount = $net_amount;
@@ -280,7 +282,7 @@ class FeesStudentController extends Controller
 
         // Transaction
         $transaction = new Transaction;
-        $transaction->transaction_id = Str::random(16);
+        $transaction->transaction_id = $trans_id;
         $transaction->amount = $net_amount;
         $transaction->type = '1';
         $transaction->created_by = Auth::guard('web')->user()->id;
@@ -636,7 +638,7 @@ class FeesStudentController extends Controller
         // Filter Student
         $students = StudentEnroll::where('status', '1');
         $students->with('student')->whereHas('student', function ($query){
-            $query->where('status', '1');
+        //    $query->where('status', '1');
             $query->orderBy('student_id', 'asc');
         });
         $data['fee_registers'] = FeeRegister::get();
@@ -670,11 +672,13 @@ class FeesStudentController extends Controller
             'pay_date' => 'required|date|before_or_equal:today',
         ]);
 
+        $trans_id = Str::random(16);
 
         // try{
             DB::beginTransaction();
             // Insert Data
             $fee = new Fee;
+            $fee->transaction_id = $trans_id;
             $fee->student_enroll_id = $request->student;
             $fee->category_id = $request->category;
             $fee->fee_amount = $request->fee_amount;
@@ -694,15 +698,11 @@ class FeesStudentController extends Controller
 
             // Transaction
             $transaction = new Transaction;
-            $transaction->transaction_id = Str::random(16);
+            $transaction->transaction_id = $trans_id;
             $transaction->amount = $request->paid_amount;
             $transaction->type = '1';
             $transaction->created_by = Auth::guard('web')->user()->id;
             $fee->studentEnroll->student->transactions()->save($transaction);
-
-            //update transaction number
-            $fee->transaction_id = $transaction->transaction_id;  
-            $fee->save();  
 
             DB::commit();
 

@@ -229,6 +229,8 @@ class StudentController extends Controller
             $students->where('section_id', $section);            
         }
 
+        if($request->status != 'all'){
+
         if($request->status == '5'){
             $students->where('is_transfer', '1');
         }elseif($request->status == '6'){
@@ -236,6 +238,7 @@ class StudentController extends Controller
         }else{
             $students->where('status', $request->status);
         }
+    }
 
 
         $data['rows'] = $students->orderBy('student_id', 'desc')->get();
