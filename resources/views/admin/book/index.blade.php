@@ -76,8 +76,9 @@
                                         <th>{{ __('field_isbn') }}</th>
                                         <th>{{ __('field_category') }}</th>
                                         <th>{{ __('field_author') }}</th>
-                                        <th>{{ __('field_from_accession_no') }}</th>
-                                        <th>{{ __('field_to_accession_no') }}</th>
+                                        {{-- <th>{{ __('field_from_accession_no') }}</th>
+                                        <th>{{ __('field_to_accession_no') }}</th> --}}
+                                        <th>{{ __('field_accession_no') }}</th>
                                         <th>{{ __('field_status') }}</th>
                                         <th>{{ __('field_action') }}</th>
                                     </tr>
@@ -96,8 +97,9 @@
                                         <td>{{ $row->isbn }}</td>
                                         <td>{{ $row->category->title ?? '' }}</td>
                                         <td>{{ $row->author }}</td>
-                                        <td>{{ $row->from_acc_no }}</td>
-                                        <td>{{ $row->to_acc_no }}</td>
+                                        {{-- <td>{{ $row->from_acc_no }}</td>
+                                        <td>{{ $row->to_acc_no }}</td> --}}
+                                        <td>{{ $row->acc_no }}</td>
                                         <td>
                                             @if( $row->status == 1 )
                                             <span class="badge badge-pill badge-success">{{ __('status_available') }}</span>
@@ -113,7 +115,7 @@
                                                 <i class="fas fa-print"></i> {{ __('field_token') }}
                                             </a>
                                             @endcan
-                                            
+
                                             <button type="button" class="btn btn-icon btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showModal-{{ $row->id }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
@@ -142,6 +144,7 @@
                         <!-- [ Data table ] end -->
                     </div>
                 </div>
+                {{-- {{ $rows->links() }} --}}
             </div>
         </div>
         <!-- [ Main Content ] end -->

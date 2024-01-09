@@ -45,7 +45,7 @@
                                         </td>
                                     </tr>
 
-                                    
+
 
                                     <tr>
                                         <td>{{ trans_choice('module_application', 2) }}</td>
@@ -261,7 +261,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'students']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_subject_adddrop', 2) }}</td>
                                         <td>
@@ -282,7 +282,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'student_enroll_subject']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_project', 2) }}</td>
                                         <td>
@@ -303,7 +303,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'projects']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_ecourses', 2) }}</td>
                                         <td>
@@ -324,7 +324,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'e_courses']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_elesson', 2) }}</td>
                                         <td>
@@ -345,7 +345,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'e_lessons']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_esection', 2) }}</td>
                                         <td>
@@ -366,7 +366,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'e_sections']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_question_bank', 2) }}</td>
                                         <td>
@@ -387,7 +387,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'question_banks']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                     <tr>
                                         <td>{{ trans_choice('module_test_paper', 2) }}</td>
                                         <td>
@@ -408,7 +408,7 @@
                                         <td>
                                             <a href="{{ route('admin.bulk.export', ['table' => 'test_papers']) }}" class="btn btn-info"><i class="fas fa-download"></i> {{ __('btn_export') }}</a>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

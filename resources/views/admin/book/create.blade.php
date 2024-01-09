@@ -21,7 +21,7 @@
                         <a href="{{ route($route.'.create') }}" class="btn btn-info"><i class="fas fa-sync-alt"></i> {{ __('btn_refresh') }}</a>
                     </div>
 
-                    
+
                     <div class="card-block">
                         <!-- Form Start -->
                         <fieldset class="row scheduler-border">
@@ -56,7 +56,7 @@
                               {{ __('required_field') }} {{ __('field_isbn') }}
                             </div>
                         </div>
-                        
+
                         <div class="form-group col-md-4">
                             <label for="author">{{ __('field_author') }} <span>*</span></label>
                             <input type="text" class="form-control" name="author" id="author" value="{{ old('author') }}" required>
@@ -131,14 +131,14 @@
                           <label for="">{{ __('Link') }} <span>*</span></label>
                           <input type="url" class="form-control autonumber" name="link" id="link" value="" >
                         </div>
-                       
+
                       </div>
-                   
+
                       </fieldset>
-                  
+
                       <fieldset class="row scheduler-border">
                         <legend>{{ __('field_account') }}</legend>
-                        
+
 
                         <div class="form-group col-md-4">
                             <label for="call_no">{{ __('field_call_no') }}</label>
@@ -149,7 +149,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group col-md-4">
+                        {{-- <div class="form-group col-md-4">
                             <label for="from_acc_no">{{ __('field_from_accession_no') }}<span>*</span></label>
                             <input type="number" min="0" max="99" class="form-control" name="from_acc_no" id="from_acc_no" value="{{ old('from_acc_no') }}" required>
 
@@ -165,7 +165,17 @@
                             <div class="invalid-feedback">
                               {{ __('required_field') }} {{ __('field_to_accession_no') }}
                             </div>
+                        </div> --}}
+
+                        <div class="form-group col-md-4">
+                            <label for="acc_no">{{ __('field_accession_no') }}<span>*</span></label>
+                            <input type="number" min="0" max="99" class="form-control" name="acc_no" id="acc_no" value="{{ old('acc_no') }}" required>
+
+                            <div class="invalid-feedback">
+                              {{ __('required_field') }} {{ __('field_accession_no') }}
+                            </div>
                         </div>
+
 
                         <div class="form-group col-md-4">
                             <label for="volume">{{ __('field_volume') }}</label>
@@ -175,7 +185,7 @@
                               {{ __('required_field') }} {{ __('field_volume') }}
                             </div>
                         </div>
-                        
+
                         <div class="form-group col-md-4">
                             <label for="currency">{{ __('field_currency') }}</label>
                             <input type="text" class="form-control" name="currency" id="currency" value="{{ old('currency') }}">
@@ -188,7 +198,7 @@
 
                       <fieldset class="row scheduler-border">
                         <legend>{{ __('field_book') }}</legend>
-                        
+
                         <div class="form-group col-md-4">
                             <label for="department">{{ __('field_department') }}</label>
                             <input type="text" class="form-control" name="department" id="department" value="{{ old('department') }}">
@@ -266,7 +276,7 @@
                               {{ __('required_field') }} {{ __('field_issue_books') }}
                             </div>
                         </div>
-                        
+
                         <div class="form-group col-md-4">
                             <label for="ref_books">{{ __('field_ref_books') }}</label>
                             <input type="text" class="form-control" name="ref_books" id="ref_books" value="{{ old('ref_books') }}">
@@ -275,7 +285,7 @@
                               {{ __('required_field') }} {{ __('field_ref_books') }}
                             </div>
                         </div>
-                        
+
                         <div class="form-group col-md-4">
                             <label for="supplier">{{ __('field_supplier') }}</label>
                             <input type="text" class="form-control" name="supplier" id="supplier" value="{{ old('supplier') }}">
@@ -293,7 +303,7 @@
                               {{ __('required_field') }} {{ __('field_invoice_no') }}
                             </div>
                         </div>
-                        
+
                         <div class="form-group col-md-4">
                             <label for="invoice_date">{{ __('field_invoice_date') }}</label>
                             <input type="date" class="form-control" name="invoice_date" id="invoice_date" value="{{ old('invoice_date') }}">
@@ -385,10 +395,10 @@
                               {{ __('required_field') }} {{ __('field_sub_rack_no') }}
                             </div>
                         </div>
-                        
-                        
 
-                        
+
+
+
                         <div class="form-group col-md-4">
                             <label for="publisher_place">{{ __('field_publisher_place') }}</label>
                             <input type="text" class="form-control" name="publisher_place" id="publisher_place" value="{{ old('publisher_place') }}">

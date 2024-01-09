@@ -12,7 +12,7 @@ class Book extends Model
      * @var array
      */
     protected $fillable = [
-        'category_id', 'title', 'isbn', 'code', 'author', 'publisher', 'edition', 'publish_year', 'language', 'price', 'quantity', 'section', 'column', 'row', 'description', 'note', 'attach', 'status',
+        'category_id', 'title', 'isbn', 'code', 'author', 'publisher', 'edition', 'publish_year', 'language', 'price', 'quantity', 'section', 'column', 'row', 'description', 'note', 'attach', 'status','acc_no',
     ];
 
     public function category()

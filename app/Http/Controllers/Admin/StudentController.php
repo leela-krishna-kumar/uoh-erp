@@ -241,7 +241,7 @@ class StudentController extends Controller
     }
 
 
-        $data['rows'] = $students->orderBy('student_id', 'desc')->get();
+        $data['rows'] = $students->orderBy('student_id', 'desc')->limit(30)->get();
 
        // dd( $data['rows']);
 

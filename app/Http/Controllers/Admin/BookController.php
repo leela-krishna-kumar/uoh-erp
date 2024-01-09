@@ -17,7 +17,7 @@ use Auth;
 class BookController extends Controller
 {
     use FileUploader;
-    
+
     /**
      * Create a new controller instance.
      *
@@ -78,7 +78,8 @@ class BookController extends Controller
                     if(!empty($request->category) || $request->category != null){
                         $rows->where('category_id', $category);
                     }
-        $data['rows'] = $rows->orderBy('id', 'desc')->get();
+        // $data['rows'] = $rows->orderBy('id', 'desc')->limit(20)->get();
+        $data['rows'] = $rows->orderBy('id', 'desc')->paginate(50);
 
         return view($this->view.'.index', $data);
     }
@@ -109,7 +110,7 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         // Field Validation
         // return $request->all();
         $request->validate([
@@ -125,15 +126,15 @@ class BookController extends Controller
         $fromAccNo = floatval($request->from_acc_no);
         $toAccNo = floatval($request->to_acc_no);
 
-        if ($fromAccNo >= $toAccNo) {
-            Toastr::error(__('To Accession No must be greater than From Accession No'), __('msg_success'));
-            return redirect()->route($this->route.'.index');
-        }
-        // image upload, fit and store inside public folder 
+        // if ($fromAccNo >= $toAccNo) {
+        //     Toastr::error(__('To Accession No must be greater than From Accession No'), __('msg_success'));
+        //     return redirect()->route($this->route.'.index');
+        // }
+        // image upload, fit and store inside public folder
         if($request->hasFile('attach')){
             //Upload New Image
             $filenameWithExt = $request->file('attach')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME); 
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('attach')->getClientOriginalExtension();
             $fileNameToStore = str_replace([' ','-','&','#','$','%','^',';',':'],'_',$filename).'_'.time().'.'.$extension;
 
@@ -150,7 +151,7 @@ class BookController extends Controller
         else{
             $fileNameToStore = Null;
         }
-      
+
         // Insert Data
         $book = new Book;
         $book->category_id = $request->category;
@@ -171,8 +172,9 @@ class BookController extends Controller
         $book->link = $request->link;
         $book->attach = $fileNameToStore;
         $book->call_no = $request->call_no;
-        $book->from_acc_no = $request->from_acc_no;
-        $book->to_acc_no = $request->to_acc_no;
+        // $book->from_acc_no = $request->from_acc_no;
+        // $book->to_acc_no = $request->to_acc_no;
+        $book->acc_no = $request->acc_no;
         $book->volume = $request->volume;
         $book->currency = $request->currency;
         $book->department = $request->department;
@@ -209,7 +211,7 @@ class BookController extends Controller
             $bookAccordion->accordion_no = $fromAccNo;
             $bookAccordion->save();
         }
-  
+
         Toastr::success(__('msg_created_successfully'), __('msg_success'));
 
         return redirect()->route($this->route.'.index');
@@ -270,10 +272,10 @@ class BookController extends Controller
             'category' => 'required',
             'title' => 'required|max:191',
             'isbn' => 'required|max:191|unique:books,isbn,'.$id,
-            'code' => 'nullable|max:191|unique:books,code,'.$id,
+            // 'code' => 'nullable|max:191|unique:books,code,'.$id,
             'author' => 'required',
-            'from_acc_no' => 'required',
-            'to_acc_no' => 'required',
+            // 'from_acc_no' => 'required',
+            // 'to_acc_no' => 'required',
             'author' => 'required',
             'price' => 'nullable|numeric',
             'attach' => 'nullable|image|mimes:jpg,jpeg,png|max:20480',
@@ -282,7 +284,7 @@ class BookController extends Controller
 
         $book = Book::findOrFail($id);
 
-        // image upload, fit and store inside public folder 
+        // image upload, fit and store inside public folder
         if($request->hasFile('attach')){
 
             $file_path = public_path('uploads/'.$this->path.'/'.$book->attach);
@@ -292,7 +294,7 @@ class BookController extends Controller
 
             //Upload New Image
             $filenameWithExt = $request->file('attach')->getClientOriginalName();
-            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME); 
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('attach')->getClientOriginalExtension();
             $fileNameToStore = str_replace([' ','-','&','#','$','%','^',';',':'],'_',$filename).'_'.time().'.'.$extension;
 
@@ -334,6 +336,7 @@ class BookController extends Controller
         $book->call_no = $request->call_no;
         $book->from_acc_no = $request->from_acc_no;
         $book->to_acc_no = $request->to_acc_no;
+        $book->acc_no = $request->acc_no;
         $book->volume = $request->volume;
         $book->currency = $request->currency;
         $book->department = $request->department;

@@ -117,7 +117,7 @@
                               <label for="is_e_book" class="cr"></label>
                             </div>
                           </div>
-                          
+
 
                           <div class="form-group col-md-2">
                             <div class="switch d-inline m-r-10">
@@ -134,17 +134,17 @@
 
                         <fieldset class="row scheduler-border">
                           <legend>{{ __('field_account') }}</legend>
-                          
-  
+
+
                           <div class="form-group col-md-4">
                               <label for="call_no">{{ __('field_call_no') }}</label>
                               <input type="text" class="form-control" name="call_no" id="call_no"value="{{ $row->call_no }}" >
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_call_no') }}
                               </div>
                           </div>
-  
+
                           <!-- <div class="form-group col-md-4">
                             <label for="from_acc_no">{{ __('field_from_accession_no') }}<span>*</span></label>
                             <input type="text" class="form-control" name="from_acc_no" id="from_acc_no" value="{{ $row->from_acc_no }}" required>
@@ -162,37 +162,46 @@
                               {{ __('required_field') }} {{ __('field_to_accession_no') }}
                             </div>
                           </div> -->
+
+                          <div class="form-group col-md-4">
+                            <label for="acc_no">{{ __('field_accession_no') }}</label>
+                            <input type="number" class="form-control" name="acc_no" id="acc_no" value="{{ $row->acc_no }}">
+
+                            <div class="invalid-feedback">
+                              {{ __('required_field') }} {{ __('field_accession_no') }}
+                            </div>
+                        </div>
                           <div class="form-group col-md-4">
                               <label for="volume">{{ __('field_volume') }}</label>
                               <input type="text" class="form-control" name="volume" id="volume" value="{{ $row->volume }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_volume') }}
                               </div>
                           </div>
-                          
+
                           <div class="form-group col-md-4">
                               <label for="currency">{{ __('field_currency') }}</label>
                               <input type="text" class="form-control" name="currency" id="currency" value="{{$row->currency }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_currency') }}
                               </div>
                           </div>
                         </fieldset>
-  
+
                         <fieldset class="row scheduler-border">
                           <legend>{{ __('field_book') }}</legend>
-                      
+
                           <div class="form-group col-md-4">
                               <label for="department">{{ __('field_department') }}</label>
                               <input type="text" class="form-control" name="department" id="department" value="{{ $row->department }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_department') }}
                               </div>
                           </div>
-  
+
                         <div class="form-group col-md-4">
                             <label for="category">{{ __('field_subject') }} <span>*</span></label>
                             <select class="form-control" name="subject_id" id="subject_id" required>
@@ -210,35 +219,35 @@
                           {{-- <div class="form-group col-md-4">
                               <label for="subject">{{ __('field_subject') }}</label>
                               <input type="text" class="form-control" name="subject" id="subject" value="{{$row->subject}}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_subject') }}
                               </div>
                           </div> --}}
-  
+
                           <div class="form-group col-md-4">
                               <label for="course">{{ __('field_course') }}</label>
                               <input type="text" class="form-control" name="course" id="course" value="{{$row->course}}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_course') }}
                               </div>
                           </div>
-  
-  
+
+
                           <div class="form-group col-md-4">
                               <label for="book_type">{{ __('field_book_type') }}</label>
                               <input type="text" class="form-control" name="book_type" id="book_type" value="{{ $row->book_type }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_book_type') }}
                               </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="book_size">{{ __('field_book_size') }}</label>
                               <input type="text" class="form-control" name="book_size" id="book_size" value="{{$row->book_size }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_book_size') }}
                               </div>
@@ -252,80 +261,80 @@
                               {{ __('required_field') }} {{ __('field_no_of_pages') }}
                             </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="issue_books">{{ __('field_issue_books') }}</label>
                               <input type="text" class="form-control" name="issue_books" id="issue_books" value="{{ $row->issue_books }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_issue_books') }}
                               </div>
                           </div>
-                          
+
                           <div class="form-group col-md-4">
                               <label for="ref_books">{{ __('field_ref_books') }}</label>
                               <input type="text" class="form-control" name="ref_books" id="ref_books" value="{{ $row->ref_books }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_ref_books') }}
                               </div>
                           </div>
-                          
+
                           <div class="form-group col-md-4">
                               <label for="supplier">{{ __('field_supplier') }}</label>
                               <input type="text" class="form-control" name="supplier" id="supplier" value="{{$row->supplier }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_supplier') }}
                               </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="invoice_no">{{ __('field_invoice_no') }}</label>
                               <input type="text" class="form-control" name="invoice_no" id="invoice_no" value="{{ $row->invoice_no }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_invoice_no') }}
                               </div>
                           </div>
-                          
+
                           <div class="form-group col-md-4">
                               <label for="invoice_date">{{ __('field_invoice_date') }}</label>
                               <input type="text" class="form-control" name="invoice_date" id="invoice_date" value="{{ $row->invoice_date }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_invoice_date') }}
                               </div>
                           </div>
                         </fieldset>
-  
+
                         <fieldset class="row scheduler-border">
                           <legend>{{ __('field_book') }}</legend>
-                          
-  
+
+
                           <div class="form-group col-md-4">
                               <label for="enclose_type">{{ __('field_enclose_type') }}</label>
                               <input type="text" class="form-control" name="enclose_type" id="enclose_type" value="{{ $row->enclose_type}}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_enclose_type') }}
                               </div>
                           </div>
-  
-  
+
+
                           <div class="form-group col-md-4">
                               <label for="enclose_items">{{ __('field_enclose_items') }}</label>
                               <input type="text" class="form-control" name="enclose_items" id="enclose_items" value="{{$row->enclose_items }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_enclose_items') }}
                               </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="ddc_1">{{ __('field_ddc_1') }}</label>
                               <input type="text" class="form-control" name="ddc_1" id="ddc_1" value="{{$row->ddc_1 }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_ddc_1') }}
                               </div>
@@ -333,7 +342,7 @@
                           <div class="form-group col-md-4">
                               <label for="ddc_2">{{ __('field_ddc_2') }}</label>
                               <input type="text" class="form-control" name="ddc_2" id="ddc_2" value="{{ $row->ddc_2 }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_ddc_2') }}
                               </div>
@@ -341,56 +350,56 @@
                           <div class="form-group col-md-4">
                               <label for="ddc_3">{{ __('field_ddc_3') }}</label>
                               <input type="text" class="form-control" name="ddc_3" id="ddc_3" value="{{ $row->ddc_3 }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_ddc_3') }}
                               </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="prefix">{{ __('field_prefix') }}</label>
                               <input type="text" class="form-control" name="prefix" id="prefix" value="{{ $row->prefix }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_prefix') }}
                               </div>
                           </div>
-  
-  
+
+
                           <div class="form-group col-md-4">
                               <label for="suffix">{{ __('field_suffix') }}</label>
                               <input type="text" class="form-control" name="suffix" id="suffix" value="{{ $row->suffix}}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_suffix') }}
                               </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="rack_no">{{ __('field_rack_no') }}</label>
                               <input type="text" class="form-control" name="rack_no" id="rack_no" value="{{ $row->rack_no}}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_rack_no') }}
                               </div>
                           </div>
-  
+
                           <div class="form-group col-md-4">
                               <label for="sub_rack_no">{{ __('field_sub_rack_no') }}</label>
                               <input type="text" class="form-control" name="sub_rack_no" id="sub_rack_no" value="{{ $row->sub_rack_no }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_sub_rack_no') }}
                               </div>
                           </div>
-                          
-                          
-  
-                          
+
+
+
+
                           <div class="form-group col-md-4">
                               <label for="publisher_place">{{ __('field_publisher_place') }}</label>
                               <input type="text" class="form-control" name="publisher_place" id="publisher_place" value="{{ $row->publisher_place }}">
-  
+
                               <div class="invalid-feedback">
                                 {{ __('required_field') }} {{ __('field_publisher_place') }}
                               </div>
