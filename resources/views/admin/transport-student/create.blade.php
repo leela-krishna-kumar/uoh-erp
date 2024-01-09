@@ -11,6 +11,12 @@
                 </div>
                 <div class="modal-body">
                     <!-- Form Start -->
+                    <input type="hidden" name="faculty" value="{{ request()->get('faculty') }}">
+                    <input type="hidden" name="program" value="{{ request()->get('program') }}">
+                    <input type="hidden" name="session" value="{{ request()->get('session') }}">
+                    <input type="hidden" name="semester" value="{{ request()->get('semester') }}">
+                    <input type="hidden" name="section" value="{{ request()->get('section') }}">
+
                     <input type="hidden" name="student_id" value="{{ $row->id }}">
                     <input type="hidden" name="member_id" value="{{ $row->transport->id ?? -1 }}">
 

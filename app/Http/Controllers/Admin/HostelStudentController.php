@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\HostelMember;
 use App\Models\Semester;
@@ -10,8 +11,11 @@ use App\Models\Program;
 use App\Models\Section;
 use App\Models\Session;
 use App\Models\Faculty;
+use App\Models\Fee;
+use App\Models\FeesCategory;
 use App\Models\Student;
 use App\Models\Hostel;
+use App\Models\StudentEnroll;
 use Carbon\Carbon;
 use Toastr;
 use Auth;
@@ -164,16 +168,46 @@ class HostelStudentController extends Controller
             'member_id' => 'required',
         ]);
 
+       // dd($request->all());
+
         $student = Student::findOrFail($request->student_id);
+
+        $studentEnrollId = StudentEnroll::where('student_id', $request->student_id)->first();
+
+        $department = Department::where('title','Hostel')->first();
+        $feecategory = FeesCategory::where('department_id',@$department->id)->first();
+
+       // dd($feecategory);
 
         // Insert Data
         $member = HostelMember::firstOrNew(['id' => $request->member_id]);
+
+        $member->faculty_id = $studentEnrollId->faculty_id;
+        $member->program_id = $studentEnrollId->program_id;
+        $member->session_id = $studentEnrollId->session_id;
+        $member->semester_id = $studentEnrollId->semester_id;
+        $member->section_id = $studentEnrollId->section_id;
+        $member->fee_category_id = $feecategory->id;
+
         $member->hostel_room_id = $request->hostel_room;
         $member->start_date = Carbon::today();
         $member->status = '1';
         $member->created_by = Auth::guard('web')->user()->id;
 
         $student->hostelRoom()->save($member);
+
+     //   $feeCategories = FeesCategory::where('id', $feecategory->id)->first();
+
+        $fees = new Fee;
+        $fees->fee_master_id = null;
+        $fees->transport_members_id = $member->id;
+        $fees->student_enroll_id = $studentEnrollId->id;
+        $fees->category_id = $feecategory->id;
+        $fees->fee_amount = $feecategory->amount;
+        $fees->assign_date = carbon::now();
+        $fees->due_date = Carbon::now()->addDays(30);
+        $fees->created_by = Auth::guard('web')->user()->id;
+        $fees->save();
 
 
         Toastr::success(__('msg_added_successfully'), __('msg_success'));

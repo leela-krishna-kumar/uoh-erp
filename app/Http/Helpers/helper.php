@@ -161,7 +161,10 @@ if(!function_exists('getStudentFeeByType')){
         $paidFee = 0;
         if($category_id){
             if($student->currentEnroll){
-                $feeAmount = App\Models\Fee::where('student_enroll_id',$student->currentEnroll->id)->where('category_id',$category_id)->sum('fee_amount');
+                $feeAmount = App\Models\Fee::where('student_enroll_id',$student->currentEnroll->id)->where('category_id',$category_id)->whereIn('status', ['0', '1'])->sum('fee_amount');
+               
+           //     dd($feeAmount);
+               
                 $fineAmount = App\Models\Fee::where('student_enroll_id',$student->currentEnroll->id)->where('category_id',$category_id)->sum('fine_amount');
                 $discountAmount = App\Models\Fee::where('student_enroll_id',$student->currentEnroll->id)->where('category_id',$category_id)->sum('discount_amount');
                 $paidFee = App\Models\Fee::where('student_enroll_id',$student->currentEnroll->id)->where('category_id',$category_id)->sum('paid_amount');
@@ -171,6 +174,8 @@ if(!function_exists('getStudentFeeByType')){
                 // }
                 $totalFee = $feeAmount + $fineAmount - $discountAmount;
                 $remaingniFee = $totalFee - $paidFee;
+
+             //   dd($totalFee);
             }
         }
         // if($unpaidFee){

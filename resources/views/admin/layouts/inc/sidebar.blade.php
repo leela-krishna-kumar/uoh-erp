@@ -423,7 +423,11 @@
                         @endcan --}}
 
                         @can('fees-student-quick-received')
-                        <li class="pcoded-mtext {{ Request::is('admin/fees-student-quick-received*') ? 'active' : '' }}"><a href="{{ route('admin.fees-student.quick.received') }}" class="">{{ trans_choice('module_fees_quick_received', 1) }}</a></li>
+                        <li class="pcoded-mtext {{ Request::is('admin/fees-student-quick-received*') ? 'active' : '' }}"><a href="{{ route('admin.fees-student.quick.received') }}" class="">Fee Receive</a></li>
+                        @endcan
+
+                        @can('fees-student-quick-received-bulk')
+                        <li class="pcoded-mtext {{ Request::is('admin/fees-student-quick-received*') ? 'active' : '' }}"><a href="{{ route('admin.fees-student.quick-received-bulk') }}" class="">Fee Receive Bulk</a></li>
                         @endcan
 
                         @canany(['fees-student-report', 'fees-student-print'])

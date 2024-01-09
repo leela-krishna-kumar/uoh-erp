@@ -92,12 +92,21 @@ class FeesTypeMasterController extends Controller
         $data['seat_types'] = SeatType::orderBy('name', 'asc')->get();
 
         if(!empty($request->program) && !empty($request->faculty) && !empty($request->session) && !empty($request->seat_type_id)){
-            $data['rows'] = FeesCategory::where('status',1)->orderBy('title', 'asc')->get();
+            $data['rows'] = FeesCategory::where('status',1)
+                                        // ->where('department_id', '<>', '24' )
+                                        // ->where('department_id', '<>', '39' )
+                                        ->orderBy('title', 'asc')->get();
         }
 
         // Filter Search
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
-        $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
+        $data['categories'] = FeesCategory::where('status', '1')
+                                        ->where('department_id', '<>', '24' )
+                                        ->where('department_id', '<>', '39' )
+                                        ->orderBy('title', 'asc')
+                                        ->get();
+
+      //  dd($data['categories']);
 
 
         if(!empty($request->faculty) && $request->faculty != '0'){
@@ -275,6 +284,9 @@ class FeesTypeMasterController extends Controller
      */
     public function store(Request $request)
     {
+
+       // dd($request->all());
+
         //Validation
         $request->validate([
             'fees_types' => 'required',
@@ -288,6 +300,17 @@ class FeesTypeMasterController extends Controller
         try{
             DB::beginTransaction();
             $feesTypes = $request->fees_types;
+
+            $feesTypeMaster = FeesTypeMaster::where('faculty_id', $request->faculty)
+            ->where('program_id', $request->program)
+            ->where('session_id', $request->session)
+            ->where('seat_type_id', $request->seat_type_id)
+            ->get();
+
+            foreach($feesTypeMaster as $feesType){
+                $feesType->delete();
+            }
+
 
             foreach($feesTypes as $feeType){
                 $feesTypeMaster = new FeesTypeMaster;
@@ -308,6 +331,8 @@ class FeesTypeMasterController extends Controller
             return redirect()->route($this->view.'.index');
         }
         catch(\Exception $e){
+
+            dd($e);
 
             Toastr::error(__('msg_created_error'), __('msg_error'));
 

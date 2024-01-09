@@ -1,3 +1,5 @@
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 @extends('admin.layouts.master')
 @section('title', $title)
 @section('content')
@@ -45,6 +47,27 @@
                               {{ __('required_field') }} {{ __('field_fees_type') }}
                             </div>
                         </div>
+
+
+                        {{-- $("#student").on('change',function(e){
+                            $('#category').trigger('change');
+                        });
+
+                        $("#student").on('change',function(e){
+                            $.ajax({
+                                type:'POST',
+                                url: "{{ route('get-fee-category') }}",
+                                data:{
+                                    _token:$('input[name=_token]').val(),
+                                    student_id: $('#student').find(':selected').data('student_id'),
+                                },
+                                success:function(response){
+                                    $('#fee_amount').val(response);
+                                    $('#fee_amount').trigger('keyup');
+                                }
+                
+                            });
+                        }); --}}
 
                          <div class="form-group col-md-6">
                             <label for="fee_register_id">{{ __('Fee Register') }} <span>*</span></label>
@@ -174,17 +197,26 @@
           var net_total = (parseFloat(fee_amount) - parseFloat(discount_amount)) + parseFloat(fine_amount);
           $("input[name='paid_amount']").val(net_total);
         }
+
+
         $("#student").on('change',function(e){
             $('#category').trigger('change');
         });
         $("#category").on('change',function(e){
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+             });
+
             $.ajax({
                 type:'POST',
                 url: "{{ route('get-fee-amount') }}",
                 data:{
                     _token:$('input[name=_token]').val(),
                     fees_type_id: $(this).val(),
-                    student_id: $('#student').find(':selected').data('student_id'),
+                    student_id: $('#student').val(),
                 },
                 success:function(response){
                     $('#fee_amount').val(response);
@@ -193,5 +225,7 @@
 
             });
         });
+
+
     </script>
 @endsection

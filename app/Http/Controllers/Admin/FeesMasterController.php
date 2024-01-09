@@ -14,6 +14,7 @@ use App\Models\Section;
 use App\Models\Session;
 use App\Models\Faculty;
 use App\Models\Fee;
+use App\Models\FeesTypeMaster;
 use Toastr;
 use Auth;
 use DB;
@@ -408,8 +409,19 @@ class FeesMasterController extends Controller
         $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
 
 
+
+
+       // dd($data['categories']);
+
+
         if(!empty($request->faculty) && $request->faculty != '0'){
-        $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();}
+
+            $data['fee_type_master'] =  FeesTypeMaster::where('faculty_id',$request->faculty)->where('program_id',$request->program)->where('seat_type_id',$request->seat_type_id)->get();
+
+          //  dd($data['rows']);
+
+            $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
 
         if(!empty($request->program) && $request->program != '0'){
         $sessions = Session::where('status', 1);
@@ -586,15 +598,22 @@ class FeesMasterController extends Controller
 
                 if($fees == null){                
                
-                $fees = new Fee;
-                $fees->fee_master_id = $feesMaster->id;
-                $fees->student_enroll_id = $student;
-                $fees->category_id = $category;
-                $fees->fee_amount = $fee_amount;
-                $fees->assign_date = $request->assign_date[$i];
-                $fees->due_date = $request->due_date[$i];
-                $fees->created_by = Auth::guard('web')->user()->id;
-                $fees->save();
+                    $fees = new Fee;
+                    $fees->fee_master_id = $feesMaster->id;
+                    $fees->student_enroll_id = $student;
+                    $fees->category_id = $category;
+                    $fees->fee_amount = $fee_amount;
+                    $fees->assign_date = $request->assign_date[$i];
+                    $fees->due_date = $request->due_date[$i];
+                    $fees->created_by = Auth::guard('web')->user()->id;
+                    $fees->save();
+                }elseif($fees->fee_amount != $fee_amount){
+
+                    $fees->fee_amount = $fee_amount;
+                    $fees->due_date = $request->due_date[$i];
+                    $fees->status = '3';
+
+                    $fees->update();                
                 }
             }
 

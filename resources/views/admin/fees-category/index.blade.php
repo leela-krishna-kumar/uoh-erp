@@ -41,7 +41,7 @@
                             <div class="form-group">
                                 <label for="department_id">{{ __('field_department') }}</label>
                                 <select class="form-control" name="department_id" id="department_id">
-                                    <option value="" readonly>{{ __('all') }}</option>
+                                    {{-- <option value="" readonly>{{ __('all') }}</option> --}}
                                     @foreach($departments as $department )
                                     <option value="{{ $department->id }}">{{ $department->title }}</option>
                                     @endforeach

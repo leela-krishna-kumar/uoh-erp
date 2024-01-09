@@ -61,6 +61,9 @@
                             {{-- <input type="text" name="section" value="{{ $selected_section }}" hidden> --}}
                             <div class="row">
                                 @foreach($rows as $key => $row)
+
+                                @if ($row->department_id != 24 && $row->department_id != 39)                                    
+                                
                                     @php
                                         $feesTypeMaster =  App\Models\FeesTypeMaster::where('faculty_id',request()->get('faculty'))->where('program_id',request()->get('program'))->where('seat_type_id',request()->get('seat_type_id'))->where('fees_type_id',$row->id)->latest()->first();
                                         if($feesTypeMaster){
@@ -76,6 +79,8 @@
                                             <input type="number" name="fees_types[{{ $row->id }}][amount]" value="{{ $value }}"class="form-control">
                                         </div>
                                     </div>
+
+                                @endif
                                 @endforeach
                             </div>
                             <div class="form-group text-right">

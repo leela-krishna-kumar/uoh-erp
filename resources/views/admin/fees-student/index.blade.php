@@ -66,7 +66,7 @@
                                         <th>{{ __('field_fee') }}</th>
                                         <th>{{ __('field_discount') }}</th>
                                         <th>{{ __('field_fine_amount') }}</th>
-                                        <th>{{ __('field_net_amount') }}</th>
+                                        <th>Net Amount Due</th>
                                         <th>{{ __('field_due_date') }}</th>
                                         <th>{{ __('field_status') }}</th>
                                         <th>{{ __('field_action') }}</th>
@@ -97,8 +97,14 @@
                                             @endif 
                                             {!! $setting->currency_symbol !!}
                                         </td>
+
+                                        @php
+                                            $discount_amount = $row->discount_amount;
+                                            $fine_amount = $row->fine_amount;
+                                        @endphp
+
                                         <td>
-                                            @php 
+                                            {{-- @php 
                                             $discount_amount = 0;
                                             $today = date('Y-m-d');
                                             @endphp
@@ -132,10 +138,14 @@
                                             @else
                                             {{ number_format((float)$discount_amount, 2, '.', '') }} 
                                             @endif 
-                                            {!! $setting->currency_symbol !!}
+                                            {!! $setting->currency_symbol !!} --}}
+
+                                            {{ $discount_amount }}
                                         </td>
+
+                                       
                                         <td>
-                                            @php
+                                            {{-- @php
                                                 $fine_amount = 0;
                                             @endphp
                                             @if(empty($row->pay_date) || $row->due_date < $row->pay_date)
@@ -172,11 +182,13 @@
                                             @else
                                             {{ number_format((float)$fine_amount, 2, '.', '') }} 
                                             @endif 
-                                            {!! $setting->currency_symbol !!}
+                                            {!! $setting->currency_symbol !!} --}}
+
+                                            {{ $row->fine_amount }}
                                         </td>
                                         <td>
                                             @php
-                                            $net_amount = ($row->fee_amount - $discount_amount) + $fine_amount;
+                                            $net_amount = ($row->fee_amount - $row->paid_amount - $discount_amount) + $fine_amount;
                                             @endphp
 
                                             @if(isset($setting->decimal_place))
@@ -195,15 +207,17 @@
                                         </td>
                                         <td>
                                             @if($row->status == 1)
-                                            <span class="badge badge-pill badge-success">{{ __('status_paid') }}</span>
+                                                <span class="badge badge-pill badge-success">{{ __('status_paid') }}</span>
                                             @elseif($row->status == 2)
-                                            <span class="badge badge-pill badge-danger">{{ __('status_canceled') }}</span>
+                                                <span class="badge badge-pill badge-danger">{{ __('status_canceled') }}</span>
+                                            @elseif($row->status == 3)
+                                                <span class="badge badge-pill badge-warning">Partially Paid</span>
                                             @else
-                                            <span class="badge badge-pill badge-primary">{{ __('status_pending') }}</span>
+                                                <span class="badge badge-pill badge-primary">{{ __('status_pending') }}</span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if($row->status == 0)
+                                            @if($row->status == 0 || $row->status == 3)
                                             <button type="button" class="btn btn-icon btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#payModal-{{ $row->id }}">
                                                 <i class="fas fa-plus"></i>
                                             </button>

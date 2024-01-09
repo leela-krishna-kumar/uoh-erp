@@ -67,7 +67,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+
+                                    
                                   @foreach( $rows as $key => $row )
+
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $row->id }}</td>

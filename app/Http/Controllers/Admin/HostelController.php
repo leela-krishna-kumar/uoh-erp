@@ -325,6 +325,13 @@ class HostelController extends Controller
         //         }
         //     });
         // }
+
+        $data['category_id'] = '22';
+
+        if(count($data['categories']) != 0){
+           $data['category_id'] = $data['categories'][0]['id'];
+        }
+
         
         return view($this->view.'.report.student-fee-defaulters', $data);
     }

@@ -145,9 +145,13 @@
                                         $i=0;
                                     @endphp
                                     
-                                    @foreach( $categories as $category )
+                                    @foreach( $fee_type_master as $row )
 
-                                    @if (round($category->amount) != 0)
+                                    @if (round($row->amount) != 0)
+
+                                    @php
+                                        $category =  App\Models\FeesCategory::where('id', $row->fees_type_id)->first();
+                                    @endphp
                                         
                                   
                                     <tr>
@@ -168,6 +172,7 @@
                                                     {{ __('required_field') }} {{ __('field_assign') }} {{ __('field_date') }}
                                                 </div>
                                         </td>
+
                                         <td>
                                                 <input type="date" class="form-control date" name="due_date[]" id="due_date" value="{{ date('Y-m-d') }}" min="{{ date('Y-m-d') }}" required>
                     
@@ -175,8 +180,9 @@
                                                   {{ __('required_field') }} {{ __('field_due_date') }}
                                                 </div>
                                         </td>
+
                                         <td>                            
-                                            <input type="number" class="form-control" name="amount[]" id="amount" value="{{$category->amount}}" min="0" readonly required>
+                                            <input type="number" class="form-control" name="amount[]" id="amount" value="{{$row->amount}}" min="0" readonly required>
                                         </td>
                                         <td>
                                             <div class="form-group col-md-6">

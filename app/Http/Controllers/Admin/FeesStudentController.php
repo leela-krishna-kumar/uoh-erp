@@ -16,6 +16,9 @@ use App\Models\Program;
 use App\Models\FeeRegister;
 use App\Models\Section;
 use App\Models\Fee;
+use App\Models\Grade;
+use App\Models\Student;
+use App\Models\Subject;
 use Carbon\Carbon;
 use Toastr;
 use Auth;
@@ -146,7 +149,7 @@ class FeesStudentController extends Controller
 
 
         // Filter Fees
-        $fees = Fee::where('status', '0');
+        $fees = Fee::where('status', '<>', '1');
 
         if(!empty($request->faculty) || !empty($request->program) || !empty($request->session) || !empty($request->semester) || !empty($request->section)){
             $fees->whereHas('studentEnroll.program', function ($query) use ($faculty){
@@ -635,12 +638,14 @@ class FeesStudentController extends Controller
         $data['path'] = $this->path;
         $data['access'] = $this->access;
         $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
+
         // Filter Student
         $students = StudentEnroll::where('status', '1');
         $students->with('student')->whereHas('student', function ($query){
         //    $query->where('status', '1');
             $query->orderBy('student_id', 'asc');
         });
+
         $data['fee_registers'] = FeeRegister::get();
 
         $data['students'] = $students->orderBy('student_id', 'asc')->get();
@@ -657,7 +662,7 @@ class FeesStudentController extends Controller
      */
     public function quickReceivedStore(Request $request)
     {
-        // return $request->all();
+      //   dd($request->all());
          
         // Field Validation
         $request->validate([
@@ -677,11 +682,16 @@ class FeesStudentController extends Controller
         // try{
             DB::beginTransaction();
             // Insert Data
-            $fee = new Fee;
+
+            $fee = Fee::where('student_enroll_id', $request->student)->where('category_id' ,$request->category)->latest()->first();
+
+           // dd($fee);
+
+           // $fee = new Fee;
             $fee->transaction_id = $trans_id;
-            $fee->student_enroll_id = $request->student;
-            $fee->category_id = $request->category;
-            $fee->fee_amount = $request->fee_amount;
+            // $fee->student_enroll_id = $request->student;
+            // $fee->category_id = $request->category;
+          //  $fee->fee_amount = $request->fee_amount;
             $fee->discount_amount = $request->discount_amount;
             $fee->fine_amount = $request->fine_amount;
             $fee->paid_amount = $request->paid_amount;
@@ -693,7 +703,7 @@ class FeesStudentController extends Controller
             $fee->note = $request->note;
             $fee->status = '1';
             $fee->updated_by = Auth::guard('web')->user()->id;
-            $fee->save();
+            $fee->update();
         
 
             // Transaction
@@ -705,6 +715,169 @@ class FeesStudentController extends Controller
             $fee->studentEnroll->student->transactions()->save($transaction);
 
             DB::commit();
+
+            Toastr::success(__('msg_created_successfully'), __('msg_success'));
+
+            return redirect()->back();
+        // }
+        // catch(\Exception $e){
+
+        //     Toastr::error(__('msg_created_error'), __('msg_error'));
+
+        //     return redirect()->back();
+        // }
+    }
+
+
+    public function quickReceivedBulk(Request $request)
+    {
+      //  $request->student = $student_id;
+
+        //
+        $data['title'] = trans_choice('module_fees_quick_received', 1);
+        $data['route'] = $this->route;
+        $data['view'] = $this->view;
+        $data['path'] = $this->path;
+        $data['access'] = $this->access;
+
+        $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
+
+    //     Filter Student
+    //     $students = StudentEnroll::where('status', '1');
+    //     $students->with('student')->whereHas('student', function ($query){
+    //     //    $query->where('status', '1');
+    //         $query->orderBy('student_id', 'asc');
+    //     });
+    //     $data['fee_registers'] = FeeRegister::get();
+
+    //    $data['students'] = $students->orderBy('student_id', 'asc')->get();
+
+        //$data['student_fee_data'] = [];
+
+        $data['students'] = Student::whereHas('currentEnroll')->where('status', '1')->orderBy('student_id', 'asc')->get();
+        
+        if(!empty($request->student) && $request->student != Null){
+
+            $data['selected_student'] = $request->student;
+
+            $data['row'] = $student = Student::where('id', $request->student)->first();
+
+            $student_enroll_data = StudentEnroll::where('student_id', $request->student)->first();
+
+            $data['student_fee_data'] = Fee::where('student_enroll_id', $student_enroll_data->id)
+                                            ->whereIn('status', ['0', '3'])
+                                            ->get();
+
+          //  dd($fee_data);
+
+            // Filter Enroll Data
+            $data['sessions'] = Session::with('programs')->whereHas('programs', function ($query) use ($student){
+                $query->where('program_id', $student->program_id);
+            })->where('status', '1')->orderBy('id', 'desc')->get();
+            
+            $data['semesters'] = Semester::with('programs')->whereHas('programs', function ($query) use ($student){
+                $query->where('program_id', $student->program_id);
+            })->where('status', '1')->orderBy('id', 'asc')->get();
+
+            $data['sections'] = Section::with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($student){
+                $query->where('program_id', $student->program_id);
+            })->where('status', '1')->orderBy('title', 'asc')->get();
+
+            $data['subjects'] = Subject::with('programs')->whereHas('programs', function ($query) use ($student){
+                $query->where('program_id', $student->program_id);
+            })->where('status', '1')->orderBy('code', 'asc')->get();
+
+            $data['grades'] = Grade::where('status', '1')->orderBy('min_mark', 'desc')->get();
+        }
+        else {
+            $data['selected_student'] = Null;
+        }
+
+        return view($this->view.'.quick-received-bulk', $data);
+    }
+
+
+    public function quickReceivedStoreBulk(Request $request)
+    {
+       //  dd($request->all());
+         
+        // Field Validation
+        // $request->validate([
+        //     'student' => 'required',
+        //     'category' => 'required',
+        //     'fee_amount' => 'required|numeric',
+        //     'discount_amount' => 'required|numeric',
+        //     'fine_amount' => 'required|numeric',
+        //     'paid_amount' => 'required|numeric',
+        //     'payment_method' => 'required',
+        //     'due_date' => 'required|date',
+        //     'pay_date' => 'required|date|before_or_equal:today',
+        // ]);
+
+        $i=0;  $net_amount_to_be_paid=0;
+
+        DB::beginTransaction();
+
+
+        foreach($request->fee_ids as $fee_id){           
+      
+
+        $trans_id = Str::random(16);
+
+        // try{
+
+            $fee = Fee::find($fee_id);
+
+            $total_paid_amount =  $request->paid_amount[$i] + $fee->paid_amount;
+
+            // Insert Data
+          //  $fee = new Fee;
+            $fee->transaction_id = $trans_id;
+            $fee->fee_amount = $request->fee_amount[$i];
+            $fee->discount_amount = $request->discount_amount[$i];
+            $fee->fine_amount = $request->fine_amount[$i];
+            $fee->paid_amount = $total_paid_amount;
+            $fee->assign_date = Carbon::today();
+            $fee->due_date = $request->due_date[$i];
+            $fee->pay_date = $request->pay_date[$i];
+           // $fee->fee_register_id = $request->fee_register_id;
+            $fee->payment_method = $request->payment_method;
+            $fee->note = $request->note;
+
+            $net_amount_to_be_paid = $request->fee_amount[$i] +  $request->fine_amount[$i] - $request->discount_amount[$i];
+
+           // dd($net_amount_to_be_paid, $total_paid_amount );
+
+            if($net_amount_to_be_paid > $total_paid_amount && $total_paid_amount > 0) {
+                $fee->status = '3';
+            }else if($net_amount_to_be_paid <= $total_paid_amount) {
+                $fee->status = '1';
+            }else{
+                $fee->status = '0';
+            }
+            
+            $fee->updated_by = Auth::guard('web')->user()->id;
+            $fee->update();
+        
+
+            // Transaction
+            $transaction = new Transaction();
+            $transaction->transaction_id = $trans_id;
+            $transaction->amount = $request->paid_amount[ $i ];
+            $transaction->type = '1';
+            $transaction->created_by = Auth::guard('web')->user()->id;
+          //  $fee->studentEnroll->student->transactions()->save($transaction);
+
+        //  dd($transaction->save());
+
+          $transaction->save();
+
+
+            $i++;
+        }
+
+        DB::commit();
+
 
             Toastr::success(__('msg_created_successfully'), __('msg_success'));
 

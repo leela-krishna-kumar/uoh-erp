@@ -12,8 +12,10 @@ use App\Models\Section;
 use App\Models\Session;
 use App\Models\Faculty;
 use App\Models\Department;
+use App\Models\Fee;
 use App\Models\FeesCategory;
 use App\Models\Student;
+use App\Models\StudentEnroll;
 use Carbon\Carbon;
 use Toastr;
 use Auth;
@@ -174,10 +176,19 @@ class TransportStudentController extends Controller
             'fee_category_id' => 'required',
         ]);
 
+     //   dd($request->all());
+
         $student = Student::findOrFail($request->student_id);
+
+        $studentEnrollId = StudentEnroll::where('student_id', $request->student_id)->first();
 
         // Insert Data
         $member = TransportMember::firstOrNew(['id' => $request->member_id]);
+        $member->faculty_id = $request->faculty;
+        $member->program_id = $request->program;
+        $member->session_id = $request->session;
+        $member->semester_id = $request->semester;
+        $member->section_id = $request->section;
         $member->transport_route_id = $request->route;
         $member->transport_vehicle_id = $request->vehicle;
         $member->fee_category_id = $request->fee_category_id;
@@ -188,6 +199,20 @@ class TransportStudentController extends Controller
 
         $student->transport()->save($member);
 
+        $feeCategories = FeesCategory::where('id', $request->fee_category_id)->first();
+
+        $fees = new Fee;
+        $fees->fee_master_id = null;
+        $fees->transport_members_id = $member->id;
+        $fees->student_enroll_id = $studentEnrollId->id;
+        $fees->category_id = $request->fee_category_id;
+        $fees->fee_amount = $feeCategories->amount;
+        $fees->assign_date = carbon::now();
+        $fees->due_date = Carbon::now()->addDays(30);
+        $fees->created_by = Auth::guard('web')->user()->id;
+        $fees->save();
+
+      //  dd($fees);
 
         Toastr::success(__('msg_added_successfully'), __('msg_success'));
 
@@ -209,6 +234,8 @@ class TransportStudentController extends Controller
             'status' => 'required'
         ]);
 
+       // dd($request->all());
+
 
         // Update Data
         $member = TransportMember::findOrFail($request->member_id);
@@ -217,6 +244,20 @@ class TransportStudentController extends Controller
         $member->updated_by = Auth::guard('web')->user()->id;
         $member->fee_category_id = $request->fee_category_id;
         $member->save();
+
+
+        // $student = Student::findOrFail($member->transportable_id);
+
+        // $studentEnrollId = StudentEnroll::where('student_id', $student->id)->first();
+
+        // $fee = Fee::where('id', $member->fee_category_id)
+        //         ->where('student_enroll_id', $studentEnrollId->id)
+        //         ->where('status', '<>', '1')
+        //         ->latest()
+        //         ->first();
+
+        // $fee->delete();
+
 
         if($request->status == 0){
             Toastr::success(__('msg_canceled_successfully'), __('msg_success'));

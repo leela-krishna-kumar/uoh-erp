@@ -81,7 +81,11 @@ Route::middleware(['XSS'])->group(function () {
     Route::post('filter-section', 'FilterController@filterSection')->name('filter-section');
     Route::post('filter-subject', 'FilterController@filterSubject')->name('filter-subject');
     Route::post('filter-teacher', 'FilterController@filterTeacher')->name('filter-teacher');
+    
+    Route::post('get-fee-category', 'FilterController@getFeeCategory')->name('get-fee-category');
     Route::post('get-fee-amount', 'FilterController@getFeeAmount')->name('get-fee-amount');
+
+
     Route::post('filter-question-subject', 'FilterController@filterQuestionSubject')->name('filter-question-subject');
     Route::post('filter-enroll-subject', 'FilterController@filterEnrollSubject')->name('filter-enroll-subject');
     Route::post('filter-student-subject', 'FilterController@filterStudentSubject')->name('filter-student-subject');
@@ -378,6 +382,10 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::post('fees-student-quick-received', 'FeesStudentController@quickReceivedStore')->name('fees-student.quick.received.store');
     Route::get('fees-student-quick-assign', 'FeesStudentController@quickAssign')->name('fees-student.quick.assign');
     Route::post('fees-student-quick-assign', 'FeesStudentController@quickAssignStore')->name('fees-student.quick.assign.store');
+
+    Route::get('fees-student-quick-received-bulk', 'FeesStudentController@quickReceivedBulk')->name('fees-student.quick-received-bulk');
+    Route::post('fees-student-quick-received-bulk', 'FeesStudentController@quickReceivedStoreBulk')->name('fees-student.quick.received.store.bulk');
+
 
     // Fees Collection staff
     Route::get('fees-staff', 'FeesStaffController@index')->name('fees-staff.index');

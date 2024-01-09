@@ -68,13 +68,24 @@
                                 </thead>
                                 <tbody>
                                   @foreach( $rows as $key => $row )
+
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $key + 1 }} {{ request()->category }}</td>
                                         <td>{{ $row->id }}</td>
                                         <td>{{ $row->first_name }} {{ $row->last_name }}</td>
-                                        <td>{{ number_format((float)getStudentFeeByType($row,'Hostel',request()->category)['remaining_fee'], 2, '.', '') }} </td>
+                                        <td>{{ number_format((float)getStudentFeeByType($row,'Hostel', $category_id)['remaining_fee'], 2, '.', '') }} </td>
                                         <td>
-                                            <span class="badge badge-pill badge-primary">{{ __('status_pending') }}</span>
+
+                                            @if(round(number_format((float)getStudentFeeByType($row,'Hostel', $category_id)['remaining_fee'], 2, '.', '')) == 0)
+                                                <span class="badge badge-pill badge-success">
+                                                    {{ __('status_paid') }}
+                                                </span>
+                                            @else
+                                            <span class="badge badge-pill badge-primary">
+                                                {{ __('status_pending') }}
+                                            </span>
+                                            @endif
+                                            
                                         </td>
                                     </tr>
                                   @endforeach
