@@ -90,7 +90,7 @@
                                   </div>
                                   <div class="form-group col-md-6">
                                     <label for="last_name">{{ __('field_last_name') }} <span>*</span></label>
-                                    <input type="text" class="form-control" name="last_name" id="last_name" value="{{ @$student->last_name }}" required>
+                                    <input type="text" class="form-control" name="last_name" id="last_name" value="{{ @$student->last_name }}">
                                     <div class="invalid-feedback">
                                         {{ __('required_field') }} {{ __('field_last_name') }}
                                     </div>
@@ -239,8 +239,8 @@
                                     </div>
                                   </div>
                                   <div class="form-group col-md-4">
-                                    <label for="caste">{{ __('Caste') }} <span>*</span></label>
-                                    <select name="caste" id="" class="form-control select2" required>
+                                    <label for="caste">{{ __('Caste') }} <span></span></label>
+                                    <select name="caste" id="" class="form-control select2">
                                        <option value="" readonly>Select Caste</option>
                                        @foreach ($castes as $caste)
                                        <option value="{{$caste->id}}"@if($caste->id == @$student->caste) selected @endif>
@@ -308,8 +308,8 @@
                                     </div>
                                   </div>
                                   <div class="form-group col-md-6">
-                                    <label for="type">{{ __('Type') }}<span>*</span></label>
-                                    <select class="form-control" name="type" id="type" required>
+                                    <label for="type">{{ __('Type') }}<span></span></label>
+                                    <select class="form-control" name="type" id="type">
                                         <option value="">{{ __('select') }}</option>
                                         @foreach($address_categories as $key => $category)
                                         <option value="{{ $category->id }}" @if ($key == 0) selected @endif>{{ $category->name }}</option>
@@ -528,7 +528,7 @@
             province:$(this).val()
           },
           success: function(response) {
-            $('option', permanentDistrict).remove();
+            // $('option', permanentDistrict).remove();
             $('#permanent_district').append('<option value="">{{ __("select") }}</option>');
   
             $.each(response, function() {
@@ -594,7 +594,7 @@
                         province:stateId
                     },
                     success: function (response) {
-                        $('option', permanentDistrict).remove();
+                        // $('option', permanentDistrict).remove();
                         $('#'+id).append('<option value="">{{ __("select") }}</option>');
                         $.each(response, function() {
                             var option = $('<option/>', {
@@ -669,7 +669,7 @@
             province:$(this).val(),
           },
           success: function(response) {
-            $('option', presentDistrict).remove();
+            // $('option', presentDistrict).remove();
             $('#present_district').append('<option value="">{{ __("select") }}</option>');
   
             $.each(response, function() {

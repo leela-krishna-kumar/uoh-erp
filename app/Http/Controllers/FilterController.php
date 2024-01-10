@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Semester;
+use App\Models\Batch;
 use App\Models\Session;
 use App\Models\Program;
 use App\Models\Subject;
@@ -14,7 +15,6 @@ use App\Models\FeesTypeMaster;
 use App\Models\FeesCategory;
 use App\Models\Chapter;
 use App\Models\ProgramSemesterSection;
-use App\Models\StudentEnroll;
 use Carbon\Carbon;
 use App\User;
 use Auth;
@@ -22,6 +22,15 @@ use DB;
 
 class FilterController extends Controller
 {
+    public function filterFaculty(Request $request)
+    {
+        $data=$request->all();
+
+        $rows = Batch::where('status', 1)->where('faculty_id', $request->faculty);
+        $programs = $rows->orderBy('title', 'asc')->get();
+
+        return response()->json($programs);
+    } 
     public function filterBatch(Request $request)
     {
         $data=$request->all();
@@ -206,7 +215,7 @@ class FilterController extends Controller
         return response()->json($questions);
     }
 
-    public function getFeeCategory(Request $request)
+    public function getFeeAmount(Request $request)
     {
         if(isset($request->student_id)){
             //Get fee type According to selected student
@@ -218,39 +227,6 @@ class FilterController extends Controller
             $feesTypeMaster =  FeesTypeMaster::where('faculty_id',request()->get('faculty_id'))->where('program_id',request()->get('program_id'))
             ->where('seat_type_id',request()->get('seat_type_id'))->where('fees_type_id',request()->get('fees_type_id'))->first();
         }
-       
-        if($feesTypeMaster){
-            $feeAmount = $feesTypeMaster->amount;
-        }else{
-            $feesType =  FeesCategory::where('id',request()->get('fees_type_id'))->first();
-            $feeAmount = $feesType ? $feesType->amount : 0;
-        }
-        return response()->json($feeAmount);
-    }
-
-    public function getFeeAmount(Request $request)
-    {
-      //  dd($request->student_id);
-
-        if(isset($request->student_id)){
-            //Get fee type According to selected student
-            $student_enroll = StudentEnroll::find($request->student_id);
-
-            $student = Student::find($student_enroll->student_id);
-
-          //  dd( $student );
-
-            $feesTypeMaster =  FeesTypeMaster::where('faculty_id',$student->faculty_id)->where('program_id',$student->program_id)
-            ->where('seat_type_id',$student->seat_type_id)->where('fees_type_id',request()->get('fees_type_id'))->first();
-        }
-
-      //  dd($feesTypeMaster);
-        
-        // else{
-        //     //Get fee type According to selected program
-        //     $feesTypeMaster =  FeesTypeMaster::where('faculty_id',request()->get('faculty_id'))->where('program_id',request()->get('program_id'))
-        //     ->where('seat_type_id',request()->get('seat_type_id'))->where('fees_type_id',request()->get('fees_type_id'))->first();
-        // }
        
         if($feesTypeMaster){
             $feeAmount = $feesTypeMaster->amount;

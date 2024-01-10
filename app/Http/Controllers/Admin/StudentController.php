@@ -229,16 +229,13 @@ class StudentController extends Controller
             $students->where('section_id', $section);            
         }
 
-        if($request->status != 'all'){
-
-        if($request->status == '5'){
-            $students->where('is_transfer', '1');
-        }elseif($request->status == '6'){
-            $students->where('is_transfer', '2');
-        }else{
-            $students->where('status', $request->status);
-        }
-    }
+        // if($status == '5'){
+        //     $students->where('is_transfer', '1');
+        // }elseif($status == '6'){
+        //     $students->where('is_transfer', '2');
+        // }else{
+        //     $students->where('status', $status);
+        // }
 
 
         $data['rows'] = $students->orderBy('student_id', 'desc')->limit(30)->get();
@@ -248,7 +245,7 @@ class StudentController extends Controller
 
         if ($request->id) {
             $students = Student::where('id', 'LIKE', '%' . $request->id . '%')->orWhere('admission_no', 'LIKE', '%' . $request->id . '%');
-            $data['rows'] = $students->orderBy('student_id', 'desc')->get();
+            $data['rows'] = $students->orderBy('student_id', 'desc')->limit(30)->get();
         }
         return view($this->view . '.index', $data);
     }
@@ -548,7 +545,7 @@ class StudentController extends Controller
         // Field Validation
         $request->validate([
             'first_name' => 'required',
-            'last_name' => 'required',
+            // 'last_name' => 'required',
             'email' => 'required|email|unique:students,email,' . $student->id,
             // 'student_id' => 'required|unique:students,student_id,'.$student->id,
             'admission_no' => 'required|unique:students,admission_no,' . $student->id,
@@ -560,7 +557,7 @@ class StudentController extends Controller
         ], [
             'email.unique' => 'The email has already been taken. Please choose a different one.',
             'student_id.unique' => 'The Student id has already been taken. Please choose a different one.',
-            'admission_no.unique' => 'The admission no has already been taken. Please choose a different one.',
+            // 'admission_no.unique' => 'The admission no has already been taken. Please choose a different one.',
             'roll_no.unique' => 'The roll no has already been taken. Please choose a different one.',
         ]);
         // Update Data
@@ -840,5 +837,12 @@ class StudentController extends Controller
         $data['print'] = IdCardSetting::where('slug', 'student-card')->firstOrFail();
 
         return view($this->view . '.card', $data);
+    }
+
+    public function bulkStudent(Request $request)
+    {
+        $faculties = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
+
+        return view('admin.bulk-import-export.create', compact('faculties'));
     }
 }

@@ -9,7 +9,7 @@ class GuardianDetail extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name','occupation','annual_income', 'phone'];
+        'name'];
 
         public function relation()
         {

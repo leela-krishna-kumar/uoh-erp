@@ -164,8 +164,14 @@ class BulkImportExportController extends Controller
             Excel::import(new UsersImport, $request->file('import'));
         }
         elseif($table == 'students'){
+            $faculty_id = $request->faculty;
+            $program_id = $request->program;
+            $batch_id = $request->batch;
+            $session_id = $request->session;
+            $semester_id = $request->semester;
+            $section_id = $request->section;
 
-            Excel::import(new StudentsImport, $request->file('import'));
+            Excel::import(new StudentsImport($faculty_id, $program_id, $batch_id,$session_id,$semester_id, $section_id), $request->file('import'));
         }
         elseif($table == 'subjects'){
 

@@ -9,7 +9,7 @@ class Education extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'hall_ticket_no','year_of_passing','marks', 'percenteage', 'institution', 'grade','board','entrance_type','rank'];
+        'hall_ticket_no'];
 
     protected $casts = [
         'payload' => 'array',

@@ -11,7 +11,7 @@ class UserBank extends Model
     use HasFactory;
 
     protected $fillable = [
-        'bank_name', 'type','account_holder_name','account_no','ifsc_code','branch','status'
+        'account_no'
     ];
 
     protected $casts = [
