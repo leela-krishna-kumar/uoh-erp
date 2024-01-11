@@ -1,4 +1,7 @@
 @extends('admin.layouts.master')
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 @section('title', $title)
 @section('content')
 
@@ -54,7 +57,10 @@
                                         <thead>
                                             <tr>
                                                 <th>
-                                                    #
+                                                    <div class="checkbox checkbox-success d-inline">
+                                                        <input type="checkbox" id="checkbox" class="all_select">
+                                                        <label for="checkbox" class="cr" style="margin-bottom: 0px;"></label>
+                                                    </div>
                                                 </th>
                                                 <th>{{ __('field_student_id') }}</th>
                                                 <th>{{ __('field_student') }}</th>
@@ -72,12 +78,14 @@
                                                ->where('student_id', $row->student_id)->first();
                                             @endphp
                                             <tr>
+                                                
                                                 <td>
                                                     <div class="checkbox checkbox-primary d-inline">
-                                                        <input type="checkbox" name="student_id[]" @if($ecourse_user) checked @endif id="checkbox-{{$row->id}}" value="{{$row->student_id}}">
-                                                        <label for="checkbox-{{$row->id}}" class="cr"></label>
+                                                        <input type="checkbox" name="student_id[]" @if($ecourse_user) checked @endif  id="checkbox-{{ $row->id }}" value="{{ $row->student_id }}">
+                                                        <label for="checkbox-{{ $row->id }}" class="cr"></label>
                                                     </div>
                                                 </td>
+
                                                 <td>
                                                     <a href="{{ route('admin.student.show', $row->student->id) }}">
                                                     #{{ $row->student->student_id ?? '' }}
@@ -127,6 +135,23 @@
     </div>
 </div>
 <!-- End Content-->
+
+
+<script type="text/javascript">
+    "use strict";
+
+    $(".all_select").on('click',function(e){
+        if($(this).is(":checked")){
+            // check all checkbox
+            $("input:checkbox").prop('checked', true);
+        }
+        else if($(this).is(":not(:checked)")){
+            // uncheck all checkbox
+            $("input:checkbox").prop('checked', false);
+        }
+    });
+
+</script>
 
 @endsection
 @section('page_js')

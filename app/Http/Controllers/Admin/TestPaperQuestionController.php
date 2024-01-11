@@ -126,8 +126,11 @@ class TestPaperQuestionController extends Controller
             $data['testPaper'] = TestPaper::where('id',$id)->first();
             
             $data['rows'] = $testPaperQuestions->where('testpaper_id',$id)->latest()->get();
+
             $question_bank_ids = $testPaperQuestions->where('testpaper_id',$id)->pluck('question_bank_id')->toArray();
+
             $data['questions'] = QuestionBank::where('status',1)->whereNotIn('id',$question_bank_ids)->get();
+
             return view($this->view.'.index', $data);
 
         } catch(\Exception $e){
@@ -156,6 +159,9 @@ class TestPaperQuestionController extends Controller
      */
     public function store(Request $request)
     {
+       // dd($request->all());
+
+
         if($request->type == 'manual'){
             $request->validate([
                 'question_bank_id' => 'required',
@@ -175,9 +181,18 @@ class TestPaperQuestionController extends Controller
                 $count  = $request->no_of_questions;
             }
             $arr_questions = [];
+
+        
             foreach($request->no_of_questions as $key => $no_of_questions){
-                $arr_questions []= QuestionBank::where('subject_id',$request->subject_id)->where('level',$key)->inRandomOrder()->limit($no_of_questions)->get();
+
+              //  dd($key);
+            
+
+                $arr_questions []= QuestionBank::where('subject_id',$request->subject_id)->where('level',$key)->limit($no_of_questions)->get();
+           
             }
+          //  dd( $arr_questions);
+
             foreach($arr_questions as $questions){
                 foreach($questions as $question){
                     if(!empty($question)){
@@ -188,6 +203,8 @@ class TestPaperQuestionController extends Controller
                     }
                 }
             }
+
+        
             Toastr::success(__('msg_created_successfully'), __('msg_success'));
         }
         

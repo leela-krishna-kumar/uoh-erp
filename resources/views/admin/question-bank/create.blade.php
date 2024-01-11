@@ -74,7 +74,7 @@
                                                                 <select class="form-control" name="status" id="status" required>
                                                                     <option value="">{{ __('Select Status') }}</option>
                                                                     @foreach($statuses as $key => $status)
-                                                                        <option value="{{$key}}">{{$status['label']}}</option>
+                                                                        <option value="{{$key}}" selected>{{$status['label']}}</option>
                                                                     @endforeach
                                                                 </select>
                                                                 <div class="invalid-feedback">

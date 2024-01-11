@@ -75,7 +75,7 @@
                                 <div class="form-group col-md-4">
                                     <strong class="fw-800 text-muted">Difficulty Level: <span class="text-success">Easy</span></strong>
                                     <label for="level">{{ __('Number of questions to be picked') }} <span>*</span></label>
-                                    <input value="" required type="number" name="no_of_questions[low]" class="form-control"min="0">
+                                    <input value="" required type="number" name="no_of_questions[Easy]" class="form-control"min="0">
     
                                     <div class="invalid-feedback">
                                     {{ __('required_field') }} {{ __('Question') }}
@@ -84,7 +84,7 @@
                                 <div class="form-group col-md-4">
                                   <strong class="fw-800 text-muted">Difficulty Level: <span class="text-warning">Medium</span></strong>
                                     <label for="level">{{ __('Number of questions to be picked') }} <span>*</span></label>
-                                    <input value="" required type="number" name="no_of_questions[medium]" class="form-control" min="0">
+                                    <input value="" required type="number" name="no_of_questions[Medium]" class="form-control" min="0">
     
                                     <div class="invalid-feedback">
                                     {{ __('required_field') }} {{ __('Question') }}
@@ -93,7 +93,7 @@
                                 <div class="form-group col-md-4">
                                   <strong class="fw-800 text-muted">Difficulty Level: <span class="text-danger">Hard</span></strong>
                                     <label for="level">{{ __('Number of questions to be picked') }} <span>*</span></label>
-                                    <input value="" required type="number" name="no_of_questions[high]" class="form-control" min="0">
+                                    <input value="" required type="number" name="no_of_questions[Hard]" class="form-control" min="0">
     
                                     <div class="invalid-feedback">
                                     {{ __('required_field') }} {{ __('Question') }}

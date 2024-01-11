@@ -46,13 +46,9 @@
                 <li class="pcoded-mtext {{ Request::is('admin/admission/student/create') ? 'active' : '' }}"><a href="{{ route('admin.student.create') }}" class="">{{ trans_choice('module_registration', 1) }}</a></li>
                 @endcanany
 
-                @canany(['student-bulk'])
-                <li class="pcoded-mtext {{ Request::is('admin/setting/bulk-student') ? 'active' : '' }}"><a href="{{ route('admin.bulk.student') }}" class="">Student Bulk Upload</a></li>
-                @endcanany
-
-                @canany(['student-view', 'student-password-print', 'student-password-change', 'student-card'])
+                {{-- @canany(['student-view', 'student-password-print', 'student-password-change', 'student-card'])
                 <li class="pcoded-mtext {{ Request::is('admin/admission/student') ? 'active' : '' }}"><a href="{{ route('admin.student.index') }}" class="">{{ trans_choice('module_student', 1) }} {{ __('list') }}</a></li>
-                @endcanany
+                @endcanany --}}
 
                 @canany(['student-transfer-in-create', 'student-transfer-in-view', 'student-transfer-out-create', 'student-transfer-out-view'])
                 <li class="pcoded-mtext nav-item pcoded-hasmenu @if(Request::is('admin/admission/student-transfer-in*') || Request::is('admin/admission/student-transfer-out*'))
@@ -427,7 +423,11 @@
                         @endcan --}}
 
                         @can('fees-student-quick-received')
-                        <li class="pcoded-mtext {{ Request::is('admin/fees-student-quick-received*') ? 'active' : '' }}"><a href="{{ route('admin.fees-student.quick.received') }}" class="">{{ trans_choice('module_fees_quick_received', 1) }}</a></li>
+                        <li class="pcoded-mtext {{ Request::is('admin/fees-student-quick-received*') ? 'active' : '' }}"><a href="{{ route('admin.fees-student.quick.received') }}" class="">Fee Receive</a></li>
+                        @endcan
+
+                        @can('fees-student-quick-received-bulk')
+                        <li class="pcoded-mtext {{ Request::is('admin/fees-student-quick-received*') ? 'active' : '' }}"><a href="{{ route('admin.fees-student.quick-received-bulk') }}" class="">Fee Receive Bulk</a></li>
                         @endcan
 
                         @canany(['fees-student-report', 'fees-student-print'])
@@ -461,6 +461,10 @@
 
                 @canany(['fees-master-view', 'fees-master-create'])
                 <li class="pcoded-mtext {{ Request::is('admin/fees-master*') ? 'active' : '' }}"><a href="{{ route('admin.fees-master.index') }}" class="">{{ trans_choice('module_fees_master', 2) }}</a></li>
+                @endcanany
+
+                @canany(['fees-master-view', 'fees-master-create'])
+                <li class="pcoded-mtext {{ Request::is('admin/fees-master-bulk') ? 'active' : '' }}"><a href="{{ route('admin.fees-master-bulk.index') }}" class="">Assign Fees Bulk</a></li>
                 @endcanany
 
                 @canany(['fees-fine-view', 'fees-fine-create', 'fees-receipt-view'])
