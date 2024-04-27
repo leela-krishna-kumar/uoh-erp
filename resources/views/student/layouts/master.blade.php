@@ -23,7 +23,8 @@
                 @if(isset($setting))
                 @if(is_file('uploads/setting/'.$setting->logo_path))
                 <a href="{{ route('student.dashboard.index') }}" class="b-brand">
-                    <img src="{{ asset('uploads/setting/'.$setting->logo_path) }}" alt="logo">
+                    {{-- <img src="{{ asset('uploads/setting/'.$setting->logo_path) }}" alt="logo"> --}}
+                    <img src="{{ asset('assets/images/logopsd_blue.jpg') }}" alt="logo">
                 </a>
                 @endif
                 @endif

@@ -57,6 +57,7 @@ class PlacedStudentController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
 
+            // return $data['rows'];
             return view($this->view . '.index', $data);
         } catch (\Exception $e) {
             Toastr::error(__('msg_error'), __('msg_error'));
@@ -186,20 +187,33 @@ class PlacedStudentController extends Controller
 
     public function store(Request $request)
     {
+        // return $request->all();
         try {
+            if (is_array($request->student_id) && count($request->student_id) > 0 ){
+                foreach($request->student_id as $student){
+                    $placedStudent = new PlacedStudent();
+                    $placedStudent->placement_id = $request->placement_id;
+                    $placedStudent->student_id = $student;
+                    $placedStudent->status = $request->status;
+                    $placedStudent->note = $request->note;
+                    $placedStudent->package = $request->package;
+                    $placedStudent->save();
+                }
+            }
             // Insert Data
-            $placedStudent = new PlacedStudent();
-            $placedStudent->placement_id = $request->placement_id;
-            $placedStudent->student_id = $request->student_id;
-            $placedStudent->status = $request->status;
-            $placedStudent->note = $request->note;
-            $placedStudent->package = $request->package;
-            $placedStudent->save();
+            // $placedStudent = new PlacedStudent();
+            // $placedStudent->placement_id = $request->placement_id;
+            // $placedStudent->student_id = $request->student_id;
+            // $placedStudent->status = $request->status;
+            // $placedStudent->note = $request->note;
+            // $placedStudent->package = $request->package;
+            // $placedStudent->save();
             // return  $placedStudent;
             Toastr::success(__('msg_created_successfully'), __('msg_success'));
 
             return redirect()->route($this->route . '.index', ['placement_id' => $request->placement_id]);
         } catch (\Exception $e) {
+            return $e;
             Toastr::error(__('msg_updated_error'), __('msg_error'));
             return redirect()->back();
         }
@@ -248,7 +262,7 @@ class PlacedStudentController extends Controller
     {
         try {
             // Field Validation
-            //   return $request->all();
+            // return $request->all();
             $placedStudent->placement_id = $placedStudent->placement_id;
             $placedStudent->status = $request->status;
             $placedStudent->note = $request->note;
@@ -282,5 +296,47 @@ class PlacedStudentController extends Controller
 
             return redirect()->back();
         }
+    }
+    public function studentsList(Request $request)
+    {
+        try {
+            $data['title'] = $this->title;
+            $data['route'] = $this->route;
+            $data['view'] = $this->view;
+            $data['path'] = $this->path;
+            $data['access'] = $this->access;
+
+            if(!empty($request->from_date) || $request->from_date != null){
+                $data['selected_from_date'] = $from_date = $request->from_date;
+            }
+            else{
+                $data['selected_from_date'] = $from_date = '';
+            }
+            
+            if(!empty($request->to_date) || $request->to_date != null){
+                $data['selected_to_date'] = $to_date = $request->to_date;
+            }
+            else{
+                $data['selected_to_date'] = $to_date = '';
+            }
+            // return $request->all();
+            $placedStudent = PlacedStudent::query();
+            if (!empty($request->from_date) && !empty($request->to_date)){
+                $placedStudent = $placedStudent->whereBetween('created_at', [$from_date . ' 00:00:00', $to_date . ' 23:59:59']);
+            }
+          
+            $data['rows'] = $placedStudent
+                // ->where('placement_id', request()->get('placement_id'))
+                ->orderBy('id', 'desc')
+                ->get();
+
+            // return $data['rows'];
+            return view($this->view . '.student-list', $data);
+        } catch (\Exception $e) {
+            Toastr::error(__('msg_error'), __('msg_error'));
+
+            return redirect()->back();
+        }
+        
     }
 }

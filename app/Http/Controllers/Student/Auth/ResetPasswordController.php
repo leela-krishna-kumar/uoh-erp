@@ -23,7 +23,7 @@ class ResetPasswordController extends Controller
     /**
      * Only guests for "student" guard are allowed except
      * for logout.
-     * 
+     *
      * @return void
      */
     public function __construct()
@@ -33,7 +33,7 @@ class ResetPasswordController extends Controller
 
     /**
      * Show the reset password form.
-     * 
+     *
      * @param  \Illuminate\Http\Request $request
      * @param  string|null  $token
      * @return \Illuminate\Http\Response
@@ -55,6 +55,8 @@ class ResetPasswordController extends Controller
      */
     public function reset(Request $request)
     {
+        dd('$request->all()');
+
         // Field Validation
         $request->validate([
             'token' => 'required',
@@ -70,7 +72,7 @@ class ResetPasswordController extends Controller
                         ->where('email', $request->email)
                         ->where('token', $request->token)
                         ->first();
-            
+
             if(isset($token_validate)){
                 $user->password = Hash::make($request->password);
                 $user->password_text = Crypt::encryptString($request->password);
@@ -82,7 +84,7 @@ class ResetPasswordController extends Controller
                 return redirect()->back()->with('error', __('auth_token_not_valid'));
             }
         }
-        
+
         return redirect()->back()->with('error', __('auth_account_not_found'));
     }
 

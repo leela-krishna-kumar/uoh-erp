@@ -638,16 +638,41 @@
                           </div>
                         </div>
 
-                        <div class="form-group col-md-4">
-                          <label for="week_off">{{ __('Week Off') }}<span>*</span></label>
-                          <input type="number" class="form-control" max="1111" min="0" name="week_off" id="week_off" value="{{ isset($row->week_off)?$row->week_off:'' }}" required>
-
+                        {{-- <div class="form-group col-md-4">
+                          <label for="week_off">{{ __('Week Off') }}<span>*</span></label> --}}
+                          {{-- <input type="number" class="form-control" max="1111" min="0" name="week_off" id="week_off" value="{{ isset($row->week_off)?$row->week_off:'' }}" required> --}}
+                          {{-- <select multiple  class="form-control select2"  name="week_off" required>
+                            <option value="">{{ __('select') }}</option>
+                            <option value="saturday" @if( $row->week_off == 'saturday' ) selected @endif>{{ __('day_saturday') }}</option>
+                            <option value="sunday" @if( $row->week_off == 'sunday' ) selected @endif>{{ __('day_sunday') }}</option>
+                            <option value="monday" @if( $row->week_off == 'monday' ) selected @endif>{{ __('day_monday') }}</option>
+                            <option value="tuesday" @if( $row->week_off == 'tuesday' ) selected @endif>{{ __('day_tuesday') }}</option>
+                            <option value="wednesday" @if( $row->week_off == 'wednesday' ) selected @endif>{{ __('day_wednesday') }}</option>
+                            <option value="thursday" @if( $row->week_off == 'thursday' ) selected @endif>{{ __('day_thursday') }}</option>
+                            <option value="friday" @if( $row->week_off == 'friday' ) selected @endif>{{ __('day_friday') }}</option>
+                          </select>
                           <div class="invalid-feedback">
                             {{ __('required_field') }} {{ __('Week Off') }}
                           </div>
-                        </div>
+                        </div> --}}
 
-
+                        <div class="form-group col-md-4">
+                          <label for="week_off">{{ __('Week Off') }}<span>*</span></label>
+                          <select multiple class="form-control select2" name="week_off[]" required>
+                              <option value="">{{ __('select') }}</option>
+                              <option value="saturday" @if(strpos($row->week_off, 'saturday') !== false) selected @endif>{{ __('day_saturday') }}</option>
+                              <option value="sunday" @if(strpos($row->week_off, 'sunday') !== false) selected @endif>{{ __('day_sunday') }}</option>
+                              <option value="monday" @if(strpos($row->week_off, 'monday') !== false) selected @endif>{{ __('day_monday') }}</option>
+                              <option value="tuesday" @if(strpos($row->week_off, 'tuesday') !== false) selected @endif>{{ __('day_tuesday') }}</option>
+                              <option value="wednesday" @if(strpos($row->week_off, 'wednesday') !== false) selected @endif>{{ __('day_wednesday') }}</option>
+                              <option value="thursday" @if(strpos($row->week_off, 'thursday') !== false) selected @endif>{{ __('day_thursday') }}</option>
+                              <option value="friday" @if(strpos($row->week_off, 'friday') !== false) selected @endif>{{ __('day_friday') }}</option>
+                          </select>
+                          <div class="invalid-feedback">
+                              {{ __('required_field') }} {{ __('Week Off') }}
+                          </div>
+                      </div>
+                      
                         <div class="form-group col-md-12">
                             <label for="copyright_text">{{ __('field_copyright_text') }}</label>
                             <textarea class="form-control texteditor" name="copyright_text" id="copyright_text">{{ isset($row->copyright_text)?$row->copyright_text:'' }}</textarea>

@@ -43,7 +43,7 @@ class QuestionBankController extends Controller
         $this->middleware('permission:'.$this->access.'-delete', ['only' => ['destroy']]);
     }
     public function index( Request $request)
-    {
+    {     
         // try{  
             $data['title'] = $this->title;
             $data['route'] = $this->route;
@@ -55,8 +55,8 @@ class QuestionBankController extends Controller
                 $questionBanks->where('status',request()->get('status'));
             }
             
-            if(request()->has('subject_id') && request()->get('subject_id') != null) {
-                $questionBanks->where('subject_id',request()->get('subject_id'));
+            if(request()->has('subject') && request()->get('subject') != null) {
+                $questionBanks->where('subject_id',request()->get('subject'));
             }
             if(!empty($request->faculty) || $request->faculty != null){
                 $data['selected_faculty'] = $faculty = $request->faculty;
@@ -95,10 +95,13 @@ class QuestionBankController extends Controller
             $data['subjects'] = $subjects->orderBy('title', 'asc')->select('id','title','code')->get();}
 
             if(!empty($request->subject) && $request->subject != '0' && !empty($request->program) && $request->program != '0' && !empty($request->faculty) && $request->faculty != '0'){
-                $data['rows'] = $questionBanks->latest()->get();
+               $data['rows'] = $questionBanks->latest()->get();
             }else{
                 $data['rows'] = [];
             }
+
+          //  dd($data['rows']);
+
             return view($this->view.'.index', $data);
         // } catch(\Exception $e){
         
@@ -106,7 +109,6 @@ class QuestionBankController extends Controller
 
             return redirect()->back();
         // } 
-
     }
 
     /**
@@ -142,17 +144,25 @@ class QuestionBankController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request->all();
+        //  dd($request->all());
+
+        if($request->correct_options == null || (is_array($request->correct_options) && count($request->correct_options) == 0)){
+            Toastr::error('Please select correct option(s)', __('msg_error'));
+
+            return redirect()->back();
+        }
+
             $request->validate([
                 'subject_id' => 'required',
-                'question' => 'required',
-                'options' => 'required',
+                'info' => 'required',
+             //   'options' => 'required',
             ]);
+
             // Insert Data
             $questionBank = new QuestionBank;
             $questionBank->subject_id = $request->subject_id;
             $questionBank->level = $request->level;
-            $questionBank->question = $request->question;
+            $questionBank->question = $request->info;
             $questionBank->options = $request->options;
             if($request->type == 'multi' || $request->type == 'single' || $request->type == 'blank'){
                 $questionBank->correct_options = $request->correct_options;
@@ -164,6 +174,8 @@ class QuestionBankController extends Controller
             $questionBank->created_by = auth()->id();
             $questionBank->status = $request->status;
             $questionBank->save();
+
+          //  dd();
             
             Toastr::success(__('msg_created_successfully'), __('msg_success'));
             return redirect()->route($this->route.'.index');
@@ -198,7 +210,13 @@ class QuestionBankController extends Controller
             $data['questionTypes'] = QuestionBank::QUESTION_TYPES;
             $data['row'] = $questionBank;
             $data['options'] = $data['row']->options;
+
+          //  dd( $data['row']);
+
             return view($this->view.'.edit', $data);
+
+           
+
         // } catch(\Exception $e){
 
         //     Toastr::error(__('msg_updated_successfully'), __('msg_error'));
@@ -221,6 +239,13 @@ class QuestionBankController extends Controller
             $request->validate([
                 'question' => 'required',
             ]);
+
+            if($request->correct_options == null || count($request->correct_options) == 0){
+                Toastr::error('Please select correct option(s)', __('msg_error'));
+    
+                return redirect()->back();
+            }
+            
             $questionBank->subject_id = $questionBank->subject_id;
             $questionBank->question = $request->question;
 

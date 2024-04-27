@@ -297,41 +297,58 @@
                 <div class="col-md-8">
                   @php
                       $lastIndex = count($testPaper->testPaperQuestions) - 1;
-                      $questionCount = $testPaper->testPaperQuestions;
+                      $questionCount = $testPaper->testPaperQuestions; $i=0; $k=0;
                   @endphp
                     @foreach($testPaper->testPaperQuestions as $ques_key => $question)
+
+                    {{-- <p> {{$ques_key}}</p> --}}
                       <section class="question-section d-none" id="question_answer{{$ques_key}}">
                           <div class="question">
                               <h2 class="question-num">Question {{$ques_key + 1}}</h2>
                               <p class="question-text">{{strip_tags($question->questions->question)}}</p>
                           </div>
-                          <input type="hidden" name="question_id" value="{{$question->id}}" id="question_id{{$ques_key}}">
-                          <input type="hidden" name="question_type" value="{{$question->questions->type}}" id="question_type{{$ques_key}}">
+                          <input type="hidden" name="question_id[]" value="{{$question->id}}" id="question_id{{$ques_key}}">
+                          <input type="hidden" name="question_type[]" value="{{$question->questions->type}}" id="question_type{{$ques_key}}">
                           <div class="answer">
                             @php
-                              $options = $question->questions->options;
+                              $options = $question->questions->options; 
                             @endphp
                             @foreach($options as $key => $option)
                               @php 
                                   $progress = App\Models\TestPaperProgress::where('test_paper_id',$testPaper->id)->where('question_id',$question->id)->where('student_id',$student->id)->whereJsonContains('answers',$option)->first()
                               @endphp
+
+                            @php // dd($question->questions->type); @endphp
+
                               @if($question->questions->type != 'multi')
                                 @if($key == 0)
+                                @php  $k++; @endphp
                                   <h3 class="text-muted mb-5">Select a single answer</h3>
                                 @endif
+
+                                <fieldset id="group{{$i}}">
+
                               <label class="single-answer answer-item @if($progress) checked @endif ">
-                                <input onchange="toggleParentClass('{{$question->id}}','{{$option}}',this,{{$ques_key}})" type="radio" name="correct_answer" id="correct_answer{{$ques_key}}" value="{{$option}}" @if($progress) checked @endif>
+                                <input onchange="toggleParentClass('{{$question->id}}','{{$option}}',this,{{$ques_key}})" type="radio" name="correct_answer[{{$k-1}}][]" id="correct_answer{{$ques_key}}{{$i++}}" value="{{$option}}" @if($progress) checked @endif>
                                     <span class="question-no">{{$key + 1}}</span><span class="text-muted">{{$option}}</span>
                               </label>
+                            </fieldset>
+
                               @else
                                 @if($key == 0)
+                                  @php  $k++; @endphp
                                   <h3 class="text-muted mb-5">Select a multiple answer</h3>
                                 @endif
+
+                                <fieldset id="group{{$i}}">
+
                               <label class="multi-answer answer-item @if($progress) checked @endif ">
                                 {{-- <input onchange="toggleParentClass('{{$question->id}}','{{$option}}',this,{{$ques_key}})" type="checkbox" name="correct_answer[]" id="correct_answer{{$ques_key}}" value="{{$option}}" @if($progress) checked @endif style="width: 0px;"> --}}
-                                <input onchange="toggleParentClassMulti('{{$question->id}}','{{$option}}',this,{{$ques_key}})" type="checkbox" name="correct_answer[]" id="correct_answer{{$ques_key}}" value="{{$option}}" @if($progress) checked @endif style="width: 0px;">
+                                <input onchange="toggleParentClass('{{$question->id}}','{{$option}}',this,{{$ques_key}})" type="checkbox" name="correct_answer[{{$k-1}}][]" id="correct_answer{{$ques_key}}{{$i++}}" value="{{$option}}" @if($progress) checked @endif style="width: 0px;">
                                     <span class="question-no">{{$key + 1}}</span><span class="text-muted">{{$option}}</span>
                               </label>
+                            </fieldset>
+
                               @endif
                             @endforeach
                           </div>
@@ -473,8 +490,8 @@
       var answerItems = document.querySelectorAll('.single-answer');
       for (var i = 0; i < answerItems.length; i++) {
         if (answerItems[i] !== parent) { 
-          answerItems[i].classList.remove('checked');
-          answerItems[i].querySelector('input[type="radio"]').checked = false; 
+        //  answerItems[i].classList.remove('checked');
+        //  answerItems[i].querySelector('input[type="radio"]').checked = false; 
         }
       } 
 

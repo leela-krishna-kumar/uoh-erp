@@ -18,7 +18,7 @@
                 <div class="cd-secondary-nav border-b md:m-0 -mx-4" style="">
                     <ul>
                         @foreach($semesters as $key => $semester)
-                            <li @if(request()->has('semester') && request()->get('semester') == $semester->id) class="active" @elseif(!request()->has('semester') && $loop->first) class="active" @endif><a href="{{route('student.student-dashboard.index',['semester' => $semester->id])}}" class="lg:px-2"> {{$semester->title}} </a></li>
+                            <li @if(request()->has('semester') && request()->get('semester') == $semester->id) class="active" @elseif(!request()->has('semester') && $loop->first) class="active" @endif><a href="{{route('student.student-course-dashboard.index',['semester' => $semester->id])}}" class="lg:px-2"> {{$semester->title}} </a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -41,7 +41,7 @@
                                     <div class="font-semibold line-clamp-2"> {{$e_course->title}}
                                     </div>
                                     <div class="flex space-x-2 items-center text-sm pt-3">
-                                        @php 
+                                        @php
                                             $interval = Carbon\CarbonInterval::minutes($e_course->duration);
                                             $formatted_duration = $interval->cascade()->forHumans(['short' => true]);
                                             $e_section_id = App\Models\ESection::where('e_course_id', $e_course->id)->pluck('id')->toArray();
@@ -70,6 +70,5 @@
     <!-- Main Contents -->
     @endsection
     <!-- End Content-->
-    
+
     @endsection
-            

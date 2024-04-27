@@ -83,13 +83,14 @@ class ClassRoutineController extends Controller
                         ->where('status', '1')
                         ->first();
         }
+        
 
         // Class Routine
         if(isset($enroll) && isset($session)){
         $data['rows'] = ClassRoutine::where('status', '1')
                         ->where('session_id', $enroll->session_id)
                         ->where('program_id', $enroll->program_id)
-                        // ->where('semester_id', $enroll->semester_id)
+                        ->where('semester_id', $enroll->semester_id)
                         ->where('section_id', $enroll->section_id)
                         ->orderBy('start_time', 'asc')
                         ->get();

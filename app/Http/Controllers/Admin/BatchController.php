@@ -256,6 +256,7 @@ class BatchController extends Controller
         $batch->title = $request->title;
         $batch->regulation_id = $request->regulation_id;
         $batch->start_date = $request->start_date;
+        $batch->end_date = $request->end_date;
         $batch->status = $request->status;
         $batch->save();
 

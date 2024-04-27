@@ -29,9 +29,6 @@ class HostelStaffController extends Controller
         $this->path = 'user';
         $this->access = 'hostel-member';
 
-
-        $this->middleware('permission:'.$this->access.'-view|'.$this->access.'-create', ['only' => ['index','show']]);
-        $this->middleware('permission:'.$this->access.'-create', ['only' => ['store','update']]);
     }
 
     /**
@@ -70,7 +67,7 @@ class HostelStaffController extends Controller
 
 
         // Staff List
-        $users = User::where('id', '!=', '0');
+        $users = User::where('id', '!=', '0')->whereHas('hostelRoom');
         if(!empty($request->department) && $request->department != '0'){
             $users->where('department_id', $department);
         }

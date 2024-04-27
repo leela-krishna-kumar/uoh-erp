@@ -1,7 +1,20 @@
 @extends('admin.layouts.master')
 @section('title', $title)
 @section('content')
+<head>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <style>
+        td {
+    /* max-width: 200px; Set a maximum width for the cell */
+    overflow: hidden; /* Hide the overflow content */
+    white-space: nowrap; /* Prevent line breaks within the content */
+    text-overflow: ellipsis; /* Display an ellipsis (...) when the text overflows */
+  }
+
+  </style>
+</head>
 <!-- Start Content-->
 <div class="main-body">
     <div class="page-wrapper">
@@ -44,28 +57,15 @@
                                 <div class="form-group col-md-2">
                                     <label for="class_type">{{ __('field_class_type') }}</label>
                                     <select class="form-control" name="class_type" id="class_type">
-                                        <option value="">{{ __('all') }}</option>
                                         @foreach (App\Models\Subject::CLASS_TYPES as $key => $class)
-                                        <option value="{{$key}}" @if( request('class_type') == $key ) selected @endif>{{ $class['label'] }}</option>
+                                            <option value="{{ $key }}" @if( request('class_type') == $key ) selected @endif>{{ $class['label'] }}</option>
                                         @endforeach
                                     </select>
 
                                     <div class="invalid-feedback">
-                                      {{ __('required_field') }} {{ __('field_class_type') }}
+                                        {{ __('required_field') }} {{ __('field_class_type') }}
                                     </div>
                                 </div>
-                                <!-- <div class="form-group col-md-2">
-                                    <label for="class_type">{{ __('field_class_type') }}</label>
-                                    <select class="form-control" name="class_type" id="class_type">
-                                        <option value="">{{ __('all') }}</option>
-                                        <option value="1" @if(request()->class_type == 1 ) selected @endif>{{ __('class_type_theory') }}</option>
-                                        <option value="2" @if(request()->class_type == 2 ) selected @endif>{{ __('class_type_practical') }}</option>
-                                    </select>
-
-                                    <div class="invalid-feedback">
-                                      {{ __('required_field') }} {{ __('field_class_type') }}
-                                    </div>
-                                </div> -->
                                 <div class="form-group col-md-3">
                                     <button type="submit" class="btn btn-info btn-filter"><i class="fas fa-search"></i> {{ __('btn_filter') }}</button>
                                 </div>
@@ -80,50 +80,224 @@
                     @if(isset($rows))
                     <div class="card-block">
                         <!-- [ Data table ] start -->
+
                         <div class="table-responsive">
-                            <table class="table class-routine-table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('day_monday') }}</th>
-                                        <th>{{ __('day_tuesday') }}</th>
-                                        <th>{{ __('day_wednesday') }}</th>
-                                        <th>{{ __('day_thursday') }}</th>
-                                        <th>{{ __('day_friday') }}</th>
-                                        <th>{{ __('day_saturday') }}</th>
-                                        <th>{{ __('day_sunday') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            <table class="table class-routine-table border p-10">
+                                <tbody style="font-size: 12px">
                                     @php
-                                    $weekdays = array('3', '4', '5', '6', '7','1', '2');
+                                        $weekdays = array('3', '4', '5', '6', '7', '1', '2');
+                                        $days = array('day_saturday', 'day_sunday','day_monday', 'day_tuesday', 'day_wednesday', 'day_thursday', 'day_friday');
                                     @endphp
-                                    <tr>
-                                        @foreach($weekdays as $weekday)
-                                        <td>
-                                            @foreach($rows->where('day', $weekday) as $row)
-                                            @if($row->subject)
-                                            <div class="class-time">
-                                                {{ $row->subject->code ?? '' }}<br>
-                                                @if(isset($setting->time_format))
-                                                {{ date($setting->time_format, strtotime($row->start_time)) }}
+                            
+                                    @foreach($weekdays as $weekday)
+                                        @php
+                                            $dayRows = $rows->where('day', $weekday);
+
+                                           // $dayRows_1 = $dayRows->fetch_assoc();
+                                        @endphp
+                            
+                                        @if($dayRows->count() > 0)
+                                            <tr>
+                                                <th style="font-weight: bold; text-align: left;">{{ __($days[$weekday - 1]) }}</th>
+
+                                                @php
+                                                    $i=0; $k=0; $duplicate = 0; 
+                                                @endphp
+
+                                                @php
+                                                    // dd($dayRows->keys()->all());
+
+                                                    $dayRows_indexes = $dayRows->keys()->all();
+
+                                                   // dd(count($dayRows_indexes));
+
+                                                  //  dd($dayRows_indexes[4]);
+                                                @endphp
+
+                                                @foreach($dayRows as $row)     
+                                                
+                                                @php
+                                                  //  dd($dayRows); dd($row, )
+                                                @endphp
+
+                                                @php
+                                                               
+                                                               $k = $i+1 ;
+
+                                                               if ($i <= count($dayRows_indexes)-2)
+                                                               { 
+                                                                    $s = $dayRows_indexes[$i++];
+                                                                    $e = $dayRows_indexes[$i];
+
+                                                                    $duplicate_probability = 1;
+                                                                }else{
+                                                                    $duplicate_probability = 0;
+                                                                }        
+                                                                
+                                                               // dd($row, $i);
+                                                                
+
+                                                              //  print($dayRows[$s]['start_time'] . $dayRows[$e]['start_time']);
+                                                            @endphp
+
+                                                @if(isset($row->subject->title) && ($row->subject->title == 'Lunch Break'))
+                                                <td>
+                                                    <div class="class-time" style="color: yellow;">
+                                                        @if(isset($setting->time_format))
+                                                            <?php $start_time = date($setting->time_format, strtotime($row->start_time)); ?>
+                                                        @else
+                                                            <?php $start_time = date("h:i A", strtotime($row->start_time)); ?>
+                                                        @endif
+                                                
+                                                        @if(isset($setting->time_format))
+                                                            <?php $end_time = date($setting->time_format, strtotime($row->end_time)); ?>
+                                                        @else
+                                                            <?php $end_time = date("h:i A", strtotime($row->end_time)); ?>
+                                                        @endif
+                                                
+                                                        {{ $start_time . ' - ' . $end_time }}<br>
+                                                        {{ '' }}<br>
+                                                        {{ $row->subject->title ?? '' }}<br>
+                                                        {{ '' }}<br>
+                                                        </div>
+                                                </td>
                                                 @else
-                                                {{ date("h:i A", strtotime($row->start_time)) }}
-                                                @endif <br/> @if(isset($setting->time_format))
-                                                {{ date($setting->time_format, strtotime($row->end_time)) }}
-                                                @else
-                                                {{ date("h:i A", strtotime($row->end_time)) }}
-                                                @endif<br>
-                                                {{ __('field_room') }}: {{ $row->room->title ?? '' }}<br>
-                                                {{ $row->teacher->staff_id }} - {{ $row->teacher->first_name ?? '' }} <br>
-                                                {{ __('field_group') }}: {{ @$row->subject->group ? @$row->subject->group->name : '-' }}<br>
-                                                {{ __('field_class_type') }}:  
-                                                {{@App\Models\Subject::CLASS_TYPES[$row->subject->class_type]['label']}}
-                                            </div>
-                                            @endif
-                                            @endforeach
-                                        </td>
-                                        @endforeach
-                                    </tr>
+
+                                                    @if ($duplicate != 1)                                                        
+                                                    
+                                                    <td data-toggle="modal" data-target="#classDetailsModal{{ $row->id }}" style="cursor: pointer;">
+                                                        <div class="class-time">
+                                                            @if(isset($setting->time_format))
+                                                                <?php $start_time = date($setting->time_format, strtotime($row->start_time)); ?>
+                                                            @else
+                                                                <?php $start_time = date("h:i A", strtotime($row->start_time)); ?>
+                                                            @endif
+                                                    
+                                                            @if(isset($setting->time_format))
+                                                                <?php $end_time = date($setting->time_format, strtotime($row->end_time)); ?>
+                                                            @else
+                                                                <?php $end_time = date("h:i A", strtotime($row->end_time)); ?>
+                                                            @endif
+                                                            
+
+                                                    
+                                                        <span style="word-wrap:break-word">    {{ $start_time . ' - ' . $end_time }}<br>
+                                                            {{ __('field_room') }}: {{ $row->room->title ?? '' }}<br>
+
+                                                             @if ($duplicate_probability == 1 && $dayRows[$s]['start_time'] == $dayRows[$e]['start_time'])
+                                                                {{ $row->subject->title ?? '' }} / {{ $dayRows[$e]['subject']['title'] }} <br>
+
+                                                                {{-- @php echo $s .','. $e . ',' . $dayRows[$s]['start_time'] . ',' . $dayRows[$e]['start_time'] @endphp --}}
+                                                                {{ $row->subject->code ?? '' }} / {{ $dayRows[$e]['subject']['code'] }}<br>
+
+                                                                @php
+                                                                    $duplicate = 1;
+                                                                @endphp
+
+                                                             @else
+
+                                                                {{ $row->subject->title ?? '' }}<br>
+                                                                {{ $row->subject->code ?? '' }}<br>
+
+                                                                {{-- @php echo $s .','. $e . ',' . $dayRows[$s]['start_time'] . ',' . $dayRows[$e]['start_time'] @endphp --}}
+
+
+                                                                @php
+                                                                    $duplicate = 0;
+                                                                @endphp
+                                                                
+                                                            @endif 
+
+                                                            
+
+                                                            {{-- {{ $dayRows[$k]['start_time'] }} --}}
+
+                                                            
+                                                        </span>
+
+
+
+                                                            </div>
+                                                    </td>
+                                                    @else
+                                                        @php
+                                                            $duplicate = 0;
+                                                        @endphp
+                                                    @endif
+                                                    {{-- Modal --}}
+                                                    <div class="modal fade" id="classDetailsModal{{ $row->id }}" tabindex="-1" role="dialog" aria-labelledby="classDetailsModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h6 class="modal-title" id="classDetailsModalLabel">{{ $row->subject->code ?? '' }}</h6>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+
+                                                                    
+                                                                    @if ($duplicate_probability == 1 && $dayRows[$s]['start_time'] == $dayRows[$e]['start_time'])
+
+                                                                    <span style="font-weight: bold; font-size: 16px;">Subject Name - </span> {{ $row->subject->title }}<br>
+
+                                                                    <span style="font-weight: bold; font-size: 16px;">Teacher Staff Id - </span> {{ $row->teacher->staff_id }}<br>
+                                                                    <span style="font-weight: bold; font-size: 16px;">Teacher Name - </span> {{ $row->teacher->first_name . ' ' . $row->teacher->last_name ?? '' }}<br>
+
+                                                                    <center><p style="padding: 10px;" >OR</p></center>
+
+                                                                    <span style="font-weight: bold; font-size: 16px;">Subject Name - </span> {{ $dayRows[$e]['subject']['title'] }}<br>
+
+                                                                    <span style="font-weight: bold; font-size: 16px;">Teacher Staff Id - </span> {{ $dayRows[$e]['teacher']['staff_id'] }}<br>
+                                                                    <span style="font-weight: bold; font-size: 16px;">Teacher Name - </span> {{ $dayRows[$e]['teacher']['first_name'] . ' ' . $dayRows[$e]['teacher']['last_name'] }}<br>
+                                                                
+                                                                    <br />
+                                                                    @php
+                                                                        $duplicate = 1;
+                                                                    @endphp
+
+                                                             @else
+
+                                                             <span style="font-weight: bold; font-size: 16px;">Subject Name - </span> {{ $row->subject->title }}<br>
+
+                                                             <span style="font-weight: bold; font-size: 16px;">Teacher Staff Id - </span> {{ $row->teacher->staff_id }}<br>
+                                                             <span style="font-weight: bold; font-size: 16px;">Teacher Name - </span> {{ $row->teacher->first_name . ' ' . $row->teacher->last_name ?? '' }}<br>
+
+                                                                {{-- @php echo $s .','. $e . ',' . $dayRows[$s]['start_time'] . ',' . $dayRows[$e]['start_time'] @endphp --}}
+
+
+                                                                @php
+                                                                    $duplicate = 0;
+                                                                @endphp
+                                                                
+                                                            @endif 
+
+                                                                    <span style="font-weight: bold; font-size: 16px;">{{ __('field_group') }} - </span> {{ @$row->subject->group ? @$row->subject->group->name : '-' }}<br>
+                                                                    <span style="font-weight: bold; font-size: 16px;">{{ __('field_class_type') }} - </span> {{ @App\Models\Subject::CLASS_TYPES[$row->subject->class_type]['label'] }}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                    {{-- End Modal --}}
+                                                @endforeach
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <th style="font-weight: bold; text-align: left;">{{ __($days[$weekday - 1]) }}</th>
+                                                <td colspan="5">No classes</td> <!-- Adjust colspan based on the number of columns -->
+                                            </tr>
+                                        @endif
+
+                                        @php
+                                          //  $i++;
+                                        @endphp
+
+
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

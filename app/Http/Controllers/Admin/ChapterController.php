@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Chapter;
@@ -18,19 +20,18 @@ class ChapterController extends Controller
     public function __construct()
     {
         // Module Data
-        $this->title = trans_choice('module_chapter', 1);
+        $this->title = trans_choice('chapter', 1);
         $this->route = 'admin.chapter';
         $this->view = 'admin.chapter';
         $this->path = 'chapter';
         $this->access = 'chapter';
 
 
-        $this->middleware('permission:'.$this->access.'-view|'.$this->access.'-create|'.$this->access.'-edit|'.$this->access.'-delete|'.$this->access.'-card', ['only' => ['index']]);
-        $this->middleware('permission:'.$this->access.'-create', ['only' => ['create','store']]);
-        $this->middleware('permission:'.$this->access.'-delete', ['only' => ['destroy']]);
+       
     }
     public function index(Request $request)
     {
+        
         // try{  
             $data['title'] = $this->title;
             $data['route'] = $this->route;

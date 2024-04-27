@@ -22,7 +22,7 @@
                     </div>
                     <div class="form-group">
                         <label for="latitude" class="form-label">{{ __('field_latitude') }} <span>*</span></label>
-                        <input type="text" class="form-control" name="latitude" id="latitude" value="{{ $row->latitude }}" required>
+                        <input type="text" class="form-control" name="latitude" id="latitude" value="{{ $row->latitude }}" >
 
                         <div class="invalid-feedback">
                           {{ __('required_field') }} {{ __('field_latitude') }}
@@ -30,7 +30,7 @@
                     </div>
                     <div class="form-group">
                         <label for="longitude" class="form-label">{{ __('field_longitude') }} <span>*</span></label>
-                        <input type="text" class="form-control" name="longitude" id="longitude" value="{{ $row->longitude }}" required>
+                        <input type="text" class="form-control" name="longitude" id="longitude" value="{{ $row->longitude }}" >
 
                         <div class="invalid-feedback">
                           {{ __('required_field') }} {{ __('field_longitude') }}

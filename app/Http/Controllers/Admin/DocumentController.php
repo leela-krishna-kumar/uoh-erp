@@ -10,6 +10,8 @@ use App\User;
 use App\Traits\FileUploader;
 use Toastr;
 use DB;
+use Illuminate\Support\Facades\Log;
+
 
 class DocumentController extends Controller
 {
@@ -49,57 +51,94 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
     try {
+        // return $request->all();
+        
             if($request->type == "user"){
-                $request->validate([
-                    'photo' => 'nullable|image',
-                    'signature' => 'nullable|image',
-                    'resume' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,zip,rar,csv,xls,xlsx,ppt,pptx|max:20480',
-                    'joining_letter' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,zip,rar,csv,xls,xlsx,ppt,pptx|max:20480',
-                ]);
+                // $request->validate([
+                //     'photo' => 'nullable|image',
+                //     'signature' => 'nullable|image',
+                //     'resume' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,zip,rar,csv,xls,xlsx,ppt,pptx|max:20480',
+                //     'joining_letter' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,zip,rar,csv,xls,xlsx,ppt,pptx|max:20480',
+                // ]);
                 $user = User::where('id', $request->user_id)->first();
 
                 $user->photo = $this->updateImage($request, 'photo', $this->path, 300, 300, $user, 'photo');
                 $user->signature = $this->updateImage($request, 'signature', $this->path, 300, 100, $user, 'signature');
                 $user->resume = $this->updateMultiMedia($request, 'resume', $this->path, $user, 'resume');
                 $user->joining_letter = $this->updateMultiMedia($request, 'joining_letter', $this->path, $user, 'joining_letter');
-                $user->updated_by = Auth::guard('web')->user()->id;
-                if(is_array($request->documents)){
+                $user->updated_by = auth()->user()->id;
+
+                if(isset($request->driving_license_pic))
+                {
+                    $user->driving_license_pic = $this->updateMultiMedia($request, 'driving_license_pic', $this->path, $user, 'driving_license_pic');
+                }
+
+                if(isset($request->aadhar_image))
+                {
+                    $user->aadhar_image = $this->updateMultiMedia($request, 'aadhar_image', $this->path, $user, 'aadhar_image');
+                }
+                Log::info($user);
+                $user->save();
+
+                $docable_ids = DB::table('docables')->where('docable_id', auth()->user()->id)->whereNotIn('document_id', $request->documentids)->pluck('document_id');
+                DB::table('docables')->where('docable_id', auth()->user()->id)->whereIn('document_id', $docable_ids)->delete();
+                DB::table('documents')->whereIn('id', $docable_ids)->delete();
+
+                if (is_array($request->documents) && count(array_filter($request->documents)) > 0) {
                     $documents = $request->file('documents');
                     foreach($documents as $key =>$attach){
-
                         // Valid extension check
                         $valid_extensions = array('jpg','jpeg','png','gif','ico','svg','webp','pdf','doc','docx','txt','zip','rar','csv','xls','xlsx','ppt','pptx','mp3','avi','mp4','mpeg','3gp');
                         $file_ext = $attach->getClientOriginalExtension();
                         if(in_array($file_ext, $valid_extensions, true))
                         {
 
-                        //Upload Files
-                        $filename = $attach->getClientOriginalName();
-                        $extension = $attach->getClientOriginalExtension();
-                        $fileNameToStore = str_replace([' ','-','&','#','$','%','^',';',':'],'_',$filename).'_'.time().'.'.$extension;
+                            //Upload Files
+                            $filename = $attach->getClientOriginalName();
+                            $extension = $attach->getClientOriginalExtension();
+                            $fileNameToStore = str_replace([' ','-','&','#','$','%','^',';',':'],'_',$filename).'_'.time().'.'.$extension;
 
-                        // Move file inside public/uploads/ directory
-                        $attach->move('uploads/'.$this->path.'/', $fileNameToStore);
+                            // Move file inside public/uploads/ directory
+                            $attach->move('uploads/'.$this->path.'/', $fileNameToStore);
 
-                        // Insert Data
-                        $document = new Document;
-                        $document->title = $request->titles[$key];
-                        $document->attach = $fileNameToStore;
-                        $document->save();
+                            if (isset($request->titles[$key]) && isset($request->documents[$key])) {
+                                $document_id = $request->documentids[$key];
+                            } else {
+                                $document_id = '';
+                            }
+                            
+                            if($document_id != '' && $document_id != null)
+                            {
+                                $document = Document::where('id', $document_id)->first();
+                                if($document)
+                                {
+                                    $document->title = $request->titles[$key];
+                                    if($request->documents[$key] != '' && $request->documents[$key] != null)
+                                    {
+                                        $document->attach = $fileNameToStore;
+                                    }
+                                    $document->save();
+                                }
+                            } else {
+                                // Insert Data
+                                $document = new Document;
+                                $document->title = $request->titles[$key];
+                                $document->attach = $fileNameToStore;
+                                $document->save();
+                                $document->users()->sync($user->id);
 
-                        // Attach
-                        $document->users()->sync($user->id);
-
+                            }
+                            // Attach
                         }
                     }
+                    Toastr::success(__('msg_updated_successfully'), __('msg_success'));
                 }
-
             }else{
-                $request->validate([
-                    'student_id' => 'required',
-                    'photo' => 'nullable|image',
-                    'signature' => 'nullable|image',
-                ]);
+                // $request->validate([
+                //     'student_id' => 'required',
+                //     'photo' => 'nullable|image',
+                //     'signature' => 'nullable|image',
+                // ]);
                 //Store Student Documents
                 $student = Student::where('id', $request->student_id)->first();
                 $student->photo = $this->updateImage($request, 'photo', $this->path, 300, 300, $student, 'photo');
@@ -157,7 +196,8 @@ class DocumentController extends Controller
             }
             Toastr::success(__('msg_updated_successfully'), __('msg_success'));
             return redirect()->back()->with( __('msg_success'), __('msg_updated_successfully'));
-        } catch (\Throwable $th) {
+        } 
+        catch (\Throwable $th) {
             Toastr::error(__('msg_updated_error'), __('msg_error'));
             return redirect()->back();
         }

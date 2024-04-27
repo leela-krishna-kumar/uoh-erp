@@ -19,10 +19,14 @@
                                     <select class="form-control select2 check-program" name="program" id="program" required>
                                         <option value="">{{ __('Select') }}</option>
                                         @foreach($programs as $program)
-                                            <option value="{{ $program->id }}" @if(request('program') == $program->id) selected @endif>{{ $program->title }}</option>
+
+                                        @php
+                                             $faculty_data = \App\Models\Faculty::find( $program->faculty_id);
+                                        @endphp
+                                            <option value="{{ $program->id }}" @if(request('program') == $program->id) selected @endif>{{ $program->title }} - {{ $faculty_data->title}} </option>
                                         @endforeach
                                     </select>
-    
+
                                     <div class="invalid-feedback">
                                       {{ __('required_field') }} {{ __('field_program') }}
                                     </div>
@@ -40,7 +44,7 @@
                                       {{ __('required_field') }} {{ __('Subject') }}
                                     </div>
                                 </div>
-    
+
                                 <div class="form-group col-md-4">
                                     <label for="student" class="form-label">{{ __('field_student') }} <span>*</span></label>
                                     <select class="form-control select2 student" name="student" id="student" required>
@@ -50,7 +54,7 @@
                                             @endforeach
                                         @endif
                                     </select>
-    
+
                                     <div class="invalid-feedback">
                                       {{ __('required_field') }} {{ __('field_student') }}
                                     </div>

@@ -52,6 +52,11 @@
                                         <th>{{ __('ID') }}</th>
                                         <th>{{ __('field_name') }}</th>
                                         <th>{{ __('field_subject') }}</th>
+                                        <th>Total Present</th>
+                                        <th>Total Absent</th>
+                                        <th>Total Leave</th>
+                                        <th>Total Holiday</th>
+                                        <th>Percentage</th>
                                     </tr>
                                 </thead>
                                 <tbody>

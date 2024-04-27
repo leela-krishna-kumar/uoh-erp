@@ -21,7 +21,7 @@
                                 <select class="form-control" name="vehicle_id"  id="vehicle" required >
                                     <option value="">{{ __('select') }}</option>
                                     @foreach ($vehicles as $key =>$vehicle)
-                                    <option value="{{$vehicle->id}}">{{$vehicle->type}}</option>
+                                    <option value="{{ $vehicle->id }}">{{ $vehicle->number . ' - ' . $vehicle->type }}</option>
                                     @endforeach
                                 </select>
 

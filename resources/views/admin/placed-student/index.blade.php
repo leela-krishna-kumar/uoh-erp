@@ -10,7 +10,10 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5> #ID{{$placement->company->id}} {{@$placement->company->name}} {{ $title }}</h5>
+                        {{-- <h5> #ID{{$placement->company->id}} {{@$placement->company->name}} {{ $title }}</h5> --}}
+                        @if(isset($placement->company))
+                        #ID{{$placement->company->id}} {{$placement->company->name}} {{ $title }}
+                    @endif
                     </div>
                     <div class="card-block">
                         @can($access.'-create')
@@ -24,7 +27,7 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
-                        <h5> {{ $title }} List</h5> 
+                        <h5> {{ $title }} List</h5>
                     </div>
                     <div class="card-block">
                         <!-- [ Data table ] start -->
@@ -49,9 +52,15 @@
                                         <td>{{ $row->getPrefix('id')}}</td>
                                         <td>{{ @$row->student->name }}</td>
                                         <td>
+                                            {{-- {{$row->status}} --}}
                                             <span class="badge badge-{{ App\Models\PlacedStudent::STATUSES[$row->status]['color'] }}">{{ App\Models\PlacedStudent::STATUSES[$row->status]['label'] }}</span>
                                         </td>
-                                        <td>{{$row->package}} LPA</td>
+                                        {{-- <td>{{$row->package}} LPA</td> --}}
+                                        <td>
+                                            @if($row->package != 0)
+                                                {{$row->package}} LPA
+                                            @endif
+                                        </td>
                                         <td>{{$row->note}}</td>
 
                                         <td>

@@ -39,6 +39,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('notice:send')
                 ->dailyAt('01:01');
 
+        $schedule->command('backup:run')->dailyAt('03:00');
+
         $schedule->command('content:send')
                 ->dailyAt('02:01');
     }

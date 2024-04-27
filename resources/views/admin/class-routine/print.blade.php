@@ -65,12 +65,12 @@
 </head>
 <body>
 
-<div class="template-container printable" style="width: {{ $print->width }}; height: {{ $print->height }};">
+<center> <div class="template-container printable" style="align-items:center; text-align:center; width: {{ $print->width }}; height: {{ $print->height }};">
   <div class="template-inner">
     <!-- Header Section -->
     <table class="table-no-border">
         <tbody>
-            <tr>
+            {{-- <tr>
                 <td class="temp-logo">
                   <div class="inner">
                     @if(is_file('uploads/'.$path.'/'.$print->logo_left))
@@ -91,7 +91,7 @@
                     @endif
                   </div>
                 </td>
-            </tr>
+            </tr> --}}
         </tbody>
     </table>
     <!-- Header Section -->
@@ -162,7 +162,7 @@
     @endif
     <!-- Header Section -->
   </div>
-</div>
+</div></center>
 
     <!-- Print Js -->
     <script src="{{ asset('dashboard/plugins/jquery/js/jquery.min.js') }}"></script>

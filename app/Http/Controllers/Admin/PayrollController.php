@@ -39,7 +39,7 @@ class PayrollController extends Controller
         $this->access = 'payroll';
 
 
-        $this->middleware('permission:'.$this->access.'-action', ['only' => ['index','generate','store','update','pay','unpay']]);
+        $this->middleware('permission:'.$this->access.'-action', ['only' => ['generate','store','update','pay','unpay']]);
         $this->middleware('permission:'.$this->access.'-view', ['only' => ['index']]);
         $this->middleware('permission:'.$this->access.'-report', ['only' => ['report']]);
         $this->middleware('permission:'.$this->access.'-print', ['only' => ['print']]);
@@ -96,7 +96,20 @@ class PayrollController extends Controller
         }
 
 
-        $data['departments'] = Department::where('status', '1')->orderBy('title', 'asc')->get();
+        // $data['departments'] = Department::where('status', '1')->orderBy('title', 'asc')->get();
+
+        if(auth()->user()->hasRole('HoD'))
+        {
+            // dd('88');
+
+            $data['departments'] = Department::where('id', auth()->user()->department_id)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['departments'] = Department::where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
+
         $data['designations'] = Designation::where('status', '1')->orderBy('title', 'asc')->get();
         $data['print'] = PrintSetting::where('slug', 'pay-slip')->first();
 
@@ -115,7 +128,7 @@ class PayrollController extends Controller
             if(!empty($request->designation)){
                 $users->where('designation_id', $designation);
             }
-            $data['rows'] = $users->orderBy('staff_id', 'asc')->get();
+            $data['rows'] = $users->select('id','staff_id','first_name','last_name','department_id','designation_id','salary_type','status')->orderBy('staff_id', 'asc')->get();
         }
 
 
@@ -176,7 +189,7 @@ class PayrollController extends Controller
             return redirect()->back();
         }
 
-        // Attendances 
+        // Attendances
         if($user->salary_type == 1){
         $data['attendances'] = StaffAttendance::whereYear('date', $year)
             ->whereMonth('date', $month)
@@ -185,7 +198,7 @@ class PayrollController extends Controller
         if($user->salary_type == 2){
         $data['attendances'] = StaffHourlyAttendance::whereYear('date', $year)
             ->whereMonth('date', $month)
-            ->get(); 
+            ->get();
         }
 
         $data['total_days'] = Carbon::createFromDate($year, $month, 1)->daysInMonth;
@@ -489,8 +502,8 @@ class PayrollController extends Controller
 
             $payrolls = Payroll::whereYear('salary_month', $year)->whereMonth('salary_month', $month);
 
-           
-            
+
+
             if(!empty($request->salary_type)){
                 $payrolls->where('salary_type', $salary_type);
             }
@@ -519,9 +532,9 @@ class PayrollController extends Controller
                 $payrolls->where('user_id', auth()->user()->id);
             }
             $data['rows'] = $payrolls->orderBy('id', 'asc')->get();
-        }                
+        }
 
-        
+
         return view($this->view.'.report', $data);
     }
 

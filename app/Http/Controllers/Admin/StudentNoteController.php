@@ -23,6 +23,7 @@ class StudentNoteController extends Controller
      */
     public function __construct()
     {
+        // dd("123");
         // Module Data
         $this->title = trans_choice('module_student_note', 1);
         $this->route = 'admin.student-note';
@@ -68,9 +69,23 @@ class StudentNoteController extends Controller
             $query->where('program_id', request()->program);
         });
         $data['subjects']  = $programSubjects->orderBy('code', 'asc')->get();
-        $data['programs'] = Program::where('status', '1')->orderBy('title', 'asc')->get();
+
+        if(auth()->user()->designation_id == 33){
+
+            // dd('123');
+
+              $program_ids = json_decode(auth()->user()->program_ids);
+
+              $data['programs'] = Program::where('status', '1')->whereIn('id', $program_ids)->orderBy('title', 'asc')->get();
+
+            }else{
+            $data['programs'] = Program::where('status', '1')->orderBy('title', 'asc')->get();
+          }
+
+
+
         $data['students'] = Student::where('program_id',request()->program)->get();
-        
+
         $data['rows'] = $notes->where('noteable_type', 'App\Models\Student')->orderBy('id', 'desc')->get();
 
         return view($this->view.'.index', $data);

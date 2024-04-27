@@ -17,7 +17,7 @@ class Student extends Authenticatable
      *
      * @var array
      */
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -29,7 +29,7 @@ class Student extends Authenticatable
         'password', 'remember_token',
     ];
     protected $appends = [
-        'full_name' , 'name' 
+        'full_name' , 'name'
       ];
 
     /**
@@ -42,7 +42,7 @@ class Student extends Authenticatable
         'managed_by' => 'array',
     ];
 
-  
+
 
     public function faculty()
     {
@@ -145,7 +145,7 @@ class Student extends Authenticatable
     {
         return $this->hasMany(TransferCreadit::class, 'student_id');
     }
-    
+
 
     // Polymorphic relations
     public function documents()
@@ -198,7 +198,7 @@ class Student extends Authenticatable
 
         return $enroll;
     }
-   
+
     public function eCourseUser()
     {
         return $this->hasMany(ECourseUser::class, 'student_id');
@@ -213,8 +213,8 @@ class Student extends Authenticatable
      }
      public function getNameAttribute() {
          return ucwords($this->first_name.' '.$this->last_name);
-      } 
-     
+      }
+
       public function permanentAddress()
     {
         return $this->belongsTo(Address::class, 'id','model_id')->where('model_type',Student::class)->where('is_permanent',1);
@@ -243,7 +243,7 @@ class Student extends Authenticatable
     {
         return $this->belongsTo(StudentGroup::class, 'group_id', 'id');
     }
-    
+
       public function userBank()
     {
         return $this->belongsTo(UserBank::class, 'id','mother_tongue');
@@ -254,5 +254,14 @@ class Student extends Authenticatable
     {
         return $this->belongsTo(User::class, 'counselled_by');
     }
+    // public function hostelAttendances()
+    // {
+    //     return $this->hasOne(HostelAttendance::class,'student_id','id')->select('id', 'date', 'direction');
+    // }
+    public function hostelAttendances()
+    {
+        return $this->hasOne(HostelAttendance::class)->latest('date');
+    }
+
 
 }

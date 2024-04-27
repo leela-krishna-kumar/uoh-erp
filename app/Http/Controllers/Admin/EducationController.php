@@ -43,19 +43,23 @@ class EducationController extends Controller
     public function store(Request $request)
     {
 
-        // $request->validate([
-        //     'student_id' => 'required|numeric',
-        // ]);
         try {
-            
+
             $education = new Education();
             if(isset($request->user_id)){
                 $education->model_id = $request->user_id;
                 $education->model_type = User::class;
+                $payload =$request->payload;
+                $education->education_type = $payload['education_level'];
             }else{
                 $education->model_id = $request->student_id;
                 $education->model_type = Student::class;
-                $education->education_type = $request->education_type;
+                if ($request->education_type) {
+                    $education->education_type = $request->education_type;
+                } else {
+                    $payload =$request->payload;
+                    $education->education_type = $payload['education_level'];
+                }
             }
             $education->payload = $request->payload;
             $education->save();

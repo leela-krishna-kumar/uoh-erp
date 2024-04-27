@@ -157,12 +157,12 @@ class StudentAttendanceController extends Controller
             $data['subjects'] = $subjects->orderBy('code', 'asc')->get();
         }
 
-      
+
         // Student List
-       
+
         if(!empty($request->program) && !empty($request->session) && !empty($request->subject)){
             // Check Subject Access
-          
+
             $subject_check = Subject::where('id', $subject);
             $subject_check->with('classes')->whereHas('classes', function ($query) use ($teacher_id, $session, $superAdmin){
                 if(isset($session)){
@@ -172,7 +172,7 @@ class StudentAttendanceController extends Controller
                     $query->where('teacher_id', $teacher_id);
                 }
             })->first();
- 
+
             // Enrolls
             $enrolls = StudentEnroll::where('status', '1');
             if(!empty($request->program) && $request->program != 'all'){
@@ -198,7 +198,7 @@ class StudentAttendanceController extends Controller
             $data['rows'] = $enrolls->get();
         }
 
-             
+
         // return $request->all();
         // Attendances
         if(!empty($request->program) || !empty($request->semester) &&  !empty($request->faculty)  && !empty($request->session)  && !empty($request->section) &&  !empty($request->subject)){
@@ -254,11 +254,11 @@ class StudentAttendanceController extends Controller
             // Insert Or Update Data
             $studentAttendance = StudentAttendance::updateOrCreate(
             [
-                'student_enroll_id' => $student, 
-                'subject_id' => $request->subject, 
+                'student_enroll_id' => $student,
+                'subject_id' => $request->subject,
                 'date' => $request->date
             ],[
-                'student_enroll_id' => $student, 
+                'student_enroll_id' => $student,
                 'subject_id' => $request->subject,
                 'date' => $request->date,
                 'attendance' => $attendances[$key],
@@ -281,7 +281,7 @@ class StudentAttendanceController extends Controller
     public function report(Request $request)
     {
         //
-        
+
         $data['title'] = trans_choice('module_student_subject_report', 1);
         $data['route'] = $this->route;
         $data['view'] = $this->view;
@@ -345,7 +345,7 @@ class StudentAttendanceController extends Controller
             $data['selected_year'] = date("Y", strtotime(Carbon::today()));
         }
 
-        
+
         // Search Filter
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
 
@@ -373,7 +373,7 @@ class StudentAttendanceController extends Controller
             $query->where('semester_id', $semester);
         });
         $data['sections'] = $sections->orderBy('title', 'asc')->get();}
-   
+
         if(!empty($request->program) && $request->program != '0' && !empty($request->session) && $request->session != '0'){
             // Access Data
             $teacher_id = Auth::guard('web')->user()->id;
@@ -382,7 +382,7 @@ class StudentAttendanceController extends Controller
                 $query->where('slug', 'super-admin');
             });
             $superAdmin = $user->first();
-
+            
             // Filter Subject
             $subjects = Subject::where('status', '1');
             // $subjects->with('classes')->whereHas('classes', function ($query) use ($teacher_id, $session, $superAdmin){
@@ -402,6 +402,7 @@ class StudentAttendanceController extends Controller
                 $query->where('section_id', request('section'));
             });
             $data['subjects'] = $subjects->orderBy('code', 'asc')->get();
+            
         }
 
 //problem
@@ -443,9 +444,8 @@ class StudentAttendanceController extends Controller
                 $query->orderBy('student_id', 'asc');
             });
 
-            $data['rows'] = $enrolls->get();
+            $data['rows'] = $enrolls->paginate(10);
         }
-        
 
 
         // Attendances
@@ -525,7 +525,7 @@ class StudentAttendanceController extends Controller
         else{
             $data['selected_status'] = '0';
         }
-        
+
 
         // Search Filter
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
@@ -557,7 +557,7 @@ class StudentAttendanceController extends Controller
 
 
         // Student Filter
-        
+
         if(!empty($request->program) || !empty($request->semester) &&  !empty($request->faculty)  && !empty($request->session)  && !empty($request->section) || !empty($request->status)){
             $students = Student::where('status', '1');
             if($faculty != 0 && $faculty != 'all'){
@@ -565,7 +565,7 @@ class StudentAttendanceController extends Controller
                     $query->where('faculty_id', $faculty);
                 });
             }
-            if(($session != 0 && $session != 'all') || ($semester != 0 && $semester != 'all') || ($section != 0 && $section != 'all')){ 
+            if(($session != 0 && $session != 'all') || ($semester != 0 && $semester != 'all') || ($section != 0 && $section != 'all')){
                  $students->with('currentEnroll')->whereHas('currentEnroll', function ($query) use ($program, $session, $semester, $section){
                     if($program != 0 && $program != 'all'){
                     $query->where('program_id', $program);
@@ -595,7 +595,6 @@ class StudentAttendanceController extends Controller
 
         $data['students'] = Student::where('program_id',$request->program)->get();
         $data['selected_student'] = $request->student;
-        
         return view($this->view.'.summary', $data);
     }
 }

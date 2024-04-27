@@ -70,8 +70,20 @@ class MarksheetController extends Controller
 
         $data['batchs'] = Batch::where('status', '1')
                         ->orderBy('id', 'desc')->get();
-        $data['programs'] = Program::where('status', '1')
-                        ->orderBy('title', 'asc')->get();
+        // $data['programs'] = Program::where('status', '1')
+        //                 ->orderBy('title', 'asc')->get();
+
+        if(auth()->user()->hasRole('HoD'))
+        {           
+            $program_ids = json_decode(auth()->user()->program_ids);       
+            $data['programs'] = Program::where('faculty_id', $request->faculty)
+                                ->whereIn('id', $program_ids)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['programs'] = Program::where('faculty_id', $request->faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
         $data['grades'] = Grade::where('status', '1')
                         ->orderBy('min_mark', 'desc')->get();
         $data['print'] = MarksheetSetting::where('status', '1')->first();

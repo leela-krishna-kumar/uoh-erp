@@ -79,7 +79,7 @@
         <!-- footer -->
         <div class="lg:mt-28 mt-10 mb-7 px-12 border-t pt-7">
             <div class="flex flex-col items-center justify-between lg:flex-row max-w-6xl mx-auto lg:space-y-0 space-y-3">
-                <p class="capitalize font-medium"> © copyright 2023  EducateNXT</p>
+                <p class="capitalize font-medium"> © copyright 2023  </p>
                 <div class="lg:flex space-x-4 text-gray-700 capitalize hidden">
                     <a href="#"> About</a>
                     <a href="#"> Help</a>
@@ -143,7 +143,7 @@
                     echo "{
                             title: '".$event->title."',
                             start: '".$event->start_date."',
-                            end: '".$event->end_date."',
+                            end: '" . date("Y-m-d", strtotime($event->end_date . " +1 day")) . "',
                             borderColor: '".$event->color."',
                             backgroundColor: '".$event->color."',
                             textColor: '#fff',

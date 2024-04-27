@@ -115,6 +115,7 @@
                             <select required class="form-control select2" name="managed_by[]" id="managed_by"multiple>
                             @foreach($teachers as $key => $teacher)
                             <option value="{{ $teacher->id }}" @if(isset($row) && $row->managed_by != null && in_array($teacher->id, json_decode($row->managed_by))) selected @endif>{{ $teacher->first_name }} {{ $teacher->last_name }}</option>
+                            {{-- <option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</option> --}}
                             @endforeach
                             </select>
                             <div class="invalid-feedback">

@@ -127,7 +127,7 @@
                     @endif
 
 
-                    @if (count($student_fee_data) != 0)                        
+                    @if (isset($student_fee_data) && count($student_fee_data) != 0)                        
                    
                     
                     <form class="needs-validation" novalidate action="{{ route($route.'.quick.received.store.bulk') }}" method="post" enctype="multipart/form-data">
@@ -286,7 +286,9 @@
 
                     @else
 
-                    <h3 style="text-align: center;"> No Fee Dues Found</h3>
+                        @if (isset($student_fee_data))
+                            <h3 style="text-align: center;"> No Fee Dues Found</h3>
+                        @endif                    
 
                     @endif
 

@@ -33,9 +33,9 @@
   <select class="form-control session" name="session" id="session" required>
 		<option value="">{{ __('select') }}</option>
 		@if(isset($sessions))
-		@foreach( $sessions->sortByDesc('id') as $session )
-		<option value="{{ $session->id }}" @if( $selected_session == $session->id) selected @endif>{{ $session->title }}</option>
-		@endforeach
+      @foreach( $sessions->sortByDesc('id') as $session )
+        <option value="{{ $session->id }}" @if( $selected_session == $session->id) selected @endif>{{ $session->title }}</option>
+      @endforeach
 		@endif
 	</select>
 

@@ -90,6 +90,7 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request->description);
         $request->validate([
             'title' => 'required',
             'project_category_id' => 'required',

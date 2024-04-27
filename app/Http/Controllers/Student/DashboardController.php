@@ -10,9 +10,11 @@ use App\Models\Session;
 use App\Models\Student;
 use App\Models\Event;
 use App\Models\Fee;
+use App\Models\ELesson;
 use Carbon\Carbon;
 use Auth;
 use App\Models\ECourse;
+use App\Models\ECourseUser;
 use App\Models\ESection;
 use App\Models\Semester;
 use App\Models\ProgramSemesterSection;
@@ -21,6 +23,8 @@ use App\Models\TestPaper;
 use App\Models\TestPaperUser;
 use App\Models\TestPaperProgress;
 use App\Models\EventUser;
+use Closure;
+use Illuminate\Support\Facades\Crypt;
 
 class DashboardController extends Controller
 {
@@ -37,14 +41,37 @@ class DashboardController extends Controller
         $this->view = 'student';
     }
 
-    public function studentIndex()
+
+
+    public function studentIndex(Request $request)
     {
+        $data['title'] = trans_choice('module_profile', 1);
+        $data['route'] = 'student.profile';
+        $data['view'] = 'student.profile';
+        $data['row'] = Student::where('id', Auth::guard('student')->user()->id)->firstOrFail();
+        
+        return view('student.profile.student-account-details', $data);
+    }
+    
+    public function studentCourseIndex(Request $request)
+    {
+        $semester = Semester::orderBy('id', 'asc')->first();
+        if(!$request->input('semester'))
+        {
+            $semester = $semester->id;
+        }
+        else{
+            $semester =  $request->input('semester');
+        }
         $data['title'] = $this->title;
         $data['route'] = $this->route;
         $data['view'] = $this->view;
         $student = auth()->user();
+        // return $student->program->semesters;
         $data['semesters'] = $student->program->semesters;
-        $eCourseUser = $student->eCourseUser->pluck('course_id')->toArray();
+        $eCourseUser = $student->eCourseUser()->where('semester_id',$semester)->pluck('course_id')->toArray();
+        // $eCourseUser = $student->eCourseUser->pluck('course_id')->toArray();
+        // $data['e_courses'] = ECourse::where('is_published', 1)->whereIn('id',$eCourseUser)->where('Semester_id',$semester)->gset();
         $data['e_courses'] = ECourse::where('is_published', 1)->whereIn('id',$eCourseUser)->get();
 
         return view($this->view.'.student-index', $data);
@@ -79,7 +106,24 @@ class DashboardController extends Controller
         $data['view'] = $this->view;
         $data['e_course'] = Ecourse::where('id', $id)->where('is_published', 1)->first();
         $data['e_sections'] = ESection::where('e_course_id', $id)->get();
+        $section_ids = ESection::where('e_course_id', $id)->pluck('id');
+        $e_lesson_id = ELesson::whereIn('e_section_id', $section_ids)->first();
+        if($e_lesson_id) {
+            $data['e_lesson_id'] = $e_lesson_id->id;
+        } else {
+            $data['e_lesson_id'] = 0;
+        }
         return view($this->view.'.course.student-course-watch', $data);
+    }
+
+    public function getLesson(Request $request)
+    {
+        $lesson_id = $request->input('lesson_id');
+
+        // Fetch the lesson from the database
+        $lesson = Elesson::where('id', $lesson_id)->first();
+
+        return response()->json(['data' => $lesson->link]);
     }
 
     public function studentBooks()
@@ -103,6 +147,7 @@ class DashboardController extends Controller
 
         return view($this->view.'.exams.student-exam-info',$data);
     }
+
     public function studentExamWatch($id)
     {
         $data['testPaper'] = TestPaper::find($id);
@@ -110,9 +155,15 @@ class DashboardController extends Controller
         $data['formatted_duration'] = $interval->cascade()->forHumans(['short' => true]);
         return view($this->view.'.exams.student-exam-disclaimer',$data);
     }
+
     public function studentExamStarted($id)
     {
+      //  dd('11');
+
         $data['testPaper'] = TestPaper::find($id);
+
+      //  dd($data['testPaper']);
+
         $TestPaperUser = TestPaperUser::where('test_paper_id',$data['testPaper']->id)->where('student_id',auth()->id())->first();
         $TestPaperUser->status = TestPaperUser::STATUS_STARTED;
         if($TestPaperUser->started_at == null){
@@ -173,11 +224,11 @@ class DashboardController extends Controller
             $assignments->with('assignment')->whereHas('assignment', function ($query){
                 $query->where('start_date', '<=', Carbon::today());
             });
-    
+
             $data['assignments'] = $assignments->orderBy('id', 'desc')->limit(10)->get();
             }
-    
-    
+
+
             // Fees
             if(isset($enroll) && isset($session) && isset($semester)){
             $fees = Fee::with('studentEnroll')->whereHas('studentEnroll', function ($query) use ($student_id, $session, $semester){
@@ -185,11 +236,11 @@ class DashboardController extends Controller
                 $query->where('session_id', $session);
                 $query->where('semester_id', $semester);
             });
-    
+
             $data['fees'] = $fees->orderBy('assign_date', 'desc')->limit(10)->get();
             }
-    
-    
+
+
             // Events
             // $data['events'] = Event::where('status', '1')->orderBy('id', 'asc')->get();
             // $data['latest_events'] = Event::where('status', '1')

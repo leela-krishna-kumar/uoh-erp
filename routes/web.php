@@ -1,5 +1,14 @@
 <?php
+
+
 use Spatie\Permission\Models\Role;
+use App\Models\Student;
+
+use App\Http\Controllers\Student\DashboardController;
+use App\User;
+use App\Http\Controllers\FilterController;
+
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,6 +20,9 @@ use Spatie\Permission\Models\Role;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+
 Route::get('/qb', function() {
     return createPermissions();
    return $permissions = Spatie\Permission\Models\Permission::where('group','')->pluck('name');
@@ -23,8 +35,8 @@ Route::get('/qb', function() {
    return 'success';
     $roles = auth()->user()->roles;
     if ($roles->isNotEmpty()) {
-        $roleName = $roles[0]->name; 
-    
+        $roleName = $roles[0]->name;
+
         dd($roleName); // Display the role name
     } else {
         dd("No roles found for the user.");
@@ -39,6 +51,8 @@ Route::get('/qb', function() {
     return sessionSync(2020-2024);
     return $data['roles'] = Role::orderBy('name', 'asc')->get();
 });
+
+
 
 Route::middleware(['auth:web'])->name('news-feed.')->namespace('Common')->prefix('news-feed')->group(function () {
     Route::get('/', 'NewsFeedController@index')->name('index');
@@ -60,7 +74,7 @@ Route::middleware(['XSS'])->namespace('Web')->group(function () {
     Route::get('/', function() {
        return redirect()->route('student.dashboard.index');
     });
-    
+
 
     // SetCookie Route
     Route::get('/set-cookie', 'HomeController@setCookie')->name('setCookie');
@@ -72,6 +86,8 @@ Route::resource('application', 'ApplicationController');
 // Ajax Filter Routes
 Route::middleware(['XSS'])->group(function () {
 
+    Route::post('filter-faculty', 'FilterController@filterFaculty')->name('filter-faculty');
+
     Route::post('filter-district', 'AddressController@filterDistrict')->name('filter-district');
     Route::post('filter-province', 'AddressController@filterProvince')->name('filter-province');
     Route::post('filter-batch', 'FilterController@filterBatch')->name('filter-batch');
@@ -81,7 +97,7 @@ Route::middleware(['XSS'])->group(function () {
     Route::post('filter-section', 'FilterController@filterSection')->name('filter-section');
     Route::post('filter-subject', 'FilterController@filterSubject')->name('filter-subject');
     Route::post('filter-teacher', 'FilterController@filterTeacher')->name('filter-teacher');
-    
+
     Route::post('get-fee-category', 'FilterController@getFeeCategory')->name('get-fee-category');
     Route::post('get-fee-amount', 'FilterController@getFeeAmount')->name('get-fee-amount');
 
@@ -100,6 +116,9 @@ Route::middleware(['XSS'])->group(function () {
     Route::post('filter-submission-variable', 'ApprovalSubmissionCategoryController@submissionVariable')->name('filter-submission-variable');
     Route::post('filter-chapter', 'FilterController@filterChapter')->name('filter-chapter');
     Route::post('filter-requisition', 'FilterController@filterRequisition')->name('filter-requisition');
+
+    Route::post('filter-rooms', 'FilterController@filterHostelRooms')->name('filter-rooms');
+
 });
 
 
@@ -111,8 +130,10 @@ Route::get('locale/language/{locale}', function ($locale){
     \App::setLocale($locale);
 
     return redirect()->back();
-    
+
 })->name('version');
+
+
 
 
 // Auth Routes
@@ -121,14 +142,66 @@ Route::middleware(['XSS'])->prefix('admin')->group(function () {
     Auth::routes(['register' => false]);
 });
 
+Route::middleware(['auth:web'])->name('admin.')->namespace('Admin')->prefix('admin')->group(function () {
+
+Route::post('set-password','SetpasswordController@reset')->name('password.set');
+Route::get('set-password','SetpasswordController@showSetPasswordForm')->name('set-password');
+});
+
 
 // Admin Routes
 Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->prefix('admin')->group(function () {
+
+
+    // if (isset(Auth::user()->id) && Auth::user()->is_admin != 1) {
+
+    //     if(Auth::user()->staff_id == Crypt::decryptString(Auth::user()->password_text)) {
+
+    //         return redirect(route('admin.set-password'));
+    //     }
+    // }
 
     // Dashboard Route
     Route::get('/', 'DashboardController@index')->name('dashboard.index');
     Route::get('dashboard', 'DashboardController@index')->name('dashboard.index');
 
+    Route::get('/passwd-update', function() {
+
+        set_time_limit(10000);
+
+        // $users = User::all();
+
+        // foreach($users as $user){
+
+        //     if($user->is_admin != 1){
+        //         $user->password = Hash::make('password');
+        //         $user->password_text = Crypt::encryptString('password');
+
+        //         $user->update();
+        //     }
+        // }
+
+
+        $students = Student::all();
+
+        foreach($students as $student){
+
+           // dd($student->roll_no);
+
+          // if($student->password_text != Crypt::encryptString($student->roll_no)){
+            $student->password = Hash::make($student->roll_no);
+            $student->password_text = Crypt::encryptString($student->roll_no);
+
+            $student->update();
+
+          //  dd( $student);
+        //   }
+
+        }
+
+      dd('done');
+
+    });
 
 
     //Question Bank Routes
@@ -137,6 +210,12 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
 
 
     // Student Routes
+
+    Route::get('setting/bulk-student', 'StudentController@bulkStudent')->name('bulk.student');
+
+    Route::get('student/change-section', 'StudentGroupEnrollController@changeSection')->name('change.section');
+    Route::post('student/storeStudentSection', 'StudentGroupEnrollController@storeStudentSection')->name('store.section');
+
     Route::resource('admission/application', 'ApplicationController');
     Route::resource('admission/student', 'StudentController');
     Route::get('admission/student-card/{id}', 'StudentController@card')->name('student.card');
@@ -179,11 +258,14 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::post('update-academic-info/{id}', 'EducationController@updateAcademicInfo')->name('update-academic-info');
     Route::resource('student/entrance', 'EntranceController');
     Route::resource('student/document', 'DocumentController');
-    // for Both User & Student 
+    // for Both User & Student
     Route::resource('education','EducationController');
 
     // User
     Route::resource('experience','ExperienceController');
+    // expertise
+    Route::resource('expertise','ExpertiseController');
+
     Route::post('update-payroll/{id}', 'UserController@updatePayroll')->name('update-payroll');
     Route::resource('chat', 'ChatController');
     Route::resource('chat-room', 'ChatRoomController');
@@ -204,8 +286,16 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('faq', 'FAQController');
     Route::resource('hostel-attendance', 'HostelAttendanceController');
     Route::resource('fleets', 'FleetsController');
+    Route::get('driver-details', 'FleetsController@driverDetails')->name('driver-details');
     Route::resource('device-log', 'DeviceLogController');
-    
+
+    //Research Staff
+    Route::resource('research','ResearchController');
+
+    //professional body Staff
+    Route::resource('professional-body','ProfessionalBodyController');
+
+
     // Update Task
     Route::get('task-update/{task}', 'TaskController@updateStatus')->name('update-task-status');
 
@@ -227,6 +317,8 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('relation-type', 'RelationController');
     Route::resource('document-type', 'DocumentTypeController');
     Route::resource('bank', 'BankController');
+    Route::resource('student-intake', 'StudentIntakeController');
+
     Route::resource('mother-tongue', 'MotherTongueController');
     Route::resource('student-group', 'StudentGroupController');
     Route::resource('regulation', 'RegulationController');
@@ -240,7 +332,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('sports','SportsController');
 
     // Route::resource('hostel-master','HostelMasterController');
-   
+
 
 
 
@@ -281,7 +373,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('academic/room', 'ClassRoomController');
     Route::resource('academic/subject', 'SubjectController');
     Route::resource('academic/enroll-subject', 'EnrollSubjectController');
-    
+
     //Lession Route
     Route::resource('chapter','ChapterController');
     Route::resource('topic','TopicController');
@@ -294,7 +386,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('elesson','ELessonController');
     Route::resource('lesson-progress','LessonProgressController');
     Route::resource('placed-student','PlacedStudentController');
-
+    Route::get('placed-student-list','PlacedStudentController@studentsList')->name('placed-student.student-list');
     Route::post('elesson/{id}/edit', 'ELessonController@edit')->name('elesson.edit');
 
 
@@ -323,15 +415,12 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
 
 
     //Compliance Attachment Routes
-
-    
     Route::get('compliance/show/{id}/attachment', 'ComplianceAttachmentController@index')->name('compliance-attachment.show');
     Route::post('attachment/store', 'ComplianceAttachmentController@store')->name('compliance-attachment.store');
     Route::put('attachment/update/{id}', 'ComplianceAttachmentController@update')->name('compliance-attachment.update');
     Route::delete('attachment/destroy/{id}', 'ComplianceAttachmentController@destroy')->name('compliance-attachment.destroy');
 
     //Question Routes
-
     Route::resource('question-bank', 'QuestionBankController');
     Route::resource('test-paper', 'TestPaperController');
     Route::resource('test-paper-user', 'TestPaperUserController');
@@ -364,7 +453,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::post('download/assignment-marking', 'AssignmentController@marking')->name('assignment.marking');
 
     // Content Routes
-    Route::resource('download/content', 'ContentController');    
+    Route::resource('download/content', 'ContentController');
     Route::resource('download/content-type', 'ContentTypeController');
 
 
@@ -401,7 +490,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::get('fees-staff-quick-assign', 'FeesStaffController@quickAssign')->name('fees-staff.quick.assign');
     Route::post('fees-staff-quick-assign', 'FeesStaffController@quickAssignStore')->name('fees-staff.quick.assign.store');
 
-     
+
 
     // Fees Routes
     Route::get('fees-master-bulk', 'FeesMasterController@bulkCreate')->name('fees-master-bulk.index');
@@ -416,7 +505,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::get('fees-receipt-print/{id}', 'ReceiptSettingController@print')->name('fees-receipt.print');
 
 
-    
+
     // Human Resource Routes
     Route::resource('staff/designation', 'DesignationController');
     Route::resource('staff/holiday', 'HolidayMasterController');
@@ -424,6 +513,24 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('staff/work-shift-type', 'WorkShiftTypeController');
     Route::resource('staff/staff-note', 'StaffNoteController');
     Route::resource('staff/tax-setting', 'TaxSettingController');
+
+
+    //Staff Acheivements
+    Route::resource('faculty-achievements/books-published', 'BooksPublishedController');
+    Route::resource('faculty-achievements/journals', 'StaffJournalsController');
+    Route::resource('faculty-achievements/it-publication', 'StaffJournalsController');
+    Route::resource('faculty-achievements/seed-grants', 'SeedGrantController');
+    Route::resource('faculty-achievements/workshops-attended', 'WorkShopController');
+    // Route::get('faculty-achievements/getWorkshopData', 'WorkShopController@getWorkshopData');
+    Route::resource('faculty-achievements/patent', 'PatentController');
+    //awards
+    Route::resource('faculty-achievements/awards', 'AwardsController');
+    Route::resource('faculty-achievements/funded-research', 'FundedResearchController');
+    Route::resource('faculty-achievements/funded-research', 'FundedResearchController');
+    Route::get('faculty-achievements/bulk-import', 'AchivementsBulkImportController@index');
+    Route::post('faculty-achievements/bulk-import/{table}', 'AchivementsBulkImportController@import')->name('faculty-achievements.bulk-import');
+    Route::get('faculty-achievements/bulk-export/{table}', 'AchivementsBulkImportController@export')->name('faculty-achievements.bulk-export');
+
 
     // Staff Routes
     Route::resource('staff/user','UserController');
@@ -448,6 +555,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
 
     // Staff Leave Routes
     Route::resource('staff/staff-leave', 'LeaveController');
+    Route::get('get-leave-balance', 'LeaveController@getLeaveBalance')->name('leave.balance');
     Route::resource('staff/leave-type', 'LeaveTypeController');
     Route::resource('staff/leave-manage', 'LeaveManagementController');
     Route::post('staff/leave-manage-status/{id}', 'LeaveManagementController@status')->name('leave-manage.status');
@@ -492,6 +600,8 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
 
 
     // Library Routes
+    Route::resource('library/library-autocheckinout', 'LibraryAutoCheckInOutController');
+    Route::resource('library/library-attendence', 'LibraryAttendenceController');
     Route::resource('library/book-list', 'BookController');
     Route::get('library/book-list-token-print/{id}', 'BookController@tokenPrint')->name('book-list.token.print');
     Route::get('library/book-list-multitoken-print', 'BookController@multitokenPrint')->name('book-list.multitoken.print');
@@ -504,8 +614,8 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('library/subject-master','SubjectMasterController');
     Route::get('library/issue-return-over', 'IssueReturnController@dateOver')->name('issue-return.over');
     Route::post('library/issue-return-penalty/{id}', 'IssueReturnController@penalty')->name('issue-return.penalty');
-    
- 
+
+
     // Library Member Routes
     Route::resource('member/library-student', 'LibraryStudentController');
     Route::resource('member/library-staff', 'LibraryStaffController');
@@ -532,7 +642,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
 
 
 
-    // Hostel Routes
+    // Pl Routes
     Route::resource('hostel/hostel', 'HostelController');
     Route::resource('hostel/hostel-room', 'HostelRoomController');
     Route::resource('hostel/room-type', 'HostelRoomTypeController');
@@ -541,7 +651,8 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::get('hostel/student-fee-defaulters', 'HostelController@studentFeeDefaulter')->name('hostel.student-fee-defaulters');
     Route::get('hostel/staff-fee-defaulters', 'HostelController@staffFeeDefaulter')->name('hostel.staff-fee-defaulters');
 
-
+    //hostel gate pass 
+    Route::resource('hostel/student-gatepass','HostelStudentGatePassController');
 
     // Transport Routes
     Route::resource('transport-route', 'TransportRouteController');
@@ -549,11 +660,11 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::resource('transport-student', 'TransportStudentController');
     Route::resource('transport-halt', 'TransportHaltController');
      Route::resource('transport-vehicle-log','VehicleLogBookController');
-    
+
     Route::resource('transport-staff', 'TransportStaffController');
     Route::get('transport/student-fee-defaulters', 'TransportReportController@studentFeeDefaulter')->name('transport.student-fee-defaulters');
     Route::get('transport/staff-fee-defaulters', 'TransportReportController@staffFeeDefaulter')->name('transport.staff-fee-defaulters');
-  
+
 
 
     // Visitor Routes
@@ -562,7 +673,7 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::get('frontdesk/visitor-token-print/{id}', 'VisitorController@tokenPrint')->name('visitor.token.print');
     Route::resource('frontdesk/visit-purpose', 'VisitPurposeController');
     Route::resource('frontdesk/visitor-token-setting', 'VisitorTokenSettingController');
-   
+
     // UserLog Routes
     Route::resource('frontdesk/user-log', 'UserLogController');
 
@@ -606,9 +717,9 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     Route::get('transcript/certificate-print/{id}', 'CertificateController@print')->name('certificate.print');
     Route::get('transcript/certificate-download/{id}', 'CertificateController@download')->name('certificate.download');
     Route::resource('transcript/certificate-template', 'CertificateTemplateController');
-    
 
-    
+
+
 
     // Setting Routes
     Route::get('setting', 'SettingController@index')->name('setting.index');
@@ -660,6 +771,15 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
     // Report Routes
 
     Route::prefix('report')->name('report.')->group(function(){
+        
+        Route::get('/student-attendence','ReportController@studentAttendence')->name('student-attendence');
+        Route::get('/staff-attendence','ReportController@staffAttendence')->name('staff-attendence');
+        Route::get('/exam-results','ReportController@examResults')->name('exam-results');
+
+        Route::get('/admissionvsintake','ReportController@AdmissionVsIntake')->name('admissionvsintake');
+        Route::get('/eamcet-rank-range','ReportController@eamcetrankrange')->name('eamcet-rank-range');
+        Route::get('/seat-types','ReportController@seattypes')->name('seat-types');
+        Route::get('/hostel-occupancy','ReportController@hosteloccupancy')->name('hostel-occupancy');
         Route::get('/student-management','ReportController@studentManagement')->name('student-management');
         Route::get('/employee-staff-management','ReportController@employeeStaffManagement')->name('employee-staff-management');
         Route::get('/fee-payment-tracking','ReportController@feePaymenTracking')->name('fee-payment-tracking');
@@ -675,7 +795,11 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
         Route::get('/daily-reports','ReportController@dailyReports')->name('daily-reports');
         Route::get('/award-reports','ReportController@awardReports')->name('award-reports');
     });
-    
+    //ravi
+    Route::get('dataUpdateAdmin','DataUpdateController@create');
+    Route::post('getTableColumns','DataUpdateController@getTableColumns')->name('getTableColumns');
+    Route::post('updateTableData','DataUpdateController@updateTableData')->name('updateTableData');
+
 });
 
 
@@ -684,13 +808,15 @@ Route::middleware(['auth:web', 'XSS'])->name('admin.')->namespace('Admin')->pref
 
 
 //Start Student Routes
-  
-
+// Route::get('/', function () {
+//     return view('auth.multi-login');
+//     // return "ok";
+// });
 // Student Login Routes
 Route::prefix('student')->name('student.')->namespace('Student')->group(function(){
-    
+
     Route::namespace('Auth')->group(function(){
-            
+
         // Login Routes
         Route::get('/login','LoginController@showLoginForm')->name('login');
         Route::post('/login','LoginController@login')->name('login.store');
@@ -701,21 +827,32 @@ Route::prefix('student')->name('student.')->namespace('Student')->group(function
         // Route::post('/register','RegisterController@register')->name('register.store');
 
         // Forgot Password Routes
-        // Route::get('/password/reset','ForgotPasswordController@showLinkRequestForm')->name('password.request');
-        // Route::post('/password/email','ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+        Route::get('/password/reset','ForgotPasswordController@showLinkRequestForm')->name('password.request');
+        Route::post('/password/email','ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 
         // Reset Password Routes
-        // Route::get('/password/reset/{token}/{email}','ResetPasswordController@showResetForm')->name('password.reset');
-        // Route::post('/password/reset','ResetPasswordController@reset')->name('password.update');
+        Route::get('/password/reset/{token}/{email}','ResetPasswordController@showResetForm')->name('password.reset');
     });
 
 });
 
+Route::middleware(['auth:student', 'XSS'])->prefix('student')->name('student.')->namespace('Student')->group(function () {
+    Route::post('set-password','SetpasswordController@reset')->name('password.set');
+    Route::get('set-password','SetpasswordController@showSetPasswordForm')->name('set-password');
+});
+
+
+
+
 // Student Dashboard Routes
 Route::middleware(['auth:student', 'XSS'])->prefix('student')->name('student.')->namespace('Student')->group(function () {
-    
+
+    // Route::get('set-password','SetpasswordController@showSetPasswordForm')->name('set-password');
+
     // Dashboard Route
     Route::get('student-dashboard', 'DashboardController@studentIndex')->name('student-dashboard.index');
+    
+        Route::get('student-course-dashboard', 'DashboardController@studentCourseIndex')->name('student-course-dashboard.index');
 
     Route::get('student-courses', 'DashboardController@studentCourses')->name('student-courses');
     Route::get('student-courses-info/{id}', 'DashboardController@studentCoursesInfo')->name('student-courses-info');
@@ -761,6 +898,12 @@ Route::middleware(['auth:student', 'XSS'])->prefix('student')->name('student.')-
     // Exam Routine Routes
     Route::get('student-exam-routine', 'ExamRoutineController@studentExamRoutine')->name('student-exam-routine');
     Route::get('exam-routine', 'ExamRoutineController@index')->name('exam-routine.index');
+    
+     //Results
+    Route::get('student-results', 'ResultsController@studentResults')->name('student-results');
+    Route::get('results', 'ResultsController@index')->name('results.index');
+
+
     // Fees Routes
     Route::get('fees', 'FeesController@index')->name('fees.index');
 
@@ -779,17 +922,17 @@ Route::middleware(['auth:student', 'XSS'])->prefix('student')->name('student.')-
     // Leave Routes
     Route::get('student-apply-leave', 'LeaveController@studentApplyLeave')->name('student-apply-leave');
     Route::resource('leave', 'LeaveController');
-    
+
 
     // Leave Routes
     Route::get('student-grievance', 'GrievanceController@studentGrievance')->name('student-grievance');
     Route::resource('grievance', 'GrievanceController');
-    
+
     // Approval Submission
     Route::get('student-approval-submissions', 'ApprovalSubmissionController@studentApprovals')->name('student-approval-submissions');
     Route::resource('approval-submissions', 'ApprovalSubmissionController');
 
-    //Transportation 
+    //Transportation
 
     Route::resource('transport-student', 'TransportStudentController');
 
@@ -815,10 +958,13 @@ Route::middleware(['auth:student', 'XSS'])->prefix('student')->name('student.')-
     Route::get('student-download', 'DownloadCenterController@studentDownload')->name('student-download');
     Route::get('download', 'DownloadCenterController@index')->name('download.index');
     Route::get('download/{id}', 'DownloadCenterController@show')->name('download.show');
-    
+
     // Profile Routes
     Route::resource('profile','ProfileController');
     Route::get('student-account-setting', 'ProfileController@accountSetting')->name('student-account-setting-general');
+    Route::get('student-account-details', 'ProfileController@accountSettingDetails')->name('student.student-account-details');
+    Route::post('student-photo-submission', 'ProfileController@photoSubmission');
+
     Route::get('student-account-setting-privacy', 'ProfileController@accountSettingPrivacy')->name('student-account-setting-privacy');
     Route::get('profile/account', 'ProfileController@account')->name('profile.account');
     // Route::post('profile/changemail', 'ProfileController@changeMail')->name('profile.changemail');
@@ -835,5 +981,15 @@ Route::middleware(['auth:student', 'XSS'])->prefix('student')->name('student.')-
     Route::get('get-role-user', 'ChatRoomController@getRoleUser')->name('get-role-user');
     Route::post('get-role-student', 'ChatRoomController@getRoleStudent')->name('get-role-student');
 
-    
+
 });
+Route::get('/getCourseLesson', [DashboardController::class, 'getLesson']);
+Route::get('/login', [FilterController::class, 'login']);
+Route::get('/json-data', [FilterController::class, 'getData']);
+
+//kaleyra api's
+Route::get('/kaleyraHttp', [FilterController::class, 'kaleyraHttp']);
+Route::get('/kaleyraCurl', [FilterController::class, 'kaleyraCurl']);
+Route::get('/mobileNotification', [FilterController::class, 'mobileNotification']);
+
+

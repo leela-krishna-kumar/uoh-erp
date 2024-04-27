@@ -121,7 +121,7 @@
                                                                                 @if($row->type == "multi")
                                                                                 <input type="checkbox" name="correct_options[]" value="{{$key+1}}" @if(in_array($key+1,$correct_options)) checked @endif>
                                                                                 @else
-                                                                                <input type="radio"name="correct_options" class="" value="{{$key+1}}"@if($correct_options == $key+1) checked @endif required>
+                                                                                <input type="radio" name="correct_options" class="" value="{{$key+1}}"@if($correct_options == $key+1) checked @endif required>
                                                                                 @endif
                                                                             </span>
                                                                         </div>

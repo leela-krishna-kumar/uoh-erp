@@ -171,7 +171,7 @@ class FeesMasterController extends Controller
         $data['path'] = $this->path;
         $data['access'] = $this->access;
 
-        
+
         if(!empty($request->faculty) || $request->faculty != null){
             $data['selected_faculty'] = $faculty = $request->faculty;
         }
@@ -367,7 +367,7 @@ class FeesMasterController extends Controller
         $data['path'] = $this->path;
         $data['access'] = $this->access;
 
-        
+
         if(!empty($request->faculty) || $request->faculty != null){
             $data['selected_faculty'] = $faculty = $request->faculty;
         }
@@ -494,7 +494,7 @@ class FeesMasterController extends Controller
      */
     public function bulkStore(Request $request)
     {
-     //   dd($request->all());
+      //  dd($request->all());
 
 
         //Validation
@@ -511,12 +511,12 @@ class FeesMasterController extends Controller
         //     'category' => 'required',
         //     'students' => 'required',
         // ]);
-      
+
 
         try{
 
              // Assign Fees
-             $i=0; 
+             $i=0;
 
              foreach($request->categorys as $category){
 
@@ -539,20 +539,20 @@ class FeesMasterController extends Controller
                                     ->where('status', '<>', '1')
                                     ->get();
 
-                         //           dd($fees);
+                                    dd($fees);
 
                 foreach($fees as $fee){
                     $fee->delete();
                 }
-                    
-                }
-                
 
-               
+                }
+
+
+
               //  dd( $request->type[$i]);
 
             DB::beginTransaction();
-            
+
             if($fee_master_exist != 1){
 
             $feesMaster = new FeesMaster;
@@ -573,8 +573,8 @@ class FeesMasterController extends Controller
           //  dd($feesMaster->id);
 
 
-           
-                
+
+
             foreach($request->students as $student){
                 $total_credits = 0;
 
@@ -596,8 +596,8 @@ class FeesMasterController extends Controller
                                 ->where('status','1')
                                 ->first();
 
-                if($fees == null){                
-               
+                if($fees == null){
+
                     $fees = new Fee;
                     $fees->fee_master_id = $feesMaster->id;
                     $fees->student_enroll_id = $student;
@@ -613,12 +613,12 @@ class FeesMasterController extends Controller
                     $fees->due_date = $request->due_date[$i];
                     $fees->status = '3';
 
-                    $fees->update();                
+                    $fees->update();
                 }
             }
 
              //   dd($fees);
-            
+
 
 
             // Attach
@@ -635,7 +635,7 @@ class FeesMasterController extends Controller
         }
         catch(\Exception $e){
 
-        //    dd($e);
+            //dd($e);
 
             Toastr::error(__('msg_created_error'), __('msg_error'));
 

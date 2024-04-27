@@ -10,7 +10,6 @@
 
                 <li class="d-none" id="vedio_container">
                     <div class="embed-video">
-                        {{-- <iframe src="https://www.youtube.com/embed/9gTw2EDkaDQ" frameborder="0"uk-video="automute: true" allowfullscreen uk-responsive></iframe> --}}
                         <iframe id="vedio_container_src" src="" frameborder="0"uk-video="automute: true" allowfullscreen uk-responsive></iframe>
                     </div>
                 </li>
@@ -34,6 +33,7 @@
         @include('student.layouts.inc.student-watch-sidebar')
     </div>     
 <!-- Main Contents -->
+
 @endsection
 
 {{-- <script src="{{ asset('assets/js/student-dashboard.js')}}"></script> --}}
@@ -58,25 +58,56 @@
     </script>
 <script>
     $(document).ready(function(){
-        is_elesson = $('#is_elesson').val();
-        if(is_elesson == 1){
-            getLinkVal(0);
-        }
+        console.log("okkkkkk");
+        var e_lesson_id = {{ $e_lesson_id }}; // Assuming $e_lesson_id is a PHP variable passed to the view
+        console.log(e_lesson_id);
+        // is_elesson = $('#is_elesson').val();
+        // if(is_elesson == 1){
+        //     getLinkVal(e_section_id);
+        // }
+        getLinkVal(e_lesson_id);
     });
     function getLinkVal(key){
+        console.log(key);
         link = $('#get_link'+key).data('link');
         type = $('#get_link'+key).data('type');
+        console.log('Link:', link);
+        console.log('Type:', type);
         course_id = $('#get_link'+key).data('course_id');
         lesson_id = $('#get_link'+key).data('lesson_id');
         student_id = $('#get_link'+key).data('student_id');
+
+        // $.ajax({
+        //     url: "{{ route('admin.ecourse-progress.update') }}",
+        //     method: 'get',
+        //     data: {student_id:student_id,course_id:course_id,lesson_id:lesson_id},
+        //     success: function(result){
+        //         console.log(result.data);
+        //     }
+        // });
+
         $.ajax({
-            url: "{{ route('admin.ecourse-progress.update') }}",
-            method: 'get',
-            data: {student_id:student_id,course_id:course_id,lesson_id:lesson_id},
-            success: function(result){
-                console.log(result.data);
-            }
-        });
+                url: "/getCourseLesson",
+                method: 'get',
+                data: { lesson_id: lesson_id },
+                success: function(response){
+                    link = response.data ? response.data : '';
+                    console.log("Hello");
+                    console.log(response.data);
+                    console.log(link);
+                    $.ajax({
+                        url: "{{ route('admin.ecourse-progress.update') }}",
+                        method: 'get',
+                        data: { student_id: student_id, course_id: course_id, lesson_id: lesson_id },
+                        success: function(result){
+                            console.log(result.data);
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching lesson:", error);
+                }
+            });
         if(type == 'Video'){
             $('#live_container').addClass('d-none');
             $('#test_container').addClass('d-none');

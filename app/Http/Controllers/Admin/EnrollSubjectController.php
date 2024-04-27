@@ -77,6 +77,7 @@ class EnrollSubjectController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request->all();
         // Field Validation
         $request->validate([
             'program' => 'required',
@@ -145,7 +146,7 @@ class EnrollSubjectController extends Controller
         });
         $data['sections'] = $sections->orderBy('title', 'asc')->get();
 
-        $subjects = Subject::where('status', 1);
+        $subjects = Subject::whereIn('status', [0,1]);
         $subjects->with('programs')->whereHas('programs', function ($query) use ($enrollSubject){
             $query->where('program_id', $enrollSubject->program_id);
         });
@@ -173,25 +174,36 @@ class EnrollSubjectController extends Controller
             'subjects' => 'required',
         ]);
 
-        $enroll = EnrollSubject::where('id', '!=', $enrollSubject->id)->where('program_id', $request->program)->where('semester_id', $request->semester)->where('section_id', $request->section)->first();
+        // $enroll = EnrollSubject::where('id', '!=', $enrollSubject->id)->where('program_id', $request->program)->where('semester_id', $request->semester)->where('section_id', $request->section)->first();
 
-        if(isset($enroll)){
-            Toastr::error(__('msg_data_already_exists'), __('msg_error'));
-        }
-        else
-        {
-            // Update Data
-            $enrollSubject->program_id = $request->program;
-            $enrollSubject->semester_id = $request->semester;
-            $enrollSubject->section_id = $request->section;
-            $enrollSubject->group_id = $request->group_id;
-            $enrollSubject->save();
+        // if(isset($enroll)){
+        //     Toastr::error(__('msg_data_already_exists'), __('msg_error'));
+        // }
+        // else
+        // {
+        //     // Update Data
+        //     $enrollSubject->program_id = $request->program;
+        //     $enrollSubject->semester_id = $request->semester;
+        //     $enrollSubject->section_id = $request->section;
+        //     $enrollSubject->group_id = $request->group_id;
+        //     $enrollSubject->save();
 
-            // Attach Update
-            $enrollSubject->subjects()->sync($request->subjects);
+        //     // Attach Update
+        //     $enrollSubject->subjects()->sync($request->subjects);
 
-            Toastr::success(__('msg_updated_successfully'), __('msg_success'));
-        }
+        //     Toastr::success(__('msg_updated_successfully'), __('msg_success'));
+        // }
+
+        $enrollSubject->program_id = $request->program;
+        $enrollSubject->semester_id = $request->semester;
+        $enrollSubject->section_id = $request->section;
+        $enrollSubject->group_id = $request->group_id;
+        $enrollSubject->save();
+
+        // Attach Update
+        $enrollSubject->subjects()->sync($request->subjects);
+
+        Toastr::success(__('msg_updated_successfully'), __('msg_success'));
 
         return redirect()->back();
     }

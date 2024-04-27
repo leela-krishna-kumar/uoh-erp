@@ -18,7 +18,7 @@
                         </div>
                         <div class="card-block">
                             <!-- <div class="alert alert-info">
-                                {{ __('field_newline_separator') }} 
+                                {{ __('field_newline_separator') }}
                             </div> -->
                             <!-- Form Start -->
                             <div class="form-group">
@@ -33,7 +33,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="latitude" class="form-label">{{ __('field_latitude') }} <span>*</span></label>
-                                <input type="text" class="form-control" name="latitude" id="latitude" value="{{ old('latitude') }}" required>
+                                <input type="text" class="form-control" name="latitude" id="latitude" value="{{ old('latitude') }}" >
 
                                 <div class="invalid-feedback">
                                   {{ __('required_field') }} {{ __('field_latitude') }}
@@ -41,7 +41,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="longitude" class="form-label">{{ __('field_longitude') }} <span>*</span></label>
-                                <input type="text" class="form-control" name="longitude" id="longitude" value="{{ old('longitude') }}" required>
+                                <input type="text" class="form-control" name="longitude" id="longitude" value="{{ old('longitude') }}" >
 
                                 <div class="invalid-feedback">
                                   {{ __('required_field') }} {{ __('field_longitude') }}

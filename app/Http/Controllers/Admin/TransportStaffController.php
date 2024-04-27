@@ -71,7 +71,7 @@ class TransportStaffController extends Controller
 
 
         // Staff List
-        $users = User::where('id', '!=', '0');
+        $users = User::where('id', '!=', '0')->whereHas('transport');
         if(!empty($request->department) && $request->department != '0'){
             $users->where('department_id', $department);
         }
@@ -104,7 +104,7 @@ class TransportStaffController extends Controller
             'halts' => 'required'
         ]);
         $user = User::findOrFail($request->user_id);
-        
+
         // Insert Data
         $member = TransportMember::firstOrNew(['id' => $request->member_id]);
         $member->transport_route_id = $request->route;

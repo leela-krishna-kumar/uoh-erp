@@ -27,6 +27,9 @@
                                     <tr>
                                         <th>#</th>
                                         <th>{{ __('field_leave_type') }}</th>
+                                        @if(auth()->user()->roles[0]->name == 'Super Admin' || auth()->user()->roles[0]->name == 'Admin' || auth()->user()->roles[0]->name == 'Principal')
+                                        <th>Staff Id</th>
+                                        @endif
                                         <th>{{ __('field_pay_type') }}</th>
                                         <th>{{ __('field_leave_date') }}</th>
                                         <th>{{ __('field_days') }}</th>
@@ -40,6 +43,9 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $row->leaveType->title ?? '' }}</td>
+                                        @if(auth()->user()->roles[0]->name == 'Super Admin' || auth()->user()->roles[0]->name == 'Admin' || auth()->user()->roles[0]->name == 'Principal')
+                                        <td>{{ $row->user_id }}</td>
+                                        @endif
                                         <td>
                                             @if($row->pay_type == 1)
                                             <span class="badge badge-pill badge-success">{{ __('field_paid_leave') }}</span>

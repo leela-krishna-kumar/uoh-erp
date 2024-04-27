@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+
 use App\Models\IdCardSetting;
 use App\Models\LibraryMember;
 use Illuminate\Http\Request;
@@ -94,8 +95,21 @@ class LibraryStudentController extends Controller
 
 
         // Filter Search
-        if(!empty($request->faculty) && $request->faculty != '0'){
-        $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();}
+
+        if(auth()->user()->hasRole('HoD'))
+        {           
+            $program_ids = json_decode(auth()->user()->program_ids);       
+            $data['programs'] = Program::where('faculty_id', $request->faculty)->whereIn('id', $program_ids)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['programs'] = Program::where('faculty_id', $request->faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
+
+
+        // if(!empty($request->faculty) && $request->faculty != '0'){
+        // $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();}
 
         if(!empty($request->program) && $request->program != '0'){
         $sessions = Session::where('status', 1);
@@ -119,10 +133,14 @@ class LibraryStudentController extends Controller
         });
         $data['sections'] = $sections->orderBy('title', 'asc')->get();}
 
+        $data['rows'] = [];
 
-        // Student Filter
-        $students = Student::where('id', '!=', '0');
+       
         if($faculty != 0){
+
+             // Student Filter
+        $students = Student::where('id', '!=', '0');
+
             $students->with('program')->whereHas('program', function ($query) use ($faculty){
                 $query->where('faculty_id', $faculty);
             });
@@ -143,8 +161,10 @@ class LibraryStudentController extends Controller
             }
             $query->where('status', '1');
         });
-        }
+
         $data['rows'] = $students->orderBy('student_id', 'desc')->get();
+        }
+        
 
 
         $data['print'] = IdCardSetting::where('slug', 'library-card')->first();

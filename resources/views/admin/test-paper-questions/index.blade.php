@@ -214,7 +214,7 @@
           faculty:$(this).val()
         },
         success:function(response){
-              console.log("Okk");
+            //  console.log("Okk");
             // var jsonData=JSON.parse(response);
             $('option', program).remove();
             $('.program').append('<option value="">{{ __("all") }}</option>');

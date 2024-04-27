@@ -11,7 +11,7 @@
                     </div>
                     <div class="modal-body">
                      <fieldset class="row">
-                        <div class="form-group col-md-6">
+                        {{-- <div class="form-group col-md-6">
                            <label for="type">{{ __('Type') }}<span>*</span></label>
                            <select required class="form-control" name="type" id="type">
                               <option value="">{{ __('select') }}</option>
@@ -22,12 +22,27 @@
                            <div class="invalid-feedback">
                               {{ __('required_field') }} {{ __('Type') }}
                            </div>
-                        </div>
+                        </div> --}}
+
                         <div class="form-group col-md-6">
-                           <label for="subject">{{ __('field_subject') }}<span>*</span></label>
+                           <label for="type">{{ __('Type') }}<span>*</span></label>
+                           <select required class="form-control" name="type" id="type">
+                              <option value="">{{ __('select') }}</option>
+                              <option value="0">Teaching</option>
+                              <option value="1">Working</option>
+                              <option value="2">Research</option>
+                              <option value="3">Industry</option>
+                           </select>
+                           <div class="invalid-feedback">
+                              {{ __('required_field') }} {{ __('Type') }}
+                           </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                           <label for="subject">{{ __('field_destination') }}<span>*</span></label>
                            <input type="text" class="form-control " name="subject" id="subject" value="{{ old('subject') }}" required>
                            <div class="invalid-feedback">
-                              {{ __('required_field') }} {{ __('field_subject') }}
+                              {{ __('required_field') }} {{ __('field_destination') }}
                            </div>
                         </div>
                         <div class="form-group col-md-12">
@@ -37,20 +52,30 @@
                               {{ __('required_field') }} {{ __('field_organization') }}
                            </div>
                         </div>
-                        <div class="form-group col-md-6">
+
+                        <div class="form-group col-md-12">
+                           <div class="form-check">
+                               <input class="form-check-input" type="checkbox" id="presentCheckbox" value="" checked>
+                               <label class="form-check-label" for="presentCheckbox">Present</label>
+                           </div>
+                       </div>
+                       
+                       <div class="form-group col-md-6">
                            <label for="from_date">{{ __('field_from_date') }}<span>*</span></label>
-                           <input required type="date" class="form-control" name="from_date" id="from_date" value="{{ old('from_date') }}" >
+                           <input required type="date" class="form-control" name="from_date" id="from_date" value="{{ old('from_date') }}">
                            <div class="invalid-feedback">
-                              {{ __('required_field') }} {{ __('field_from_date') }}
+                               {{ __('required_field') }} {{ __('field_from_date') }}
                            </div>
-                        </div>
-                        <div class="form-group col-md-6">
+                       </div>
+                       
+                       <div class="form-group col-md-6">
                            <label for="to_date">{{ __('field_to_date') }}<span>*</span></label>
-                           <input required type="date" class="form-control" name="to_date" id="to_date" value="{{ old('to_date') }}" >
+                           <input type="date" class="form-control" name="to_date" id="to_date" value="{{ old('to_date') }}">
                            <div class="invalid-feedback">
-                              {{ __('required_field') }} {{ __('field_to_date') }}
+                               {{ __('required_field') }} {{ __('field_to_date') }}
                            </div>
-                        </div>
+                       </div>
+
                         <div class="form-group col-md-12">
                            <label for="remark">{{ __('field_remark') }} </label>
                            <textarea type="text" class="form-control" name="remark" id="remark">{{ old('remark') }}</textarea>
@@ -68,3 +93,4 @@
             </div>
         </div>
     </div>
+

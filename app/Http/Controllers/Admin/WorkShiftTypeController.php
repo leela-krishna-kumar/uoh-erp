@@ -44,7 +44,7 @@ class WorkShiftTypeController extends Controller
         $data['view'] = $this->view;
         $data['path'] = $this->path;
         $data['access'] = $this->access;
-        
+
         $data['rows'] = WorkShiftType::orderBy('title', 'asc')->get();
 
         return view($this->view.'.index', $data);
@@ -125,7 +125,7 @@ class WorkShiftTypeController extends Controller
             'title' => 'required|max:191|unique:work_shift_types,title,'.$workShiftType->id,
         ]);
 
-        
+
         // Update Data
         $workShiftType->title = $request->title;
         $workShiftType->slug = Str::slug($request->title, '-');

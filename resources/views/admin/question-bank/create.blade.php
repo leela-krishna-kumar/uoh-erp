@@ -34,7 +34,7 @@
                     <div class="col-sm-12">
                         <form class="needs-validation" action="{{ route($route.'.store') }}" method="post" enctype="multipart/form-data"id="question-bank">
                             @csrf
-                            <input type="hidden" class="question-value" name="question" value="">
+                            {{-- <input type="hidden" class="question-value" name="question" value=""> --}}
                             <input type="hidden" name="subject_id" id="subject_id" value="{{request()->get('subject')}}">
                             <div class="card">
                                 <div class="card-block">
@@ -61,8 +61,9 @@
                                                                 <label for="question">{{ __('Question') }} <span>*</span></label>
 
                                                                 <div id="toolbar-container"></div>
-                                                                <div id="txt_area"></div>
-                                                                {{-- <textarea class="form-control text-editor" name="question" id="question">{{ old('question') }}</textarea> --}}
+                                                                {{-- <div id="txt_area"></div> --}}
+                                                                <textarea class="form-control" cols="80" id="info" name="info" rows="10" required></textarea>
+                                                                {{-- <textarea class="form-control text-editor" name="info" id="question">{{ old('question') }}</textarea> --}}
                                 
                                                                 <div class="invalid-feedback">
                                                                 {{ __('required_field') }} {{ __('Question') }}
@@ -138,7 +139,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer text-right">
-                                    <button type="button" class="btn btn-success onclick-event"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
+                                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
                                 </div>
                             </div>
                         </form>

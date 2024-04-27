@@ -29,7 +29,7 @@
                             </form>
                         </div>
                     </div>
-                    
+
                     <div class="card-block">
                         <form class="needs-validation" novalidate method="get" action="{{ route($route.'.index') }}">
                             <div class="row gx-2">
@@ -42,6 +42,36 @@
                                         <option value="all" @if( $selected_status == 'all')selected @endif>{{ __('all') }}</option>
                                         @foreach( $statuses as $status )
                                         <option value="{{ $status->id }}" @if( $selected_status == $status->id) selected @endif>{{ $status->title }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                      {{ __('required_field') }} {{ __('field_admission_type') }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    <label for="status">Seat Type</label>
+                                    <select class="form-control" name="seat_type" id="seat_type">
+                                        <option value="">{{__('Select')}}</option>
+                                        <option value="all" @if( $selected_seat_type== 'all')selected @endif>{{ __('all') }}</option>
+                                        @foreach( $seat_types->sortBy('id') as $seat_type)
+                                        <option value="{{ $seat_type->id }}" @if( $selected_seat_type == $seat_type->id) selected @endif>{{ $seat_type->name }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                      {{ __('required_field') }} {{ __('field_admission_type') }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    <label for="status">Category</label>
+                                    <select class="form-control" name="category" id="category">
+                                        <option value="">{{__('Select')}}</option>
+                                        <option value="all" @if( $selected_user_category== 'all')selected @endif>{{ __('all') }}</option>
+                                        @foreach( $user_categories->sortBy('id') as $user_category)
+                                        <option value="{{ $user_category->id }}" @if( $selected_user_category == $user_category->id) selected @endif>{{ $user_category->name }}</option>
                                         @endforeach
                                     </select>
 
@@ -143,11 +173,11 @@
                                             <button type="submit" class="btn btn-info btn-sm"><i class="fas fa-envelope"></i> {{ __('field_password') }}</button>
                                             </form>
                                             <br/>
-                                            
+
                                             <a href="{{ route($route.'.show', $row->id) }}" class="btn btn-icon btn-success btn-sm">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            
+
                                             @can($access.'-edit')
                                             <a href="{{ route($route.'.edit', $row->id) }}" class="btn btn-icon btn-primary btn-sm">
                                                 <i class="far fa-edit"></i>
@@ -170,7 +200,7 @@
                                             <!-- Include Password Change modal -->
                                             @include($view.'.password-change')
                                             @endcan
-                                            
+
                                             @can($access.'-delete')
                                             <button type="button" class="btn btn-icon btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $row->id }}">
                                                 <i class="fas fa-trash-alt"></i>

@@ -126,7 +126,8 @@ class TransportStudentController extends Controller
             // Student Filter
             if(!empty($request->program) || !empty($request->semester) &&  !empty($request->faculty)  && !empty($request->session)  && !empty($request->section) ){
 
-                $students = Student::where('id', '!=', '0');
+                $students = Student::where('id', '!=', '0')
+                ->whereHas('transport');
                 if($faculty != 0 && $faculty != 'all'){
                     $students->with('program')->whereHas('program', function ($query) use ($faculty){
                         $query->where('faculty_id', $faculty);
@@ -151,8 +152,9 @@ class TransportStudentController extends Controller
                 }
                 $data['rows'] = $students->orderBy('student_id', 'desc')->get();
             }
-    
+
         $department = Department::where('title','Transportation')->first();
+
         $data['feeCategories'] = FeesCategory::where('department_id',$department->id)->select('id','title')->get();
 
         return view($this->view.'.index', $data);
@@ -184,11 +186,11 @@ class TransportStudentController extends Controller
 
         // Insert Data
         $member = TransportMember::firstOrNew(['id' => $request->member_id]);
-        $member->faculty_id = $request->faculty;
-        $member->program_id = $request->program;
-        $member->session_id = $request->session;
-        $member->semester_id = $request->semester;
-        $member->section_id = $request->section;
+        // $member->faculty_id = $request->faculty;
+        // $member->program_id = $request->program;
+        // $member->session_id = $request->session;
+        // $member->semester_id = $request->semester;
+        // $member->section_id = $request->section;
         $member->transport_route_id = $request->route;
         $member->transport_vehicle_id = $request->vehicle;
         $member->fee_category_id = $request->fee_category_id;
@@ -218,7 +220,7 @@ class TransportStudentController extends Controller
 
         return redirect()->back();
     }
-    
+
     /**
      * Update the specified resource in storage.
      *

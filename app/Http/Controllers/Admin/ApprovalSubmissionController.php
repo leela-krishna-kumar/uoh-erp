@@ -29,8 +29,8 @@ class ApprovalSubmissionController extends Controller
          $this->view = 'admin.approval-submissions';
          $this->path = 'approval-submissions';
          $this->access = 'approval-submissions';
- 
- 
+
+
          $this->middleware('permission:'.$this->access.'-view|'.$this->access.'-create|'.$this->access.'-edit|'.$this->access.'-delete|'.$this->access.'-card', ['only' => ['index','show','status','sendPassword']]);
          $this->middleware('permission:'.$this->access.'-create', ['only' => ['create','store']]);
          $this->middleware('permission:'.$this->access.'-edit', ['only' => ['edit','update','status']]);
@@ -38,10 +38,10 @@ class ApprovalSubmissionController extends Controller
          $this->middleware('permission:'.$this->access.'-show', ['only' => ['show']]);
 
      }
- 
+
     public function index()
     {
-       try{  
+       try{
             $data['title'] = $this->title;
             $data['route'] = $this->route;
             $data['view'] = $this->view;
@@ -59,18 +59,18 @@ class ApprovalSubmissionController extends Controller
             if (auth()->user()->roles[0]->name != 'Super Admin') {
                 $approvalSubmission->where('user_id','!=',auth()->id());
             }
-            $data['rows'] = $approvalSubmission->orderBy('id', 'desc')->get();
+            $data['rows'] = $approvalSubmission->select('id','user_id','category_id','status','created_at')->orderBy('id', 'desc')->get();
             return view($this->view.'.index', $data);
         } catch(\Exception $e){
             Toastr::error(__('msg_error'), __('msg_error'));
             return redirect()->back();
-        } 
+        }
     }
 
     public function myApprovals()
     {
 
-       try{  
+       try{
             $data['title'] = $this->title;
             $data['route'] = $this->route;
             $data['view'] = $this->view;
@@ -87,7 +87,7 @@ class ApprovalSubmissionController extends Controller
         } catch(\Exception $e){
             Toastr::error(__('msg_error'), __('msg_error'));
             return redirect()->back();
-        } 
+        }
     }
 
     /**
@@ -112,7 +112,7 @@ class ApprovalSubmissionController extends Controller
             Toastr::error(__('msg_error'));
 
             return redirect()->back();
-        } 
+        }
     }
 
     /**
@@ -142,8 +142,8 @@ class ApprovalSubmissionController extends Controller
             Toastr::error(__('msg_updated_error'), __('msg_error'));
 
             return redirect()->back();
-        } 
-    
+        }
+
     }
 
     /**
@@ -191,10 +191,10 @@ class ApprovalSubmissionController extends Controller
             Toastr::error(__('msg_updated_successfully'), __('msg_error'));
 
             return redirect()->back();
-        } 
+        }
     }
 
-    
+
 
 
     /**
@@ -218,7 +218,7 @@ class ApprovalSubmissionController extends Controller
             $approvalSubmission->link = $request->link;
             $approvalSubmission->comment = $request->comment;
             $approvalSubmission->save();
-            
+
             Toastr::success(__('msg_updated_successfully'), __('msg_success'));
             return redirect('admin/approval-submissions')->with( __('msg_success'), __('msg_updated_successfully'));
         }
@@ -227,7 +227,7 @@ class ApprovalSubmissionController extends Controller
             Toastr::error(__('msg_updated_error'), __('msg_error'));
 
             return redirect()->back();
-        }        
+        }
     }
 
     /**
@@ -238,7 +238,7 @@ class ApprovalSubmissionController extends Controller
      */
     public function destroy(ApprovalSubmission $approvalSubmission)
     {
-  
+
         try{
             $approvalSubmission;
             if ($approvalSubmission) {
@@ -257,14 +257,14 @@ class ApprovalSubmissionController extends Controller
     {
         try{
             $request->validate([
-                'status' => 'required',  
+                'status' => 'required',
             ]);
-            
+
         $approvalSubmission = ApprovalSubmission::where('id', $id)->first();
         $approvalSubmission->comment = $request->comment;
         $approvalSubmission->status = $request->status;
         $approvalSubmission->approver_id = auth()->id();
-        $approvalSubmission->save(); 
+        $approvalSubmission->save();
         Toastr::success(__('msg_updated_successfully'), __('msg_success'));
         return redirect('admin/approval-submissions')->with( __('msg_success'), __('msg_updated_successfully'));
     }
@@ -273,7 +273,7 @@ class ApprovalSubmissionController extends Controller
         Toastr::error(__('msg_updated_error'), __('msg_error'));
 
         return redirect()->back();
-    } 
- }       
-    
+    }
+ }
+
 }

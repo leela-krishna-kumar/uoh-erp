@@ -28,7 +28,20 @@
                                 <a class="nav-link" id="pills-account-tab" data-bs-toggle="pill" href="#pills-account" role="tab" aria-controls="pills-account" aria-selected="false">{{ __('tab_account_update') }}</a>
                             </li>
                             @endcan
+                            @php
+                                $user = App\User::where('id', auth()->user()->id)->first();
+                            @endphp
+                            {{-- <li style="float: right;">
+                                <button type="button" style="float: right;" class="btn btn-icon float-end" onclick="window.location.href='{{ route('admin.user.edit', $user->id) }}'">
+                                    <i class="fas fa-edit"></i>
+                                </button>                               
+                            </li> --}}
                         </ul>
+
+                        <button type="button" style="float: right;" class="btn btn-icon float-end" onclick="window.location.href='{{ route('admin.user.edit', $user->id) }}'">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab">
                                 @include('admin.profile.show')

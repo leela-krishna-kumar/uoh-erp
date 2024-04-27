@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\QuestionBank;
 use App\Models\Session;
 use Illuminate\Http\Request;
 use App\Models\TestPaperProgress;
 use App\Models\TestPaper;
+use App\Models\TestPaperQuestion;
 use App\Models\TestPaperUser;
 
 
@@ -19,7 +21,7 @@ class TestPaperProgressController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function updateProgress(Request $request)
-    {
+    {        
         $test_paper = TestPaper::find($request->test_paper_id);
         $student = TestPaperUser::where('test_paper_id',$request->test_paper_id)->first();
         
@@ -37,7 +39,7 @@ class TestPaperProgressController extends Controller
             ];
         }elseif($testPaper->questions->type == 'multi'){
             $values = $testPaper->questions->options;
-            $indices = $correct_options;
+            $indices = $correct_options-1;
             $correct_val = [];
             foreach ($indices as $index) {
             $parsedIndex = intval($index);
@@ -72,27 +74,60 @@ class TestPaperProgressController extends Controller
 
     public function updateProgressBulk(Request $request)
     {
+      //  dd($request->all());
+
         $test_paper = TestPaper::find($request->test_paper_id);
         $student = TestPaperUser::where('test_paper_id',$request->test_paper_id)->first();
-        $answer = [
-            
-        ];
+
+        // $test_paper_questions = TestPaperQuestion::where('testpaper_id', $request->test_paper_id)->get();
+
+        // $test_paper_questions =  $test_paper_questions->where()
+       
+        $i=0;
+
         $testPaperQuestions = $test_paper->testPaperQuestions;
+
         foreach($testPaperQuestions as $question){
+
+            $score=0;
+            
             $test_paper_progress = TestPaperProgress::where('test_paper_id',$request->test_paper_id)->where('question_id',$question->id)->where('student_id',$student->id)->first();
+            
+            $test_paper_questions = TestPaperQuestion::where('id', $question->id)->first();
+
+            $question_bank = QuestionBank::where('id', $test_paper_questions->question_bank_id)->first();
+
+          //  dd($question_bank);
+
+            if($question_bank->type != 'multi'){
+
+                if(in_array($question_bank->correct_options, $request->correct_answer[$i])){
+                    $score = 1;
+                }                
+            }else{
+                $result = array_diff($question_bank->correct_options, $request->correct_answer[$i]);
+
+                if (empty($result)) {
+                    $score = 1;
+                } 
+            }
+
             if(!$test_paper_progress){
                 $test_paper_progress = new TestPaperProgress;
                 $test_paper_progress->test_paper_id = $request->test_paper_id;
                 $test_paper_progress->student_id = $student->id;
                 $test_paper_progress->question_id = $question->id;
-                $test_paper_progress->answers = $answer;
-                $test_paper_progress->score = 0;
+                $test_paper_progress->answers = $request->correct_answer[$i++];
+                $test_paper_progress->score = $score;
                 $test_paper_progress->save();
             }
         }
         $TestPaperUser = TestPaperUser::where('test_paper_id',$test_paper->id)->where('student_id',auth()->id())->first();
         $TestPaperUser->status = TestPaperUser::STATUS_COMPLETED;
         $TestPaperUser->save();
+
+        $i++;
+
         return redirect()->route('student.student-exam-submitted',$test_paper->id)->with('success','Successfully submitted');
     }
 }

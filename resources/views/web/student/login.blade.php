@@ -2,6 +2,7 @@
 @section('title', __('auth_login'))
 @section('content')
 
+
 <!-- Start Content-->
 <div class="card">
     <div class="card-body text-center">
@@ -12,11 +13,11 @@
         @include('web.student.inc.message')
         <!-- Form Start -->
         <form method="POST" action="{{ route($loginRoute) }}">
-        @csrf
+            @csrf
             <div class="input-group mb-3">
-                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="{{ __('field_email') }}" autofocus>
+                <input id="roll_no" type="text" class="form-control @error('roll_no') is-invalid @enderror" name="roll_no" value="{{ old('roll_no') }}" required autocomplete="roll_no" placeholder="Roll Number" autofocus>
 
-                @error('email')
+                @error('roll_no')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
                     </span>
@@ -43,10 +44,9 @@
             <input type="submit" class="btn btn-primary shadow-2 mb-4" name="submit" value="{{ __('auth_login') }}">
         </form>
         <!-- Form End -->
-
         @if (Route::has('student.password.request'))
             <p class="mb-2 text-muted">
-                <a href="{{ route($forgotPasswordRoute) }}">
+                <a href="{{ 'password/reset' }}">
                     {{ __('auth_forgot_password') }}
                 </a>
             </p>
@@ -54,7 +54,7 @@
 
         @if (Route::has('student.register'))
         <p class="mb-0 text-muted">
-            {{ __("auth_dont_have_account") }} 
+            {{ __("auth_dont_have_account") }}
             <a href="{{ route('student.register') }}">
                 {{ __('auth_register') }}
             </a>
@@ -67,5 +67,6 @@
     </div>
 </div>
 <!-- End Content-->
+
 
 @endsection

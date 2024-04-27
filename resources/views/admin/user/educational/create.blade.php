@@ -32,20 +32,36 @@
                                   {{ __('required_field') }} {{ __('field_graduation_field') }}
                                </div>
                             </div>
-                            <div class="form-group col-md-12">
+                            {{-- <div class="form-group col-md-12">
                                 <label for="education_level">{{ __('field_education_level') }}<span>*</span></label>
                                 <input required type="text" class="form-control" name="payload[education_level]" id="education_level" value="{{ old('education_level') }}">
                                 <div class="invalid-feedback">
                                    {{ __('required_field') }} {{ __('field_education_level') }}
                                 </div>
-                             </div>
-                            <!-- <div class="form-group col-md-6">
-                               <label for="experience">{{ __('field_experience') }}<span>*</span></label>
-                               <input required class="form-control" name="payload[experience]" id="experience">{{ old('experience') }}
-                               <div class="invalid-feedback">
-                                  {{ __('required_field') }} {{ __('field_experience') }}
-                               </div>
-                            </div> -->
+                             </div> --}}
+
+                             {{-- $education = App\Models\Education::where('model_id', auth()->user()->id)->get(); --}}
+
+                             <div class="form-group col-md-12">
+                              <label for="education_level">{{ __('field_education_level') }}<span>*</span></label>
+                              <select class="form-control" name="payload[education_level]" id="education_level" value="{{ old('education_level') }}" required>
+                                  <option value="">{{ __('select') }}</option>
+                                  <option value="SSC">SSC</option>
+                                  <option value="Inter">Inter</option>
+                                  <option value="Diploma">Diploma</option>
+                                  <option value="UG">UG</option>
+                                  <option value="PG">PG</option>
+                                  <option value="Ph.D">Ph.D</option>
+                              </select>
+                              <div class="invalid-feedback"> {{ __('field_status') }}
+                              </div>
+                          </div>
+
+                          {{-- <div class="form-group col-md-6">
+                           <label for="membership_id">Document<span>*</span></label>
+                           <input type="file" class="form-control " name="document" id="" required>
+                        </div> --}}
+                         
                             <div class="form-group col-md-12">
                                <label for="note">{{ __('field_note') }}</label>
                                <textarea class="form-control" name="payload[note]" id="note">{{ old('note') }}</textarea>

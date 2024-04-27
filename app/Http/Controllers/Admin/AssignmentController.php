@@ -109,6 +109,7 @@ class AssignmentController extends Controller
             }
         });
         $data['subjects'] = $subjects->orderBy('code', 'asc')->get();
+        $data['user_id'] = $teacher_id;
 
 
         // Filter Assignment
@@ -208,7 +209,7 @@ class AssignmentController extends Controller
                 $query->where('semester_id', $semester);
             });
             $data['sections'] = $sections->orderBy('title', 'asc')->get();
-            
+
 
             // Access Data
             $teacher_id = Auth::guard('web')->user()->id;
@@ -218,9 +219,10 @@ class AssignmentController extends Controller
             });
             $superAdmin = $user->first();
 
+           
             // Filter Subject
             $subjects = Subject::where('status', '1');
-            $subjects->with('classes')->whereHas('classes', function ($query) use ($teacher_id, $session, $superAdmin){
+            $subjects->with('classes')->whereHas('classes', function ($query) use ($teacher_id, $sessions, $superAdmin){
                 if(isset($session)){
                     $query->where('session_id', $session);
                 }
@@ -232,6 +234,8 @@ class AssignmentController extends Controller
                 $query->where('program_id', $program);
             });
             $data['subjects'] = $subjects->orderBy('code', 'asc')->get();
+        
+           
         }
 
 
@@ -329,8 +333,8 @@ class AssignmentController extends Controller
             Notification::send($all_students, new AssignmentNotification($data));
 
 
-            
-            // Enrolls              
+
+            // Enrolls
             $enrolls = StudentEnroll::where('status', '1');
             if($request->faculty != 0){
                 $enrolls->with('program')->whereHas('program', function ($query) use ($faculty){
@@ -364,14 +368,14 @@ class AssignmentController extends Controller
                 $studentAssignment->save();
             }
             DB::commit();
-            
+
 
             Toastr::success(__('msg_created_successfully'), __('msg_success'));
 
             return redirect()->route($this->route.'.index');
         }
         catch(\Exception $e){
-            
+
             Toastr::error(__('msg_created_error'), __('msg_error'));
 
             return redirect()->back();
@@ -393,7 +397,7 @@ class AssignmentController extends Controller
         $data['path'] = $this->path;
         $data['access'] = $this->access;
 
-        
+
         // Access Data
         $teacher_id = Auth::guard('web')->user()->id;
         $user = User::where('id', $teacher_id)->where('status', '1');

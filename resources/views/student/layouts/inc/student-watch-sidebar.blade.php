@@ -17,7 +17,7 @@
 
     <nav class="cd-secondary-nav nav-small extanded w-auto lg:block hidden">
         <ul uk-switcher="connect: #course-tabs; animation: uk-animation-fade">
-            <li><a href="#" class="lg:px-2">   Lessions </a></li>
+            <li><a href="#" class="lg:px-2">   Lessons </a></li>
             {{-- <li><a href="#" class="lg:px-2">  Notes  </a></li> 
             <li><a href="#" class="lg:px-2"> Faq  </a></li>  --}}
         </ul>
@@ -52,7 +52,7 @@
                                                 <input type="hidden" id="is_elesson" name="is_elesson" value="1">
                                                 @foreach ($e_lessons as $key => $e_lesson)
                                                         <li>
-                                                            <a id="get_link{{$key}}" onclick="getLinkVal({{$key}})" data-type="{{$e_lesson->type}}"
+                                                            <a id="get_link{{$e_lesson->id}}" onclick="getLinkVal({{$e_lesson->id}})" data-type="{{$e_lesson->type}}"
                                                                 data-course_id="{{$e_course->id}}" data-lesson_id="{{$e_lesson->id}}" 
                                                                 data-student_id="{{$e_course->eCourseUser->first() ? $e_course->eCourseUser->first()->student_id : null}}" data-link="{{$e_lesson->link ?? ''}}">
                                                                 @if($e_lesson->type == 0)
@@ -65,7 +65,6 @@
                                                                     <i class="fas fa-newspaper"></i> 
                                                                 @endif
                                                                 {{$e_lesson->title ?? ''}} 
-                                                                {{-- <span class="text-sm ml-auto"> 4 min </span> --}}
                                                             </a>
                                                         </li>
                                                 @endforeach

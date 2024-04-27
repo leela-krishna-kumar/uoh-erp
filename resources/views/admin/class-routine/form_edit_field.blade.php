@@ -7,7 +7,7 @@
 
             <div class="form-group col-md-2">
                   <label for="subject">{{ __('field_subject') }} <span>*</span></label>
-                  <select class="form-control select2" name="subject[]" id="subject" required>
+                  <select class="form-control select2 subject-dropdown" name="subject[]" id="subject" required>
                         <option value="">{{ __('select') }}</option>
                         @foreach( $subjects as $subject )
                         <option value="{{ $subject->id }}" @isset($row) {{ $row->subject_id == $subject->id ? 'selected' : '' }} @endisset>{{ $subject->code }} - {{ $subject->title }}</option>
@@ -20,7 +20,7 @@
             </div>
             <div class="form-group col-md-2">
                   <label for="teacher">{{ __('field_teacher') }} <span>*</span></label>
-                  <select class="form-control select2" name="teacher[]" id="teacher" required>
+                  <select class="form-control select2 teacher-dropdown" name="teacher[]" id="teacher" required>
                         <option value="">{{ __('select') }}</option>
                         @foreach( $teachers as $teacher )
                         <option value="{{ $teacher->id }}" @isset($row) {{ $row->teacher_id == $teacher->id ? 'selected' : '' }} @endisset>{{ $teacher->staff_id }} - {{ $teacher->first_name }} {{ $teacher->last_name }}</option>
@@ -70,3 +70,34 @@
             @endisset
       </div>
 </div>
+<script>
+      $(document).ready(function () {
+    $('.subject-dropdown').off('change').on('change', function () {
+        var selectedSubjectId = $(this).val();
+        var managedBy = $(this).find('option:selected').data('managed_by');
+        var teacherSelect = $(this).closest('.row').find('.teacher-dropdown');
+
+        var routeUrl = "{{ route('admin.get-subject-teacher-list') }}";
+        
+        $.ajax({
+            url: routeUrl,
+            method: 'GET',
+            data: { subject_id: selectedSubjectId },
+            success: function (data) {
+                teacherSelect.empty();
+                teacherSelect.append('<option value="">{{ __("Select") }}</option>');
+                
+                $.each(data, function (index, teacher) {
+                    teacherSelect.append($('<option>', {
+                        value: teacher.id,
+                        text: teacher.staff_id + ' - ' + teacher.first_name + ' ' + teacher.last_name
+                    }));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    });
+});
+</script>

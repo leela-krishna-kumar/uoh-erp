@@ -74,8 +74,8 @@ class TransportHaltController extends Controller
         // Field Validation
         $request->validate([
             'name' => 'required|max:191',
-            'latitude' => 'required',
-            'longitude' => 'required'
+            'latitude' => 'nullable',
+            'longitude' => 'nullable'
         ]);
         $transportHalt = new TransportHalt;
         $transportHalt->name = $request->name;

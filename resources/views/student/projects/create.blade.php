@@ -13,6 +13,7 @@
                         <label for="title" >{{__('Title')}}<span class="text-danger">*</span> </label>
                         <input required class="form-control" name="title" type="text" id="title" value="">
                     </div>
+                   
                   </div>
                   {{-- <div class="form-group col-md-6">
                     <label for="student">{{ __('Date') }} <span class="text-danger">*</span></label>
@@ -33,7 +34,7 @@
                     </select>   
                   </div>
                   <div class="form-group col-md-12">
-                    <label for="description">{{ __('note') }}</label>
+                    <label for="description">{{ __('Description') }}<span class="text-danger">*</span></label>
                     <textarea type="text" class="form-control" name="description" id="description" value=""></textarea>
                     <div class="invalid-feedback">
                       {{ __('required_field') }} {{ __('note') }}

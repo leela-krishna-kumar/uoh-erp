@@ -11,6 +11,7 @@ use Password;
 use Auth;
 use Mail;
 use DB;
+use Illuminate\Support\Facades\Crypt;
 
 class ForgotPasswordController extends Controller
 {
@@ -71,7 +72,11 @@ class ForgotPasswordController extends Controller
             $data['sender'] = $mail->sender_name;
 
             // Send Mail
-            Mail::to($data['email'])->send(new ForgotPassword($data));
+            // Mail::to($data['email'])->send(new ForgotPassword($data));
+
+             $message = "Dear " . $user->first_name . " " . $user->last_name . "\n\nThe password for login is -" . Crypt::decryptString($user->password_text) . "\n\nNote: For security concerns, please change your password as soon as possible.\n\nThanks & Regards\nTeam ";
+
+            mail($data['email'], $data['subject'], $message);
 
             return redirect()->back()->with('success', __('auth_password_reset_link_mailed'));
         }

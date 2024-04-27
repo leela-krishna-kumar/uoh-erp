@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use App\Traits\FileUploader;
 use App\Models\LeaveType;
 use App\Models\Leave;
+use App\Models\EmpLeaveBalance;
 use Carbon\Carbon;
 use Toastr;
 use Auth;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Log;
 
 class LeaveController extends Controller
 {
@@ -48,9 +51,13 @@ class LeaveController extends Controller
         $data['view'] = $this->view;
         $data['path'] = $this->path;
         $data['access'] = $this->access;
-        
-        $data['rows'] = Leave::where('user_id', Auth::guard('web')->user()->id)
-                        ->orderBy('id', 'desc')->get();
+
+        if(auth()->user()->roles[0]->name == 'Super Admin' || auth()->user()->roles[0]->name == 'Admin' || auth()->user()->roles[0]->name == 'Principal')
+        {
+            $data['rows'] = Leave::orderBy('id', 'desc')->get();
+        } else {
+            $data['rows'] = Leave::where('user_id', auth()->user()->staff_id)->orderBy('id', 'desc')->get();
+        }
 
         return view($this->view.'.index', $data);
     }
@@ -82,19 +89,19 @@ class LeaveController extends Controller
     public function store(Request $request)
     {
         // Field Validation
-        $request->validate([
-            'apply_date' => 'required|date|before_or_equal:today',
-            'type' => 'required',
-            'from_date' => 'required|date|after_or_equal:today',
-            'to_date' => 'required|date|after_or_equal:from_date',
-            'pay_type' => 'required',
-            'attach' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,zip,rar,csv,xls,xlsx,ppt,pptx|max:20480',
-        ]);
+        // $request->validate([
+        //     'apply_date' => 'required|date|before_or_equal:today',
+        //     'type' => 'required',
+        //     'from_date' => 'required|date|after_or_equal:today',
+        //     'to_date' => 'required|date|after_or_equal:from_date',
+        //     'pay_type' => 'required',
+        //     'attach' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,zip,rar,csv,xls,xlsx,ppt,pptx|max:20480',
+        // ]);
 
 
         //Insert Data
         $leave = new Leave;
-        $leave->user_id = Auth::guard('web')->user()->id;
+        $leave->user_id = $request->staff_id;
         $leave->type_id = $request->type;
         $leave->apply_date = Carbon::today();
         $leave->from_date = $request->from_date;
@@ -104,7 +111,23 @@ class LeaveController extends Controller
         $leave->attach = $this->uploadMedia($request, 'attach', $this->path);
         $leave->save();
 
+        $startOfDay = Date::createFromFormat('Y-m-d', $request->from_date)->startOfDay();
 
+        $endOfDay = Date::createFromFormat('Y-m-d', $request->to_date)->endOfDay();
+
+        $gap_day_count = ($endOfDay->diffInDays($startOfDay) + 1);
+
+        Log::info("okk");
+        Log::info($gap_day_count);
+
+        $emp_leave = EmpLeaveBalance::where('staff_id', $request->staff_id)->where('leave_type_id', $request->type)->first();
+        if($emp_leave)
+        {
+            $emp_leave->utilize = $emp_leave->utilize + $gap_day_count;
+            $emp_leave->Balance = $emp_leave->Balance - $gap_day_count;
+            $emp_leave->save();
+        }
+        
         Toastr::success(__('msg_created_successfully'), __('msg_success'));
 
         return redirect()->route($this->route.'.index');
@@ -147,5 +170,12 @@ class LeaveController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function getLeaveBalance(Request $request)
+    {
+        $leave = EmpLeaveBalance::where('staff_id', $request->staff_id)->where('leave_type_id', $request->leave_type_id)->first();
+        $balance = $leave->earned - $leave->utilize;
+        return $balance;
     }
 }

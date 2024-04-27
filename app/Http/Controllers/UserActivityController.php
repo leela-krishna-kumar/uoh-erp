@@ -82,4 +82,15 @@ class UserActivityController extends Controller
     {
         //
     }
+
+    public function getLoginForm()
+    {
+        $errors = null;
+        return view('api.login',[
+            'title' => 'Login',
+            'loginRoute' => 'student.login',
+            'forgotPasswordRoute' => 'student.password.request',
+            'errors' => $errors
+        ]);
+    }
 }

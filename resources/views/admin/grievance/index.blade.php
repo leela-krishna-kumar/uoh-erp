@@ -44,17 +44,17 @@
                                 </thead>
                                 <tbody>
                                     @foreach( $rows as $key => $row )
-                                    <tr>  
+                                    <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td> 
+                                        <td>
                                             <!-- {{@$row->user ? @$row->user->full_name : @$row->student->full_name}}  -->
-                                            {{@$row->student->full_name}} 
-                                        </td>
-                                        <td> 
-                                            {{@$row->department->title}} 
+                                            {{@$row->student->full_name}}
                                         </td>
                                         <td>
-                                            {{@$row->category->name}}  
+                                            {{@$row->department->title}}
+                                        </td>
+                                        <td>
+                                            {{@$row->category->name}}
                                         </td>
                                         <td>
                                             @if( $row->status == 0 )

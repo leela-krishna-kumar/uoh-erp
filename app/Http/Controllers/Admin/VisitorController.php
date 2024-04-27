@@ -86,8 +86,23 @@ class VisitorController extends Controller
         // Search Filter
         $data['purposes'] = VisitPurpose::where('status', '1')
                             ->orderBy('title', 'asc')->get();
-        $data['departments'] = Department::where('status', '1')
-                            ->orderBy('title', 'asc')->get();
+
+
+        // $data['departments'] = Department::where('status', '1')
+        //                     ->orderBy('title', 'asc')->get();
+
+        if(auth()->user()->hasRole('HoD'))
+        {
+            // dd('88');
+
+            $data['departments'] = Department::where('id', auth()->user()->department_id)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['departments'] = Department::where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
+
 
         $rows = Visitor::whereDate('date', '>=', $start_date)
                     ->whereDate('date', '<=', $end_date);

@@ -15,7 +15,8 @@
                     <div class="card-block">
                         <form class="needs-validation" novalidate method="get" action="{{ route($route.'.index') }}">
                             <div class="row gx-2">
-                                @include('common.inc.student_search_filter')
+                                {{-- @include('common.inc.student_search_filter') --}}
+                                @include('common.inc.student_hostel_search_filter')
 
                                 <div class="form-group col-md-3">
                                     <button type="submit" class="btn btn-info btn-filter"><i class="fas fa-search"></i> {{ __('btn_search') }}</button>
@@ -28,7 +29,7 @@
 
             <div class="col-sm-12">
                 <div class="card">
-                    @if(isset($rows))                
+                    @if(isset($rows))
                     <div class="card-block">
                         <!-- [ Data table ] start -->
                         <div class="table-responsive">

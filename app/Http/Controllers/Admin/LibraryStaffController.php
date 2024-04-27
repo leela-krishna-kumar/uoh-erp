@@ -44,13 +44,22 @@ class LibraryStaffController extends Controller
     public function index(Request $request)
     {
         //
-        $data['title'] = $this->title;
+        // $data['title'] = $this->title;
+        $data['title'] = 'Staff List'; //ravi
         $data['route'] = $this->route;
         $data['view'] = $this->view;
         $data['path'] = $this->path;
         $data['access'] = $this->access;
 
-        $data['departments'] = Department::where('status', 1)->orderBy('title', 'asc')->get();
+        if(auth()->user()->hasRole('HoD'))
+        {
+            $data['departments'] = Department::where('id', auth()->user()->department_id)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['departments'] = Department::where('status', 1)->orderBy('title', 'asc')->get();
+        }
+
         $data['designations'] = Designation::where('status', 1)->orderBy('title', 'asc')->get();
 
 
@@ -78,7 +87,7 @@ class LibraryStaffController extends Controller
             $users->where('designation_id', $designation);
         }
         $data['rows'] = $users->orderBy('staff_id', 'desc')->get();
-        
+
 
         $data['print'] = IdCardSetting::where('slug', 'library-card')->first();
 
@@ -102,7 +111,7 @@ class LibraryStaffController extends Controller
         $user = User::findOrFail($request->member_id);
         $card_setting = IdCardSetting::where('slug', 'library-card')->first();
 
-        
+
         // Insert Data
         $member = new LibraryMember;
         $member->library_id = $request->library_id;

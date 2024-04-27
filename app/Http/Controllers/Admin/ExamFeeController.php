@@ -35,8 +35,8 @@ class ExamFeeController extends Controller
          $this->view = 'admin.exam-fee';
          $this->path = 'exam-fee';
          $this->access = 'income';
- 
- 
+
+
          $this->middleware('permission:'.$this->access.'-view|'.$this->access.'-create|'.$this->access.'-edit|'.$this->access.'-delete', ['only' => ['index','show']]);
          $this->middleware('permission:'.$this->access.'-create', ['only' => ['create','store']]);
          $this->middleware('permission:'.$this->access.'-edit', ['only' => ['edit','update']]);

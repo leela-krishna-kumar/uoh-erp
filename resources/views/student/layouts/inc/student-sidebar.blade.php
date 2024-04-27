@@ -3,30 +3,30 @@
     <div class="sidebar_inner" data-simplebar>
         
         <ul class="side-colored">
-            <li class="nav-item {{ Request::is('student/student-dashboard*') ? 'active' : '' }}">
-                <a href="{{route('student.student-dashboard.index')}}">
-                    <ion-icon name="compass" class="side-icon"> </ion-icon>
-                    <span> Home</span>
+            <li class="nav-item {{ Request::is('student/student-course-dashboard*') ? 'active' : '' }}">
+                <a href="{{route('student.student-course-dashboard.index')}}">
+                    <ion-icon name="book" class="side-icon"> </ion-icon>
+                    <span> Courses</span>
                 </a>
             </li>
             
-            <li class="nav-item {{ Request::is('student/student-courses*') ? 'active' : '' }}">
+            {{-- <li class="nav-item {{ Request::is('student/student-courses*') ? 'active' : '' }}">
                 <a href="{{route('student.student-courses')}}">
                     <ion-icon name="play-circle" class="side-icon"> </ion-icon>
                     <span> Courses</span>
                 </a>
-            </li>
-            <li class="nav-item {{ Request::is('student/student-books*') ? 'active' : '' }}">
+            </li> --}}
+            {{-- <li class="nav-item {{ Request::is('student/student-books*') ? 'active' : '' }}">
                 <a href="{{route('student.student-books')}}">
                     <ion-icon name="book" class="side-icon"> </ion-icon>
                     <span> Books </span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item {{ Request::is('student/student-exams-info*') ? 'active' : '' }}">
                 <a href="{{route('student.student-exams-info')}}">
                     <ion-icon name="newspaper" class="bg-gradient-to-br from-purple-300 p-1 rounded-md side-icon text-opacity-80 text-white to-blue-500">
                     </ion-icon>
-                    <span> Exam</span>
+                    <span> Test</span>
                 </a>
             </li>
         </ul>
@@ -41,6 +41,12 @@
             <li class="nav-item {{ Request::is('student/student-exam-routine*') ? 'active' : '' }}">
                 <a href="{{route('student.student-exam-routine')}}"> <span name="" class="side-icon icon-material-outline-question-answer"></span> Exam Routine </a>
             </li>
+            
+            
+            <li class="nav-item {{ Request::is('student/student-results*') ? 'active' : '' }}">
+                <a href="{{route('student.student-results')}}"> <span name="" class="side-icon icon-material-outline-question-answer"></span>Exam Results </a>
+            </li>
+            
             <li class="nav-item {{ Request::is('student/student-attendance*') ? 'active' : '' }}">
                 <a href="{{route('student.student-attendance')}}"> <span  name="" class="side-icon icon-material-outline-assessment"></span> Attendance </a>
             </li>

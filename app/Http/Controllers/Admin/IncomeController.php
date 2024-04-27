@@ -82,7 +82,7 @@ class IncomeController extends Controller
                     if(!empty($request->category) || $request->category != null){
                         $rows->where('category_id', $category);
                     }
-        $data['rows'] = $rows->orderBy('id', 'desc')->get();
+        $data['rows'] = $rows->select('id','title','category_id','invoice_id','amount','date','payment_method','status','payment_status')->orderBy('id', 'desc')->get();
 
         return view($this->view.'.index', $data);
     }

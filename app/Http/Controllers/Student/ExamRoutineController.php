@@ -106,24 +106,33 @@ class ExamRoutineController extends Controller
         $session = Session::where('status', '1')->where('current', '1')->first();
 
         if(isset($session)){
-            // $enroll = StudentEnroll::where('student_id', Auth::guard('student')->user()->id)
-            //             ->where('session_id', $session->id)
-            //             ->where('status', '1')
-            //             ->first();
             $enroll = StudentEnroll::where('student_id', Auth::guard('student')->user()->id)
                         ->where('status', '1')
                         ->first();
         }
         if(isset($enroll) && isset($session)){
             $data['rows'] = ExamRoutine::where('status', '1')
-                            ->where('session_id', $enroll->session_id)
-                            ->where('program_id', $enroll->program_id)
-                            ->where('semester_id', $enroll->semester_id)
-                            ->where('section_id', $enroll->section_id)
-                            ->orderBy('date', 'asc')
-                            ->orderBy('start_time', 'asc')
-                            ->get();
-            }
+                ->where('session_id', $enroll->session_id)
+                ->where('program_id', $enroll->program_id)
+                ->where('semester_id', $enroll->semester_id)
+                ->where('section_id', $enroll->section_id)
+                ->orderBy('date', 'asc')
+                ->orderBy('start_time', 'asc')
+                ->get();
+        }
+
+        if(!empty($request->type))
+        {
+            $data['rows'] = ExamRoutine::where('status', '1')
+                ->where('exam_type_id', $request->type)
+                ->where('session_id', $enroll->session_id)
+                ->where('program_id', $enroll->program_id)
+                ->where('semester_id', $enroll->semester_id)
+                ->where('section_id', $enroll->section_id)
+                ->orderBy('date', 'asc')
+                ->orderBy('start_time', 'asc')
+                ->get();
+        }
         // Exam Routine
         // if(isset($enroll) && isset($session) && !empty($request->type)){
         // $data['rows'] = ExamRoutine::where('status', '1')

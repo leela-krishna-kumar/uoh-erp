@@ -15,7 +15,7 @@ class FeedbackController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    
+
      public function __construct()
      {
          // Module Data
@@ -30,26 +30,26 @@ class FeedbackController extends Controller
          $this->middleware('permission:'.$this->access.'-delete', ['only' => ['destroy']]);
 
      }
- 
+
     public function index()
     {
 
-       
-        try{  
+
+        try{
             $data['title'] = $this->title;
             $data['route'] = $this->route;
             $data['view'] = $this->view;
             $data['path'] = $this->path;
             $data['access'] = $this->access;
             $feedback = Feedback::query();
-            $data['rows'] = $feedback->orderBy('id', 'desc')->get();
+            $data['rows'] = $feedback->select('id','user_id','comment','rating')->orderBy('id', 'desc')->get();
             return view($this->view.'.index', $data);
         } catch(\Exception $e){
-    
+
             Toastr::error(__('msg_error'), __('msg_error'));
-    
+
             return redirect()->back();
-        } 
+        }
     }
 
     /**
@@ -105,7 +105,7 @@ class FeedbackController extends Controller
             Toastr::error(__('msg_updated_successfully'), __('msg_error'));
 
             return redirect()->back();
-        } 
+        }
     }
 
     /**
@@ -130,8 +130,8 @@ class FeedbackController extends Controller
 
         return redirect()->back();
     }
-}        
-    
+}
+
 
     /**
      * Remove the specified resource from storage.

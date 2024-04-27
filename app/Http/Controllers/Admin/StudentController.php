@@ -36,6 +36,7 @@ use App\Models\Student;
 use App\Models\Country;
 use App\Models\Faculty;
 use App\Models\Batch;
+use App\Models\ClassRoutine;
 use App\Models\Grade;
 use App\Models\Fee;
 use App\Models\UserCategory;
@@ -84,6 +85,13 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
+
+        // $user = Auth::user();
+
+        // if ($user->hasRole('Teacher')){
+
+        // }
+        // dd($data['teacher_id']);
       //  dd( $request->all());
 
         $data['title'] = $this->title;
@@ -93,7 +101,7 @@ class StudentController extends Controller
         $data['access'] = $this->access;
         $data['rows'] = [];
 
-
+        //selected data
         if (!empty($request->faculty) || $request->faculty != null) {
             $data['selected_faculty'] = $faculty = $request->faculty;
         } else {
@@ -129,123 +137,167 @@ class StudentController extends Controller
         } else {
             $data['selected_status'] = '0';
         }
-
+        if (!empty($request->seat_type) || $request->seat_type != null) {
+            $data['selected_seat_type'] = $status = $request->seat_type;
+        } else {
+            $data['selected_seat_type'] = '0';
+        }
+        if (!empty($request->category) || $request->category != null) {
+            $data['selected_user_category'] = $status = $request->category;
+        } else {
+            $data['selected_user_category'] = '0';
+        }
 
         // Search Filter
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
         $data['statuses'] = StatusType::where('status', '1')->orderBy('title', 'asc')->get();
+        $data['seat_types'] = SeatType::orderBy('name', 'asc')->get();
+        $data['user_categories'] = UserCategory::orderBy('name', 'asc')->get();
 
+        $user = Auth::user();
 
         if (!empty($request->faculty) && $request->faculty != '0') {
-            $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+
+
+            if(auth()->user()->hasRole('Teacher')){
+
+                // $student_enroll_data = StudentEnroll::where('program_id', $request->program)->where('session_id', $request->session)->where('semester_id', $request->semester)->where('section_id', $request->section)->get();
+
+                $data['program_ids'] = ClassRoutine::where('teacher_id', $user->id)->orderBy('id', 'desc')->pluck('program_id');
+
+                $data['programs'] = Program::where('faculty_id', $faculty)->whereIn('id', $data['program_ids']->toArray())->where('status', '1')->orderBy('title', 'asc')->get();
+
+
+
+            }else{
+                $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+            }
+
         }
 
         if (!empty($request->program) && $request->program != '0') {
+
             $sessions = Session::where('status', 1);
-            $sessions->with('programs')->whereHas('programs', function ($query) use ($program) {
-                $query->where('program_id', $program);
-            });
-            $data['sessions'] = $sessions->orderBy('id', 'desc')->get();
+
+
+            if(auth()->user()->hasRole('Teacher')){
+
+                $data['session_ids'] = ClassRoutine::where('teacher_id', $user->id)->orderBy('id', 'desc')->pluck('session_id');
+
+                $sessions->with('programs')->whereHas('programs', function ($query) use ($program) {
+                    $query->where('program_id', $program);
+                });
+                $data['sessions'] = $sessions->whereIn('id', $data['session_ids'])->orderBy('id', 'desc')->get();
+
+            }else{
+
+
+                $sessions->with('programs')->whereHas('programs', function ($query) use ($program) {
+                    $query->where('program_id', $program);
+                });
+                $data['sessions'] = $sessions->orderBy('id', 'desc')->get();
+
+                }
+
         }
 
         if (!empty($request->program) && $request->program != '0') {
             $semesters = Semester::where('status', 1);
-            $semesters->with('programs')->whereHas('programs', function ($query) use ($program) {
-                $query->where('program_id', $program);
-            });
-            $data['semesters'] = $semesters->orderBy('id', 'asc')->get();
+
+
+            if(auth()->user()->hasRole('Teacher')){
+
+                $data['semester_ids'] = ClassRoutine::where('teacher_id', $user->id)->orderBy('id', 'desc')->pluck('semester_id');
+
+                $semesters->with('programs')->whereHas('programs', function ($query) use ($program) {
+                    $query->where('program_id', $program);
+                });
+                $data['semesters'] = $semesters->whereIn('id', $data['semester_ids'])->orderBy('id', 'desc')->get();
+
+            }
+            else{
+                $semesters->with('programs')->whereHas('programs', function ($query) use ($program) {
+                    $query->where('program_id', $program);
+                });
+
+                $data['semesters'] = $semesters->orderBy('id', 'asc')->get();
+            }
         }
 
         if (!empty($request->program) && $request->program != '0' && !empty($request->semester) && $request->semester != '0') {
             $sections = Section::where('status', 1);
-            $sections->with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($program, $semester) {
+
+            if(auth()->user()->hasRole('Teacher')){
+
+                $data['section_ids'] = ClassRoutine::where('teacher_id', $user->id)->orderBy('id', 'desc')->pluck('section_id');
+
+                $sections->with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($program, $semester) {
                 $query->where('program_id', $program);
                 $query->where('semester_id', $semester);
             });
-            $data['sections'] = $sections->orderBy('title', 'asc')->get();
+            $data['sections'] = $sections->whereIn('id', $data['section_ids'])->orderBy('title', 'asc')->get();
+            }else{
+                $sections->with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($program, $semester) {
+                    $query->where('program_id', $program);
+                    $query->where('semester_id', $semester);
+                });
+
+                $data['sections'] = $sections->orderBy('title', 'asc')->get();
+            }
+
+         /*   $sections->with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($program, $semester) {
+                $query->where('program_id', $program);
+                $query->where('semester_id', $semester);
+            });
+
+            $data['sections'] = $sections->orderBy('title', 'asc')->get();  */
         }
-
-
-        // Student Filter
-
-        // if (!empty($request->program) || !empty($request->semester) &&  !empty($request->faculty)  && !empty($request->session)  && !empty($request->section) || !empty($request->status)) {
-        //     $students = Student::query();
-        //     if ($faculty != 0 && $faculty != 'all') {
-        //         $students->with('program')->whereHas('program', function ($query) use ($faculty) {
-        //             $query->where('faculty_id', $faculty);
-        //         });
-        //     }
-        //     if (($session != 0 && $session != 'all') || ($semester != 0 && $semester != 'all') || ($section != 0 && $section != 'all')) {
-        //         $students->with('currentEnroll')->whereHas('currentEnroll', function ($query) use ($program, $session, $semester, $section) {
-        //             if ($program != 0 && $program != 'all') {
-        //                 $query->where('program_id', $program);
-        //             }
-        //             if ($session != 0 && $session != 'all') {
-        //                 $query->where('session_id', $session);
-        //             }
-        //             if ($semester != 0 && $semester != 'all') {
-        //                 $query->where('semester_id', $semester);
-        //             }
-        //             if ($section != 0 && $section != 'all') {
-        //                 $query->where('section_id', $section);
-        //             }
-        //         });
-        //     }
-
-        //     if (!empty($request->status) && $request->status != 'all') {
-        //       //  $students->where('status', $status);
-        //         // $students->with('statuses')->whereHas('statuses', function ($query) use ($status) {
-        //         //     $query->where('status_type_id', $status);
-        //         // });
-        //     }
-        //     $data['rows'] = $students->orderBy('student_id', 'desc')->get();
-
-        //  //   dd($data['rows']);
-
-        //     $data['print'] = IdCardSetting::where('slug', 'student-card')->first();
-        // }
-
-       // dd( $faculty, $program, $session, $semester,$section );
-
         $students = Student::query();
 
         if($request->faculty != '' || $request->faculty != null){
-            $students->where('faculty_id', $faculty);            
+            $students->where('faculty_id', $faculty);
         }
 
         if($request->program != '' || $request->program != null){
-            $students->where('program_id', $program);            
+            $students->where('program_id', $program);
         }
 
         if($request->session != '' || $request->session != null){
-            $students->where('session_id', $session);            
+            $students->where('session_id', $session);
         }
 
         if($request->semester != '' || $request->semester != null){
-            $students->where('semester_id', $semester);            
+            $students->where('semester_id', $semester);
         }
 
-        if($request->section != '' || $request->section != null){
-            $students->where('section_id', $section);            
+        if($request->section == 'all'){
+
+        }elseif($request->section != '' || $request->section != null){
+            $students->where('section_id', $section);
         }
 
-        // if($status == '5'){
-        //     $students->where('is_transfer', '1');
-        // }elseif($status == '6'){
-        //     $students->where('is_transfer', '2');
-        // }else{
-        //     $students->where('status', $status);
-        // }
 
+        if($request->seat_type == 'all'){
 
-        $data['rows'] = $students->orderBy('student_id', 'desc')->limit(30)->get();
+        }elseif($request->seat_type != '' || $request->seat_type != null){
+            $students->where('seat_type_id', $request->seat_type);
+        }
 
-       // dd( $data['rows']);
+        if($request->user_category != '' || $request->user_category != null){
+            $students->where('user_category_id', $request->user_category);
+        }
+
+        if(empty($request->faculty) && empty($request->program) && empty($request->session) && empty($request->semester))
+        {
+            return view($this->view . '.index', $data);
+        }
+
+        $data['rows'] = $students->select('id', 'roll_no','program_id','session_id','semester_id','section_id','first_name','updated_at','status')->orderBy('student_id', 'desc')->get();
 
 
         if ($request->id) {
             $students = Student::where('id', 'LIKE', '%' . $request->id . '%')->orWhere('admission_no', 'LIKE', '%' . $request->id . '%');
-            $data['rows'] = $students->orderBy('student_id', 'desc')->limit(30)->get();
+            $data['rows'] = $students->orderBy('student_id', 'desc')->get();
         }
         return view($this->view . '.index', $data);
     }
@@ -322,7 +374,7 @@ class StudentController extends Controller
 
 
         // Random Password
-        $password = str_random(8);
+      //  $password = str_random(8);
         // Insert Data
 
         // try{
@@ -346,8 +398,8 @@ class StudentController extends Controller
         $student->gender = $request->gender;
         $student->dob = $request->dob;
         $student->phone = $request->phone;
-        $student->password = Hash::make($password);
-        $student->password_text = Crypt::encryptString($password);
+        $student->password = Hash::make($request->student_id);
+        $student->password_text = Crypt::encryptString($request->student_id);
 
         $student->academic_year_from = $request->academic_year_from;
         $student->academic_year_to = $request->academic_year_to;
@@ -599,7 +651,7 @@ class StudentController extends Controller
             // Update Status
             $student->statuses()->sync($request->statuses);
 
-            // Permanent Address 
+            // Permanent Address
             $permanent_address = $student->permanentAddress;
             if (!$permanent_address) {
                 $permanent_payload = [

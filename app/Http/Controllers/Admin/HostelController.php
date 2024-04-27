@@ -146,7 +146,7 @@ class HostelController extends Controller
         ]);
 
         // Update Data
-        $hostel->hostel_id = $request->hostel_id;
+        //$hostel->hostel_id = $request->hostel_id;
         $hostel->name = $request->name;
         $hostel->type = $request->type;
         $hostel->capacity = $request->capacity;

@@ -199,7 +199,7 @@
                         <li>
                             <a href="#" class="user">
                                 <div class="user_avatar">
-                                    <img src="../assets/images/avatars/avatar-2.jpg" alt="">
+                                    <img src="{{ asset('uploads/student/'. auth()->user()->photo ) }}" alt="" style="width: 500px; height: 100px;">
                                 </div>
                                 <div class="user_name">
                                     <div> {{ auth()->user()->name }} </div>
@@ -209,6 +209,12 @@
                         </li>
                         <li> 
                             <hr>
+                        </li>
+                        <li>
+                            <a href="{{url('/student/student-account-details')}}">
+                                <ion-icon name="settings-outline" class="is-icon"></ion-icon>
+                                Student Profile
+                            </a>
                         </li>
                         {{-- <li> 
                             <a href="#">

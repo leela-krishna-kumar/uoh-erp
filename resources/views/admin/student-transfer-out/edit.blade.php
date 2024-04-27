@@ -14,7 +14,7 @@
                     <!-- Form Start -->
                     <div class="form-group">
                         <label for="student">{{ __('field_student_id') }} <span>*</span></label>
-                        <input type="text" class="form-control" name="student" id="student" value="{{ $row->student->student_id }}" readonly required>
+                        <input type="text" class="form-control" name="student" id="student" value="{{ optional($row->student)->student_id }}" readonly required>
 
                         <div class="invalid-feedback">
                         {{ __('required_field') }} {{ __('field_student_id') }}

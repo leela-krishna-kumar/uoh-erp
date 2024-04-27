@@ -56,6 +56,54 @@ class ProfileController extends Controller
         $data['row'] = Student::where('id', Auth::guard('student')->user()->id)->firstOrFail();
         return view($this->view.'.student-account-setting', $data);
     }
+
+    public function accountSettingDetails(Request $request)
+    {
+        $data['title'] = $this->title;
+        $data['route'] = $this->route;
+        $data['view'] = $this->view;
+        $data['row'] = Student::where('id', Auth::guard('student')->user()->id)->firstOrFail();
+        
+        return view($this->view.'.student-account-details', $data);
+    }
+
+    public function photoSubmission(Request $request)
+    {
+        $student = Student::where('id', Auth::guard('student')->user()->id)->firstOrFail();
+        if($request->photo != null && $request->photo != '')
+        {
+            if ($request->hasFile('photo')) {
+                $attach = $request->file('photo');
+                $valid_extensions = array('jpg', 'jpeg', 'png', 'svg', 'webp', 'pdf', 'csv');
+                $file_ext = $attach->getClientOriginalExtension();
+                if (in_array($file_ext, $valid_extensions, true)) {
+    
+                    //Upload Files
+                    $filename = $attach->getClientOriginalName();
+                    $extension = $attach->getClientOriginalExtension();
+    
+                    $fileNameToStore =  time() . '_' . str_replace([' ', '-', '&', '#', '$', '%', '^', ';', ':'], '_', $filename);
+        
+                    // Move file inside public/uploads/ directory
+                    $status = $attach->move('uploads/student/', $fileNameToStore);
+                    $student->photo = $fileNameToStore;
+                }
+            }
+            $student->first_name = $request->first_name;
+            $student->last_name = $request->last_name;
+            $student->email = $request->email;
+            $student->phone = $request->phone;
+
+            $student->save();
+
+            $data['title'] = $this->title;
+            $data['route'] = $this->route;
+            $data['view'] = $this->view;
+            $data['row'] = Student::where('id', Auth::guard('student')->user()->id)->firstOrFail();
+            return view($this->view.'.student-account-details', $data);
+        }
+    }
+
     public function accountSettingPrivacy(Request $request)
     {
         //

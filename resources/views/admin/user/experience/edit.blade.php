@@ -13,22 +13,23 @@
                     <div class="modal-body">
                      <fieldset class="row">
                         <div class="form-group col-md-6">
-                           <label for="type">{{ __('Type') }} <span>*</span></label>
-                           <select class="form-control" name="type" id="type">
-                              <option value="">{{ __('select') }}</option>
-                              @foreach ($types as $key => $types)
-                                 <option value="{{$key}}" @if ($experience && $key == $experience->type) selected @endif>{{$types['label']}}</option>
-                              @endforeach
-                           </select>
+                           <label for="type">{{ __('Type') }}<span>*</span></label>
+                           <select required class="form-control" name="type" id="type">
+                               <option value="">{{ __('select') }}</option>
+                               <option value="0" {{ $experience->type == 0 ? 'selected' : '' }}>Teaching</option>
+                               <option value="1" {{ $experience->type == 1 ? 'selected' : '' }}>Working</option>
+                               <option value="2" {{ $experience->type == 2 ? 'selected' : '' }}>Research</option>
+                               <option value="3" {{ $experience->type == 3 ? 'selected' : '' }}>Industry</option>
+                              </select>
                            <div class="invalid-feedback">
-                              {{ __('required_field') }} {{ __('Type') }}
+                               {{ __('required_field') }} {{ __('Type') }}
                            </div>
-                        </div>
+                       </div>
                         <div class="form-group col-md-6">
-                           <label for="subject">{{ __('field_subject') }} <span>*</span></label>
+                           <label for="subject">{{ __('field_destination') }} <span>*</span></label>
                            <input type="text" class="form-control " name="subject" id="subject" value="{{ @$experience->subject }}" required>
                            <div class="invalid-feedback">
-                              {{ __('required_field') }} {{ __('field_subject') }}
+                              {{ __('required_field') }} {{ __('field_destination') }}
                            </div>
                         </div>
                         <div class="form-group col-md-12">
@@ -38,7 +39,7 @@
                               {{ __('required_field') }} {{ __('field_organization') }}
                            </div>
                         </div>
-                        <div class="form-group col-md-6">
+                        {{-- <div class="form-group col-md-6">
                            <label for="from_date">{{ __('field_from_date') }} </label>
                            <input type="date" class="form-control " name="from_date" id="from_date" value="{{ @$experience->from_date }}" >
                            <div class="invalid-feedback">
@@ -51,7 +52,31 @@
                            <div class="invalid-feedback">
                               {{ __('required_field') }} {{ __('field_to_date') }}
                            </div>
-                        </div>
+                        </div> --}}
+
+                        <div class="form-group col-md-12">
+                           <div class="form-check">
+                               <input class="form-check-input" type="checkbox" id="presentCheckbox" value="" checked>
+                               <label class="form-check-label" for="presentCheckbox">Present</label>
+                           </div>
+                       </div>
+                       
+                       <div class="form-group col-md-6">
+                           <label for="from_date">{{ __('field_from_date') }}<span>*</span></label>
+                           <input required type="date" class="form-control" name="from_date" id="from_date" value="{{ @$experience->from_date }}">
+                           <div class="invalid-feedback">
+                               {{ __('required_field') }} {{ __('field_from_date') }}
+                           </div>
+                       </div>
+                       
+                       <div class="form-group col-md-6">
+                           <label for="to_date">{{ __('field_to_date') }}<span>*</span></label>
+                           <input type="date" class="form-control" name="to_date" id="to_date" value="{{ @$experience->to_date }}">
+                           <div class="invalid-feedback">
+                               {{ __('required_field') }} {{ __('field_to_date') }}
+                           </div>
+                       </div>
+
                         <div class="form-group col-md-12">
                            <label for="remark">{{ __('field_remark') }} </label>
                            <textarea type="text" class="form-control " name="remark" id="remark">{{ @$experience->remark }}</textarea>
@@ -69,3 +94,4 @@
             </div>
         </div>
     </div>
+

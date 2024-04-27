@@ -17,7 +17,7 @@
                    <tr>
                          <th>#</th>
                          <th>{{ __('Type') }}</th>
-                         <th>{{ __('field_subject') }}</th>
+                         <th>{{ __('field_destination') }}</th>
                          <th>{{ __('field_organization') }}</th>
                          <th>{{ __('field_from_date') }}</th>
                          <th>{{ __('field_to_date') }}</th>
@@ -25,10 +25,20 @@
                    </tr>
                 </thead>
                 <tbody>
-                   @foreach($experiences as $key => $experience )
+                   @foreach($experiences as $key => $experience)
                       <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ @$experience->type ? $experience->type_parsed->label : '' }}</td>
+                            {{-- <td>{{ @$experience->type ? $experience->type_parsed->label : '' }}</td> --}}
+                              
+                            @if($experience->type == 0)
+                                 <td>Teaching</td>
+                              @elseif($experience->type == 1)
+                                 <td>Working</td>
+                              @elseif($experience->type == 2)
+                                 <td>Research</td>
+                              @elseif($experience->type == 3)
+                                 <td>Industry</td>
+                              @endif
                             <td>{{ @$experience->subject }}</td>
                             <td>{{ @$experience->organization }}</td>
                             <td>{{ @$experience->from_date }}</td>

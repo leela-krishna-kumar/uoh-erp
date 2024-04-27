@@ -12,6 +12,10 @@ class HostelAttendance extends Model
     public function student()
     {
         return $this->belongsTo(Student::class, 'student_id');
-    } 
-    
+    }
+    protected $fillable = [
+        'student_id', 'date', 'direction', 'note', 'in_time', 'out_time','status',
+    ];
+
+
 }

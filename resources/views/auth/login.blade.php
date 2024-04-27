@@ -14,9 +14,9 @@
 
         <!-- Form Start -->
         <form method="POST" action="{{ route('login') }}">
-        @csrf
+            @csrf
             <div class="input-group mb-3">
-                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="{{ __('field_email') }}" autofocus>
+                <input id="staff_id" type="text" class="form-control @error('staff_id') is-invalid @enderror" name="staff_id" value="{{ old('staff_id') }}" required autocomplete="staff_id" placeholder="Staff ID" autofocus>
 
                 @error('email')
                     <span class="invalid-feedback" role="alert">
@@ -56,7 +56,7 @@
 
         @if (Route::has('register'))
         <p class="mb-0 text-muted">
-            {{ __("auth_dont_have_account") }} 
+            {{ __("auth_dont_have_account") }}
             <a href="{{ route('register') }}">
                 {{ __('auth_register') }}
             </a>

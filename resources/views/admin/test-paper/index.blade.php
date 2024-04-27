@@ -64,9 +64,11 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="disclaimer" class="form-label">{{ __('Disclaimer') }} <span>*</span></label>
-                                <div id="toolbar-container0"></div>
-                                <div id="txt_area0"></div>
+                                <label for="disclaimer" class="form-label">{{ __('Disclaimer') }} <span>*</span></label> <br />
+                                {{-- <div id="toolbar-container0"></div>
+                                <div id="txt_area0"></div> --}}
+
+                                <textarea name="disclaimer" class="form-control" rows="3" required></textarea>
 
                                 <div class="invalid-feedback">
                                   {{ __('required_field') }} {{ __('Start Date') }}
@@ -75,7 +77,7 @@
                             <!-- Form End -->
                         </div>
                         <div class="card-footer">
-                            <button type="button" class=" btn btn-success onclick-event"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
+                            <button type="submit" class=" btn btn-success"><i class="fas fa-check"></i> {{ __('btn_save') }}</button>
                         </div>
                     </div>
                 </form>

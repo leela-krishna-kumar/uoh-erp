@@ -81,16 +81,34 @@
                             </div>
                             <div class="form-group d-inline">
                                 <div class="radio radio-warning d-inline">
+                                    @php
+                                        $inputDate = request('date', date('Y-m-d'));
+                                        $holiday = App\Models\HolidayMaster::where('date', $inputDate)->first();
+                                    @endphp
+                                    @if($holiday)
+                                    <input type="radio" name="all_check" id="attendance-h" class="all_holiday" checked>
+                                    @else
                                     <input type="radio" name="all_check" id="attendance-h" class="all_holiday">
+                                    @endif
                                     <label for="attendance-h" class="cr">{{ __('all') }} {{ __('attendance_holiday') }}</label>
                                 </div>
                             </div>
                             <div class="form-group d-inline">
                                 <div class="radio radio-primary d-inline">
+                                    @php
+                                        $inputDate = request('date', date('Y-m-d'));
+                                        $dayOfWeek = date('l', strtotime($inputDate));
+                                        $week_off = App\Models\Setting::where('week_off', 'LIKE', "%{$dayOfWeek}%")->first();
+                                    @endphp
+                                    @if($week_off)
+                                    <input type="radio" name="all_check" id="attendance-wo" class="all_week_off" checked>
+                                    @else
                                     <input type="radio" name="all_check" id="attendance-wo" class="all_week_off">
+                                    @endif
                                     <label for="attendance-wo" class="cr">{{ __('all') }} {{ __('Week Off') }}</label>
                                 </div>
                             </div>
+                            
                             <div class="clearfix"></div>
                         </div>
                         <form class="needs-validation" novalidate action="{{ route($route.'.store') }}" method="post" enctype="multipart/form-data">
@@ -184,7 +202,6 @@
                                                     <div class="form-group d-inline">
                                                         <div class="radio radio-primary d-inline">
                                                             <input class="c-week_off" type="radio" data_id="{{ $row->id }}"name="attendances-{{ $key }}" id="attendance-wo-{{ $key }}" value="5"
-
                                                             @if(isset($attendances))
                                                             @foreach($attendances as $attendance)
                                                                 @if($attendance->student_enroll_id == $row->id && $attendance->attendance == 5)
@@ -251,6 +268,11 @@
         });
     });
 
+    var isChecked = $(".all_holiday").is(":checked");
+    $(".c-holiday").prop('checked', isChecked);
+
+    var isChecked = $(".all_week_off").is(":checked");
+    $(".c-week_off").prop('checked', isChecked);
 
     // checkbox all-check-button selector
     $(".all_present").on('click',function(e){

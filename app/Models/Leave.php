@@ -12,9 +12,10 @@ class Leave extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'type_id', 'user_id', 'review_by', 'apply_date', 'from_date', 'to_date', 'reason', 'attach', 'note', 'pay_type', 'status',
-    ];
+    // protected $fillable = [
+    //     'type_id', 'user_id', 'review_by', 'apply_date', 'from_date', 'to_date', 'reason', 'attach', 'note', 'pay_type', 'status',
+    // ];
+    protected $table = 'leave';
 
     public function user()
     {

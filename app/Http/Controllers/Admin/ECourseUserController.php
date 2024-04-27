@@ -44,7 +44,7 @@ class ECourseUserController extends Controller
     }
     public function index(Request $request)
     {
-        try{  
+        try{
             $data['title'] = $this->title;
             $data['route'] = $this->route;
             $data['view'] = $this->view;
@@ -58,35 +58,35 @@ class ECourseUserController extends Controller
             else{
                 $data['selected_faculty'] = $faculty = '0';
             }
-    
+
             if(!empty($request->program) || $request->program != null){
                 $data['selected_program'] = $program = $request->program;
             }
             else{
                 $data['selected_program'] = $program = '0';
             }
-    
+
             if(!empty($request->session) || $request->session != null){
                 $data['selected_session'] = $session = $request->session;
             }
             else{
                 $data['selected_session'] = $session = '0';
             }
-    
+
             if(!empty($request->semester) || $request->semester != null){
                 $data['selected_semester'] = $semester = $request->semester;
             }
             else{
                 $data['selected_semester'] = $semester = '0';
             }
-    
+
             if(!empty($request->section) || $request->section != null){
                 $data['selected_section'] = $section = $request->section;
             }
             else{
                 $data['selected_section'] = $section = '0';
             }
-    
+
             if(!empty($request->status) || $request->status != null){
                 $data['selected_status'] = $status = $request->status;
             }
@@ -127,7 +127,7 @@ class ECourseUserController extends Controller
             $data['course'] = ECourse::where('id',request()->get('course_id'))->first();
             $eCourseUser = ECourseUser::query();
             $eCourseUser->where('course_id', request()->get('course_id'));
-            
+
             $data['rows'] = $eCourseUser->get();
             return view($this->view.'.index', $data);
         } catch(\Exception $e){
@@ -262,13 +262,14 @@ class ECourseUserController extends Controller
             'student_id' => 'required',
         ]);
         // Insert Data
-        $eCourseUser = ECourseUser::where('course_id',$request->course_id)->whereNotIn('student_id',$request->student_id)->delete();
+        // $eCourseUser = ECourseUser::where('course_id',$request->course_id)->whereNotIn('student_id',$request->student_id)->delete();
         foreach($request->student_id as $key => $student_id){
             $existECourseUser = ECourseUser::where('student_id',$student_id)->where('course_id',$request->course_id)->first();
             if(!$existECourseUser){
                 $eCourseUser = new ECourseUser;
                 $eCourseUser->course_id = $request->course_id;
                 $eCourseUser->student_id = $student_id;
+                $eCourseUser->semester_id = $request->portal_semester;
                 $eCourseUser->save();
             }
         }

@@ -9,13 +9,13 @@
     <div class="main_content">
         <div class="container">
 
-            <div class="text-2xl font-semibold">Exam </div>
+            <div class="text-2xl font-semibold">Test </div>
             <nav class="cd-secondary-nav border-b md:m-0 nav-small">
-                <ul>
+               <!-- <ul>
                     <li class="active"><a href="#exam_to_be_done" class="lg:px-2">Exam To Be Done</a></li>
                     <li><a class="lg:px-2" href="#completed" uk-scroll >Completed</a></li>
                     <li><a class="lg:px-2" href="#started" uk-scroll >Started</a></li>
-                </ul>
+                </ul> -->
             </nav>
             @if($testPapersPending->count() > 0)
                 @foreach($testPapersPending as $testPaper)
@@ -189,7 +189,7 @@
         <!-- footer -->
         <div class="lg:mt-28 mt-10 mb-7 px-12 border-t pt-7">
             <div class="flex flex-col items-center justify-between lg:flex-row max-w-6xl mx-auto lg:space-y-0 space-y-3">
-                <p class="capitalize font-medium"> © copyright 2023  EducateNXT</p>
+                <p class="capitalize font-medium"> © copyright 2023  </p>
                 <div class="lg:flex space-x-4 text-gray-700 capitalize hidden">
                     <a href="#"> About</a>
                     <a href="#"> Help</a>

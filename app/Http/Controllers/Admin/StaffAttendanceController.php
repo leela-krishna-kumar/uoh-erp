@@ -87,7 +87,25 @@ class StaffAttendanceController extends Controller
 
 
         $data['roles'] = Role::orderBy('name', 'asc')->get();
-        $data['departments'] = Department::where('status', '1')->orderBy('title', 'asc')->get();
+
+
+
+
+
+        if(auth()->user()->hasRole('HoD'))
+        {
+            // dd('88');
+
+            $data['departments'] = Department::where('id', auth()->user()->department_id)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['departments'] = Department::where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
+
+
+
         $data['designations'] = Designation::where('status', '1')->orderBy('title', 'asc')->get();
         $data['work_shifts'] = WorkShiftType::where('status', '1')->orderBy('title', 'asc')->get();
 
@@ -171,7 +189,7 @@ class StaffAttendanceController extends Controller
             // Insert Or Update Data
             $staffAttendance = StaffAttendance::updateOrCreate(
             [
-                'user_id' => $request->users[$key], 
+                'user_id' => $request->users[$key],
                 'date' => $date
             ],[
                 'user_id' => $request->users[$key],
@@ -274,11 +292,11 @@ class StaffAttendanceController extends Controller
 
             $data['rows'] = $users->where('status', '1')->limit(10)->orderBy('staff_id', 'asc')->get();
         }
-        
+
 
         // Attendances
         if(!empty($request->role) || !empty($request->department) || !empty($request->designation) || !empty($request->shift) || !empty($request->month) || !empty($request->year)){
-            
+
             if(!empty($request->month) && !empty($request->year)){
 
                 $attendances = StaffAttendance::whereYear('date', $year)->whereMonth('date', $month);

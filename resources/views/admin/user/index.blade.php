@@ -8,6 +8,8 @@
         <!-- [ Main Content ] start -->
         <div class="row">
             <div class="col-sm-12">
+
+
                 <div class="card">
                     <div class="card-header">
                         <h5>{{ $title }} {{ __('list') }}</h5>
@@ -23,7 +25,11 @@
                     <div class="card-block">
                         <form class="needs-validation" novalidate method="get" action="{{ route($route.'.index') }}">
                             <div class="row gx-2">
-                                @include('common.inc.staff_search_filter')
+
+                                {{-- @if((auth()->user()->roles[0]->name == 'Super Admin') || (auth()->user()->roles[0]->name == 'admin')) --}}
+                                    @include('common.inc.staff_search_filter')
+                                {{-- @endif --}}
+
                                 <div class="form-group col-md-2">
                                     <button type="submit" class="btn btn-info btn-filter"><i class="fas fa-search"></i> {{ __('btn_search') }}</button>
                                 </div>
@@ -31,6 +37,8 @@
                         </form>
                     </div>
                 </div>
+
+
             </div>
 
             <div class="col-sm-12">
@@ -159,5 +167,10 @@
     </div>
 </div>
 <!-- End Content-->
+
+@endsection
+@section('page_js')
+
+@yield('sub-script')
 
 @endsection

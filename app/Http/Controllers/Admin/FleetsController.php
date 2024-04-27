@@ -214,4 +214,15 @@ class FleetsController extends Controller
         
         
     }
+
+    public function driverDetails(Request $request)
+    {
+        $data['title'] = 'Driver Details';
+        $data['rows'] = User::where('status', '1')
+        ->with('roles')
+        ->whereHas('roles', function ($query) {
+            $query->where('slug', 'driver');
+        })->get();
+        return view($this->view.'.driverDetails', $data);
+    }
 }

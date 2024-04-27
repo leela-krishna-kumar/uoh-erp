@@ -2,6 +2,11 @@
 @section('title', $title)
 @section('content')
 
+<head>
+    <link rel="stylesheet" href="path/to/select2.min.css">
+    <script src="path/to/jquery.min.js"></script>
+    <script src="path/to/select2.min.js"></script>
+</head>
 <!-- Start Content-->
 <div class="main-body">
     <div class="page-wrapper">
@@ -121,7 +126,7 @@
             html += '<hr/>';
             html += '<div id="inputFormField" class="card-block">';
             html += '<div class="row">';
-            html += '<div class="form-group col-md-2"><label for="subject">{{ __('field_subject') }} <span>*</span></label><select class="form-control select2" name="subject[]" id="subject" required onchange="getTeachers(this)"><option value="">{{ __('select') }}</option> @isset($subjects) @foreach( $subjects as $subject) <option value="{{ $subject->id }}"data-managed_by="">{{ $subject->code }} - {{ $subject->title }}</option> @endforeach @endisset </select> <div class="invalid-feedback"> {{ __('required_field') }} {{ __('field_subject') }}</div></div>';
+            html += '<div class="form-group col-md-2"><label for="subject">{{ __('field_subject') }} <span>*</span></label> <select class="form-control select2"  name="subject[]" required onchange="getTeachers(this)"><option value="">{{ __('select') }}</option> @isset($subjects) @foreach( $subjects as $subject) <option value="{{ $subject->id }}"data-managed_by="">{{ $subject->code }} - {{ $subject->title }}</option> @endforeach @endisset </select><div class="invalid-feedback"> {{ __('required_field') }} {{ __('field_subject') }}</div></div>';
             html += '<div class="form-group col-md-2"><label for="teacher">{{ __('field_teacher') }} <span>*</span></label> <select class="form-control select2 teacher-select" name="teacher[]" id="teacher"><option value="">{{ __('select') }}</option> </select> <div class="invalid-feedback"> {{ __('required_field') }} {{ __('field_teacher') }} </div> </div>';
             html += '<div class="form-group col-md-2"> <label for="room">{{ __('field_room') }} {{ __('field_no') }} <span>*</span></label> <select class="form-control select2" name="room[]" id="room" required> <option value="">{{ __('select') }}</option> @isset($rooms) @foreach( $rooms as $room ) <option value="{{ $room->id }}">{{ $room->title }} - {{ $room->type }}</option> @endforeach @endisset </select> <div class="invalid-feedback"> {{ __('required_field') }} {{ __('field_room') }} {{ __('field_no') }} </div> </div>';
             html += '<div class="form-group col-md-2"> <label for="start_time">{{ __('field_time') }} {{ __('field_from') }} <span>*</span></label><input type="time" class="form-control time" name="start_time[]" id="start_time" required><div class="invalid-feedback"> </div></div>';
@@ -130,6 +135,7 @@
             html += '</div>';
 
             $('#newField-'+tab).append(html);
+
 
             // Time Picker
             $('.time').bootstrapMaterialDatePicker({
@@ -181,6 +187,9 @@
                             text: teacher.staff_id + ' - ' + teacher.first_name + ' ' + teacher.last_name
                         }));
                     });
+                    if ($(selectElement).find('option:selected').text().toLowerCase().includes('lunch break')) {
+                        teacherSelect.find('option:eq(1)').prop('selected', true);
+                    }
                 },
             error: function(xhr, status, error) {
                 // Handle the error as needed.

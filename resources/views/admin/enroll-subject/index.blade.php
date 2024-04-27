@@ -18,7 +18,7 @@
                         <div class="card-block">
                             <!-- Form Start -->
                             @include('common.inc.subject_enroll_filter')
-                      
+
                             <div class="form-group">
                                 <label for="subject">{{ __('field_subject') }} <span>* ({{ __('select_multiple') }})</span></label>
                                 <select class="form-control subject select2" name="subjects[]" id="subject" multiple required>

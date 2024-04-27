@@ -194,6 +194,7 @@
                                   @endforeach
                                 </tbody>
                             </table>
+                            {{ $rows->appends(request()->input())->links() }}
                         </div>
                         <!-- [ Data table ] end -->
                     </div>

@@ -48,22 +48,22 @@
                                         <td>{{ $row->title }}</td>
                                         <td>
                                             @if ($row->is_published == 1)
-                                              <span class="badge badge-success">Publish</span>  
+                                              <span class="badge badge-success">Publish</span>
                                             @else
-                                              <span class="badge badge-danger">Unpublish</span>  
+                                              <span class="badge badge-danger">Unpublish</span>
                                             @endif
                                         </td>
                                         <td>{{$row->createdBy->first_name }}{{$row->createdBy->last_name}}</td>
-                                        
+
                                         <td>
-                                            <a href="{{ route('admin.ecourse-assignment.index', $row->id) }}" class="btn btn-icon btn-success btn-sm">
+                                            {{-- <a href="{{ route('admin.ecourse-assignment.index', $row->id) }}" class="btn btn-icon btn-success btn-sm">
                                                 <i class="fas fa-address-book"></i>
-                                            </a>
+                                            </a> --}}
                                             @can($access.'-edit')
                                             <a href="{{ route($route.'.edit',$row->id) }}" class="btn btn-icon btn-primary btn-sm">
                                                 <i class="far fa-edit"></i>
                                             </a>
-                                            @endcan 
+                                            @endcan
                                             @can($access.'-delete')
                                             <button type="button" class="btn btn-icon btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $row->id }}">
                                                 <i class="fas fa-trash-alt"></i>

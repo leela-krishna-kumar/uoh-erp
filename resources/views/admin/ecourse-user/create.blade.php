@@ -39,6 +39,18 @@
                     <form class="needs-validation" novalidate action="{{route($route.'.store')}}" method="post" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="course_id" value="{{$course->id}}">
+                        @php
+                        $semesters =  App\Models\Semester::where('status',1)->get();
+                    @endphp
+                    <div class="form-group col-md-3">
+                        <label for="portal_semester">Select Semester To Assign Course<span>*</span></label>
+                        <select class="form-control" name="portal_semester" id="portal_semester" required>
+                            <option value="">{{ __('select') }}</option>
+                            @foreach ($semesters as $semester)
+                            <option value={{$semester->id}}>{{$semester->title}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                         <div class="card">
                             <div class="card-block">
                                 <input type="text" name="faculty" value="{{ $selected_faculty }}" hidden>
@@ -54,7 +66,10 @@
                                         <thead>
                                             <tr>
                                                 <th>
-                                                    #
+                                                    <div class="checkbox checkbox-success d-inline">
+                                                        <input type="checkbox" id="checkbox" class="all_select">
+                                                        <label for="checkbox" class="cr" style="margin-bottom: 0px;"></label>
+                                                    </div>
                                                 </th>
                                                 <th>{{ __('field_student_id') }}</th>
                                                 <th>{{ __('field_student') }}</th>
@@ -67,7 +82,7 @@
                                         </thead>
                                         <tbody>
                                         @foreach($rows as $key => $row)
-                                            @php 
+                                            @php
                                                $ecourse_user = App\Models\ECourseUser::where('course_id', $course->id)
                                                ->where('student_id', $row->student_id)->first();
                                             @endphp
@@ -130,6 +145,15 @@
 
 @endsection
 @section('page_js')
-
+<script type="text/javascript">
+     $(".all_select").on('click',function(e){
+        if($(this).is(":checked")){
+            $("input[name='student_id[]']").prop('checked', true);
+        }
+        else if($(this).is(":not(:checked)")){
+            $("input[name='student_id[]']").prop('checked', false);
+        }
+    });
+</script>
 @yield('sub-script')
 @endsection

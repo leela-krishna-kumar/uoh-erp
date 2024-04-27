@@ -89,10 +89,10 @@ class ProfileController extends Controller
         //  return $request->all();
         // Field Validation
         $request->validate([
-            'first_name' => 'required |string|regex:/^[A-Za-z]+$/',
-            'last_name' => 'required |string|regex:/^[A-Za-z]+$/',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'gender' => 'required',
-            'dob' => 'required|date',
+           // 'dob' => 'required|date',
             'phone' => 'required',
             'photo' => 'nullable|image',
         ]);
@@ -104,9 +104,10 @@ class ProfileController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->father_name = $request->father_name;
+            $user->email = $request->email;
             $user->mother_name = $request->mother_name;
             $user->gender = $request->gender;
-            $user->dob = $request->dob;
+         //   $user->dob = $request->dob;
             $user->phone = $request->phone;
             $user->emergency_phone = $request->emergency_phone;
             $user->marital_status = $request->marital_status;

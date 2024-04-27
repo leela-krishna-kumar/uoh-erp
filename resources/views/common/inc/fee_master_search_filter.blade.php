@@ -98,7 +98,7 @@
               console.log("Okk");
             // var jsonData=JSON.parse(response);
             $('option', program).remove();
-            $('.program').append('<option value="">{{ __("all") }}</option>');
+            $('.program').append('<option value="">{{ __("select") }}</option>');
             $.each(response, function(){
               $('<option/>', {
                 'value': this.id,
@@ -129,7 +129,7 @@
         success:function(response){
             // var jsonData=JSON.parse(response);
             $('option', session).remove();
-            $('.session').append('<option value="">{{ __("all") }}</option>');
+            $('.session').append('<option value="all">{{ __("select") }}</option>');
             $.each(response, function(){
               $('<option/>', {
                 'value': this.id,
@@ -150,7 +150,7 @@
         success:function(response){
             // var jsonData=JSON.parse(response);
             $('option', semester).remove();
-            $('.semester').append('<option value="">{{ __("all") }}</option>');
+            $('.semester').append('<option value="all">{{ __("select") }}</option>');
             $.each(response, function(){
               $('<option/>', {
                 'value': this.id,
@@ -181,7 +181,7 @@
         success:function(response){
             // var jsonData=JSON.parse(response);
             $('option', section).remove();
-            $('.section').append('<option value="">{{ __("all") }}</option>');
+            $('.section').append('<option value="all">{{ __("select") }}</option>');
             $.each(response, function(){
               $('<option/>', {
                 'value': this.id,

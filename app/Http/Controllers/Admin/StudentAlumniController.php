@@ -76,7 +76,7 @@ class StudentAlumniController extends Controller
         // }else{
         //     $data['rows'] = [];
         // }
-        $data['rows'] = $students->orderBy('student_id', 'asc')->get();
+        $data['rows'] = $students->select('id','student_id','first_name','last_name','phone','email','dob','batch_id','program_id','collage_graduation_year','collage_graduation_point','status')->orderBy('student_id', 'asc')->get();
 
 
         return view($this->view.'.index', $data);

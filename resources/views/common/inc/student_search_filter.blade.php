@@ -1,6 +1,6 @@
 <div class="form-group col-md-3">
   <label for="faculty">{{ __('field_course') }}</label>
-  <select class="form-control faculty" name="faculty" id="faculty">
+  <select class="form-control faculty" name="faculty" id="faculty" required>
     <option value="">{{ __('select') }}</option>
     <!-- <option value="all" @if( $selected_faculty == 'all')selected @endif>{{ __('all') }}</option> -->
     @if(isset($faculties))
@@ -16,7 +16,7 @@
 </div>
 <div class="form-group col-md-3">
   <label for="program">{{ __('field_program') }}</label>
-  <select class="form-control program" name="program" id="program">
+  <select class="form-control program" name="program" id="program" required>
     <option value="">{{ __('select') }}</option>
     <!-- <option value="all" @if( $selected_program == 'all')selected @endif>{{ __('all') }}</option> -->
     @if(isset($programs))
@@ -32,7 +32,7 @@
 </div>
 <div class="form-group col-md-3">
   <label for="session">{{ __('field_academic') }} {{ __('field_year') }}</label>
-  <select class="form-control session" name="session" id="session">
+  <select class="form-control session" name="session" id="session" required>
     <option value="">{{ __('select') }}</option>
     <!-- <option value="all" @if( $selected_session == 'all')selected @endif>{{ __('all') }}</option> -->
     @if(isset($sessions))
@@ -48,7 +48,7 @@
 </div>
 <div class="form-group col-md-3">
   <label for="semester">{{ __('field_semester') }}</label>
-  <select class="form-control semester" name="semester" id="semester">
+  <select class="form-control semester" name="semester" id="semester" required>
     <option value="">{{ __('select') }}</option>
     <!-- <option value="all" @if( $selected_semester == 'all') selected @endif>{{ __('all') }}</option> -->
     {{-- <option value="all" @if($selected_semester != null && $selected_semester == 0) selected @endif>{{ __('all') }}</option> --}}
@@ -67,7 +67,7 @@
   <label for="section">{{ __('field_section') }}</label>
   <select class="form-control section" name="section" id="section">
     <option value="">{{ __('select') }}</option>
-    <!-- <option value="all"@if( $selected_section == 'all') selected @endif>{{ __('all') }}</option> -->
+    {{-- <option value="all"@if( $selected_section == 'all') selected @endif>{{ __('all') }}</option> --}}
     @if(isset($sections))
     @foreach( $sections->sortBy('title') as $section )
     <option value="{{ $section->id }}" @if( $selected_section == $section->id) selected @endif>{{ $section->title }}</option>
@@ -79,6 +79,8 @@
     {{ __('required_field') }} {{ __('field_section') }}
   </div>
 </div>
+
+
 @section('sub-script')
 <script type="text/javascript">
     "use strict";

@@ -31,11 +31,62 @@
                             </div>
                         </form>
                     </div>
-                    
+
                     <div class="card-block">
                         <form class="needs-validation" novalidate method="get" action="{{ route($route.'.index') }}">
                             <div class="row gx-2">
-                                @include('common.inc.student_search_filter')
+                                {{-- @include('common.inc.student_search_filter') --}}
+                                <div class="form-group col-md-3">
+                                    <label for="hostel">Hostel <span>*</span></label>
+                                    <select class="form-control hostel" name="hostel" id="hostel" required>
+                                      <option value="">{{ __('select') }}</option>
+                                      <!-- <option value="all" @if( $selected_hostel == 'all')selected @endif>{{ __('all') }}</option> -->
+                                      @if(isset($hostels))
+                                      @foreach($hostels->sortBy('id') as $hostel )
+                                      <option value="{{ $hostel->id }}" @if( $selected_hostel == $hostel->id) selected @endif>{{ $hostel->name }}</option>
+                                      @endforeach
+                                      @endif
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                      {{ __('required_field') }} Hostel
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="rooms">Room's</label>
+                                    <select class="form-control select2 rooms" name="rooms[]" id="rooms" multiple>
+                                      <option value="" >{{ __('select') }}</option>
+                                      <!-- <option value="all" @if( $selected_rooms == 'all')selected @endif>{{ __('all') }}</option> -->
+                                      @if(isset($rooms))
+                                      @foreach($rooms->sortBy('id') as $room )
+                                      {{-- <option value="{{ $room->id }}" @if( $selected_rooms == $room->id) selected @endif>{{ $room->name }}</option> --}}
+                                      <option value="{{ $room->id }}" @if(in_array($room->id, $selected_rooms)) selected @endif>{{ $room->name }}</option>
+                                      @endforeach
+                                      @endif
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                      {{ __('required_field') }} Rooms
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                      <div class="switch d-inline m-r-10">
+                                          <label for="from_date">From Date </label>
+                                          <input type="date"class="form-control" id="from_date" name="from_date" value="{{$selected_from_date}}" >
+                                          <label for="date" class="cr"></label>
+                                      </div>
+                                  </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                      <div class="switch d-inline m-r-10">
+                                          <label for="to_date">To Date </label>
+                                          <input type="date"class="form-control" id="to_date" name="to_date" value="{{$selected_to_date}}" >
+                                          <label for="date" class="cr"></label>
+                                      </div>
+                                  </div>
+                                </div>
 
                                 <div class="form-group col-md-3">
                                     <button type="submit" class="btn btn-info btn-filter"><i class="fas fa-search"></i> {{ __('btn_search') }}</button>
@@ -56,7 +107,10 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Student Name</th>
-                                        <th>{{ __('Direction') }}</th>
+                                        <th>Student Id</th>
+                                        <th>Room </th>
+                                        <th>Status</th>
+                                        {{-- <th>{{ __('Direction') }}</th> --}}
                                         <th>{{ __('Date') }}</th>
                                         <th>{{ __('Action') }}</th>
                                     </tr>
@@ -65,14 +119,42 @@
                                   @foreach($rows as $key => $row)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
+
+                                        {{-- <td>{{ @$row->student->first_name ?? "--" }} {{@$row->student->last_name}}</td> --}}
                                         <td>{{ @$row->student->first_name ?? "--" }} {{@$row->student->last_name}}</td>
                                         <td>
+                                             @if($row)
+                                            <a href="{{ route('admin.student.show', $row->id) }}">
+                                                #{{ $row->student_id ?? '' }}
+                                            </a>
+                                            @endif
+                                        </td>
+                                        <td>{{$row->hostel_name}}</td>
+                                        <td>
+                                            @if($row->status  == 'P')
+                                            <span class="badge badge-info" >P</span>
+                                            @elseif ($row->status  == 'A')
+                                            <span class="badge badge-danger">A</span>
+                                            @else
+                                             {{ $row->status }}
+                                            @endif
+                                        </td>
+
+                                        @php
+                                        //  $student = Student::where('id',$row->student_id)->first();
+                                        $student = App\Models\Student::where('id',$row->student_id)->first();
+                                         @endphp
+                                         {{-- <td>{{ $student}}</td> --}}
+                                        {{-- <td>
                                             @if($row->direction == 1)
                                             <span class="badge badge-info">In</span>
-                                            @else 
-                                            <span class="badge badge-danger">Out</span> 
-                                            @endif</td>
-                                        <td>{{ $row->date }}</td>
+                                            @else
+                                            <span class="badge badge-danger">Out</span>
+                                            @endif
+                                        </td> --}}
+                                        {{-- <td>{{ $row->date }}</td> --}}
+                                        <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
+
                                         <td>
 
                                             @can($access.'-edit')
@@ -80,7 +162,7 @@
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             @endcan
-                                            
+
                                             @can($access.'-delete')
                                             <button type="button" class="btn btn-icon btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $row->id }}">
                                                 <i class="fas fa-trash-alt"></i>
@@ -107,4 +189,36 @@
 @endsection
 @section('page_js')
 @yield('sub-script')
+<script>
+     $(".hostel").on('change',function(e){
+      e.preventDefault(e);
+      var rooms=$(".rooms");
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+      $.ajax({
+        type:'POST',
+        url: "{{ route('filter-rooms') }}",
+        data:{
+          _token:$('input[name=_token]').val(),
+          hostel:$(this).val()
+        },
+        success:function(response){
+            //   console.log("Okk");
+            // var jsonData=JSON.parse(response);
+            $('option', rooms).remove();
+            $('.rooms').append('<option value="">{{ __("Select") }}</option>');
+            $.each(response, function(){
+              $('<option/>', {
+                'value': this.id,
+                'text': this.name
+              }).appendTo('.rooms');
+            });
+          }
+
+      });
+    });
+</script>
 @endsection

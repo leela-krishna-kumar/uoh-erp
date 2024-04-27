@@ -15,7 +15,7 @@ class ScholarshipController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    
+
      public function __construct()
      {
          // Module Data
@@ -24,8 +24,8 @@ class ScholarshipController extends Controller
          $this->view = 'admin.scholarship';
          $this->path = 'scholarship';
          $this->access = 'scholarship';
- 
- 
+
+
          $this->middleware('permission:'.$this->access.'-view|'.$this->access.'-create|'.$this->access.'-edit|'.$this->access.'-delete|'.$this->access.'-card', ['only' => ['index','show','status','sendPassword']]);
          $this->middleware('permission:'.$this->access.'-create', ['only' => ['create','store']]);
          $this->middleware('permission:'.$this->access.'-edit', ['only' => ['edit','update','status']]);
@@ -65,7 +65,7 @@ class ScholarshipController extends Controller
             Toastr::error(__('msg_error'));
 
             return redirect()->back();
-        // } 
+        // }
     }
 
     /**
@@ -76,7 +76,7 @@ class ScholarshipController extends Controller
      */
     public function store(Request $request)
     {
-       
+
         // try{
             $request->validate([
                 'title' => 'required',
@@ -104,7 +104,7 @@ class ScholarshipController extends Controller
             Toastr::error(__('msg_updated_error'), __('msg_error'));
 
             return redirect()->back();
-        // } 
+        // }
     }
 
     /**
@@ -140,9 +140,9 @@ class ScholarshipController extends Controller
             Toastr::error(__('msg_updated_successfully'), __('msg_error'));
 
             return redirect()->back();
-        } 
+        }
 
-    
+
     }
 
     /**
@@ -156,7 +156,7 @@ class ScholarshipController extends Controller
     {
 
         try{
-           
+
             $scholarship->title = $request->title;
             $scholarship->donor_id = $request->donor_id;
             $scholarship->note = $request->note;
@@ -172,7 +172,7 @@ class ScholarshipController extends Controller
             Toastr::error(__('msg_updated_error'), __('msg_error'));
 
             return redirect()->back();
-        }  
+        }
     }
 
     /**

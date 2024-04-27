@@ -28,7 +28,7 @@
                    @foreach($educations as $key => $education )
                       <tr>
                             <td>{{ $key + 1 }}</td>
-                            <td>{{ @$education->payload['education_level'] }}</td>
+                            <td>{{ @$education->education_type }}</td>
                             <td>{{ @$education->payload['year_of_graduation'] }}</td>
                             <td>{{ @$education->payload['graduation_academy'] }}</td>
                             <td>{{ @$education->payload['graduation_field'] }}</td>
@@ -49,6 +49,22 @@
           </div>
           <!-- [ Data table ] end -->
        </fieldset>
+       @php
+         $array = ['SSC', 'Inter', 'UG', 'PG', 'Ph.D'];
+         $education_level = App\Models\Education::where('model_id', auth()->user()->id)->where('education_type', 'Diploma')->first();
+         if($education_level)
+         {
+         $array = ['SSC', 'UG', 'PG', 'Ph.D'];
+         }
+         $education_level = App\Models\Education::where('model_id', auth()->user()->id)->pluck('education_type')->toArray();
+         $not_details = array_diff($array, $education_level);
+      @endphp
+      <p style="text-align: center; color: red;">
+         *Please fill these details: 
+         @foreach($not_details as $detail)
+             {{ $detail }},
+         @endforeach
+     </p>
     </div>
  </div>
  @include('admin.user.educational.create')

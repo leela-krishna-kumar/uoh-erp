@@ -94,7 +94,7 @@ class ExpenseController extends Controller
                     if(!empty($request->department_id) || $request->department_id != null){
                         $rows->where('department_id', $department_id);
                     }
-        $data['rows'] = $rows->orderBy('id', 'desc')->get();
+        $data['rows'] = $rows->select('id','title','category_id','department_id','invoice_id','amount','date','payment_method','status')->orderBy('id', 'desc')->get();
 
         return view($this->view.'.index', $data);
     }

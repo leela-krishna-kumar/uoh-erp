@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student\Auth;
 
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Auth;
 
@@ -31,7 +32,7 @@ class LoginController extends Controller
      * @return string
      */
     public function username(){
-        return 'email';
+        return 'roll_no';
     }
 
 	/**
@@ -59,6 +60,8 @@ class LoginController extends Controller
         ]);
     }
 
+	
+
     /**
      * Login the student.
      * 
@@ -66,8 +69,10 @@ class LoginController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function login(Request $request)
-	{
+	{	
 	    $this->validator($request);
+
+	//	dd($request->all());
 
 	    //check if the user has too many login attempts.
 	    if ($this->hasTooManyLoginAttempts($request)){
@@ -77,13 +82,19 @@ class LoginController extends Controller
 	        //redirect the user back after lockout.
 	        return $this->sendLockoutResponse($request);
 	    }
+
+		
 	    //attempt login.
-	    if(Auth::guard('student')->attempt($request->only('email','password'),$request->filled('remember'))){
+	    if(Auth::guard('student')->attempt($request->only('roll_no','password'),$request->filled('remember'))){
 	        //Authenticated
+			
 	        return redirect()
 	            ->intended(route('student.student-dashboard.index'))
 	            ->with('success', __('auth_logged_in'));
 	    }
+		
+
+		
 
 	    //keep track of login attempts from the user.
 	    $this->incrementLoginAttempts($request);
@@ -116,13 +127,13 @@ class LoginController extends Controller
 	{
 	    //validation rules.
 	    $rules = [
-	        'email'    => 'required|email|exists:students|min:5|max:191',
+	        'roll_no'    => 'required|exists:students|min:5|max:191',
 	        'password' => 'required|string|min:6|max:255',
 	    ];
 
 	    //custom validation error messages.
 	    $messages = [
-	        'email.exists' => __('auth_credentials_not_match'),
+	        'roll_no.exists' => __('auth_credentials_not_match'),
 	    ];
 
 	    //validate the request.

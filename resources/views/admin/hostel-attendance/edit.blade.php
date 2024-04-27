@@ -26,7 +26,7 @@
 
                         <a href="{{ route($route.'.edit', $row->id) }}" class="btn btn-info"><i class="fas fa-sync-alt"></i> {{ __('btn_refresh') }}</a>
                     </div>
-                </div> 
+                </div>
             </div>
 
             <form class="needs-validation" novalidate action="{{ route($route.'.update', [$row->id]) }}" method="post" enctype="multipart/form-data">
@@ -47,22 +47,23 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="direction" class="direction"value="{{$row->direction}}">
                                         <div class="col-md-12">
-                                            <label for="direction" class="mb-2">Direction</label>
+                                            <label for="direction" class="mb-2">Status</label>
                                             <div class="form-group">
                                               <div class="form-group d-inline">
                                                 <div class="radio radio-success d-inline">
-                                                    <input type="radio" name="direction" value="1" id="in" @if($row->direction == 1) checked @endif required>
-                                                    <label for="in" class="cr">{{ __('In') }}</label>
+                                                    <input type="radio" name="status" value="P" id="in" @if($row->status == 'P') checked @endif required>
+                                                    <label for="in" class="cr">P</label>
                                                 </div>
-                
+
                                                 <div class="radio radio-danger d-inline">
-                                                    <input type="radio" name="direction" value="2" id="out" @if($row->direction == 2) checked @endif required>
-                                                    <label for="out" class="cr">{{ __('Out') }}</label>
+                                                    <input type="radio" name="status" value="A" id="out" @if($row->status == 'A') checked @endif required>
+                                                    <label for="out" class="cr">A</label>
                                                 </div>
-                
+
                                                 <div class="invalid-feedback">
-                                                {{ __('required_field') }} {{ __('Direction') }}
+                                                {{ __('required_field') }} Status
                                                 </div>
                                             </div>
                                           </div>

@@ -87,9 +87,27 @@ class SubjectController extends Controller
 
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
         $data['regulations'] =Regulation ::orderBy('name', 'asc')->get();
-        if(!empty($request->faculty) || $request->faculty != '0'){
-        $data['programs'] = Program::where('faculty_id', $request->faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+
+        if(auth()->user()->hasRole('HoD'))
+        {           
+            $program_ids = json_decode(auth()->user()->program_ids);       
+            $data['programs'] = Program::where('faculty_id', $request->faculty)
+                                ->whereIn('id', $program_ids)->where('status', '1')->orderBy('title', 'asc')->get();
         }
+        else
+        {
+            $data['programs'] = Program::where('faculty_id', $request->faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
+
+        // if(!empty($request->faculty) || $request->faculty != '0'){
+        //     $program_ids = json_decode(auth()->user()->program_ids);
+            
+        // $data['programs'] = Program::where('faculty_id', $request->faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+        // }
+
+
+
         // Subject Search
         $subject = Subject::where('id', '!=', null);
 
@@ -141,9 +159,9 @@ class SubjectController extends Controller
 
         $teachers = User::where('status', '1');
         $teachers->with('roles')->whereHas('roles', function ($query){
-            $query->where('slug', 'teacher');
+            $query->where('slug', 'faculty');
         });
-        $data['teachers'] = $teachers->orderBy('staff_id', 'asc')->get();
+        $data['teachers'] = $teachers->orderBy('staff_id', 'asc')->select('id', 'staff_id', 'first_name', 'last_name')->get();
 
         return view($this->view.'.create', $data);
     }
@@ -229,9 +247,9 @@ class SubjectController extends Controller
         $data['regulations'] =Regulation ::orderBy('name', 'asc')->get();
         $teachers = User::where('status', '1');
         $teachers->with('roles')->whereHas('roles', function ($query){
-            $query->where('slug', 'teacher');
+            $query->where('slug', 'faculty');
         });
-        $data['teachers'] = $teachers->orderBy('staff_id', 'asc')->get();
+        $data['teachers'] = $teachers->orderBy('staff_id', 'asc')->select('id', 'staff_id', 'first_name', 'last_name')->get();
         $data['studentGroup'] = StudentGroup::select('id','name')->get();
 
         return view($this->view.'.edit', $data);
@@ -248,7 +266,7 @@ class SubjectController extends Controller
     {
         // Field Validation
         $request->validate([
-            'title' => 'required|max:191|unique:subjects,title,'.$subject->id,
+            // 'title' => 'required|max:191|unique:subjects,title,'.$subject->id,
             'code' => 'required|max:191|unique:subjects,code,'.$subject->id,
             'credit_hour' => 'required',
             'subject_type' => 'required',
@@ -298,12 +316,12 @@ class SubjectController extends Controller
             DB::beginTransaction();
             // Detach
             $subject->programs()->detach();
-            
+
             // Delete Data
             $subject->delete();
             DB::commit();
         }
-       
+
         Toastr::success(__('msg_deleted_successfully'), __('msg_success'));
 
         return redirect()->back();

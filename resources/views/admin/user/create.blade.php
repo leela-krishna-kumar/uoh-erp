@@ -68,11 +68,28 @@
                       <fieldset class="row scheduler-border">
                          <div class="form-group col-md-4">
                             <label for="staff_id">{{ __('field_staff_id') }} <span>*</span></label>
-                            <input type="text" class="form-control autonumber" name="staff_id" id="staff_id" value="{{ old('staff_id') }}" required>
+                            <input type="text" class="form-control autonumber" @if((auth()->user()->roles[0]->name != 'Super Admin') && (auth()->user()->roles[0]->name != 'admin')) readonly @endif name="staff_id" id="staff_id" value="{{ old('staff_id') }}" required>
                             <div class="invalid-feedback">
                                {{ __('required_field') }} {{ __('field_staff_id') }}
                             </div>
                          </div>
+
+                         <div class="form-group col-md-4">
+                           <label for="staff_id">AICTE ID<span>*</span></label>
+                           <input type="text" class="form-control autonumber" @if((auth()->user()->roles[0]->name != 'Super Admin') && (auth()->user()->roles[0]->name != 'admin')) readonly @endif name="aicte_id" id="aicte_id" value="{{ old('aicte_id') }}" required>
+                           <div class="invalid-feedback">
+                              {{ __('required_field') }} {{ __('field_staff_id') }}
+                           </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                           <label for="staff_id">JNTU ID <span>*</span></label>
+                           <input type="text" class="form-control autonumber" @if((auth()->user()->roles[0]->name != 'Super Admin') && (auth()->user()->roles[0]->name != 'admin')) readonly @endif name="jntu_id" id="jntu_id" value="{{ old('jntu_id') }}" required>
+                           <div class="invalid-feedback">
+                              {{ __('required_field') }} {{ __('field_staff_id') }}
+                           </div>
+                        </div>
+
                          <div class="form-group col-md-4">
                             <label for="first_name">{{ __('field_first_name') }} <span>*</span></label>
                             <input type="text" class="form-control" name="first_name" id="first_name" value="{{ old('first_name') }}" required>
@@ -236,13 +253,32 @@
                                {{ __('required_field') }} {{ __('field_blood_group') }}
                             </div>
                          </div>
-                         <div class="form-group col-md-6">
+                         {{-- <div class="form-group col-md-6">
                            <label for="national_id">{{ __('field_national_id') }}</label>
                            <input type="text" class="form-control" name="national_id" id="national_id" value="{{ old('national_id') }}">
                            <div class="invalid-feedback">
                               {{ __('required_field') }} {{ __('field_national_id') }}
                            </div>
-                        </div>
+                        </div> --}}
+
+                        <div class="form-group col-md-6">
+                           <label for="national_id">Aadhar Number</label>
+                           <input type="number" class="form-control" name="aadhar_no"  value="">
+
+                           {{-- <div class="invalid-feedback">
+                             {{ __('required_field') }} {{ __('field_national_id') }}
+                           </div> --}}
+                       </div>
+
+                       <div class="form-group col-md-6">
+                         <label for="national_id">Pan Number</label>
+                         <input type="text" class="form-control" name="pan" id="pan" value="">
+
+                         {{-- <div class="invalid-feedback">
+                           {{ __('required_field') }} {{ __('field_national_id') }}
+                         </div> --}}
+                     </div>
+                     
                         <div class="form-group col-md-6">
                            <label for="passport_no">{{ __('field_passport_no') }}</label>
                            <input type="text" class="form-control" name="passport_no" id="passport_no" value="{{ old('passport_no') }}">
@@ -471,7 +507,6 @@
       $("#present_country").on('change',function(e){
       e.preventDefault();
       var permanentProvince=$("#present_province");
-    
       $.ajaxSetup({
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

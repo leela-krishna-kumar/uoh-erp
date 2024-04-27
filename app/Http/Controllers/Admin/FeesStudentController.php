@@ -44,7 +44,7 @@ class FeesStudentController extends Controller
         $this->middleware('permission:'.$this->access.'-due', ['only' => ['index']]);
         $this->middleware('permission:'.$this->access.'-quick-assign', ['only' => ['quickAssign','quickAssignStore']]);
         $this->middleware('permission:'.$this->access.'-quick-received', ['only' => ['quickReceived','quickReceivedStore']]);
-        $this->middleware('permission:'.$this->access.'-action', ['only' => ['index','pay','unpay','cancel']]);
+        $this->middleware('permission:'.$this->access.'-action', ['only' => ['pay','unpay','cancel']]);
         $this->middleware('permission:'.$this->access.'-report', ['only' => ['report']]);
         $this->middleware('permission:'.$this->access.'-print', ['only' => ['report','print']]);
     }
@@ -114,7 +114,7 @@ class FeesStudentController extends Controller
         }
 
 
-        
+
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
         $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
         $data['print'] = PrintSetting::where('slug', 'fees-receipt')->first();
@@ -145,7 +145,7 @@ class FeesStudentController extends Controller
             $query->where('semester_id', $semester);
         });
         $data['sections'] = $sections->orderBy('title', 'asc')->get();}
-        
+
 
 
         // Filter Fees
@@ -187,7 +187,7 @@ class FeesStudentController extends Controller
         $fees->whereHas('studentEnroll.student', function ($query){
             $query->orderBy('student_id', 'asc');
         });
-        
+
         $data['rows'] = $fees->orderBy('id', 'desc')->get();
 
 
@@ -203,8 +203,8 @@ class FeesStudentController extends Controller
      */
     public function pay(Request $request)
     {
-        
-        
+
+
         // Field Validation
         $request->validate([
             'pay_date' => 'required|date|before_or_equal:today',
@@ -242,9 +242,9 @@ class FeesStudentController extends Controller
         // Fine Calculation
         $fine_amount = 0;
         if(empty($fee->pay_date) || $fee->due_date < $fee->pay_date){
-            
+
             $due_date = strtotime($fee->due_date);
-            $today = strtotime(date('Y-m-d')); 
+            $today = strtotime(date('Y-m-d'));
             $days = (int)(($today - $due_date)/86400);
 
             if($fee->due_date < date("Y-m-d")){
@@ -269,7 +269,7 @@ class FeesStudentController extends Controller
         $trans_id = Str::random(16);
 
         DB::beginTransaction();
-        // Update Data              
+        // Update Data
         // $fee->fee_amount = $request->fee_amount;
         $fee->transaction_id = $trans_id;
         $fee->discount_amount = $discount_amount;
@@ -443,7 +443,7 @@ class FeesStudentController extends Controller
         else{
             $data['selected_end_date'] = $end_date = date('Y-m-d', strtotime(Carbon::today()));
         }
-        
+
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
         $data['categories'] = FeesCategory::where('status', '1')->orderBy('title', 'asc')->get();
         $data['print'] = PrintSetting::where('slug', 'fees-receipt')->first();
@@ -474,7 +474,7 @@ class FeesStudentController extends Controller
             $query->where('semester_id', $semester);
         });
         $data['sections'] = $sections->orderBy('title', 'asc')->get();}
-        
+
 
         // Filter Fees
         $fees = Fee::where('status', '!=', '0');
@@ -511,11 +511,11 @@ class FeesStudentController extends Controller
                 }
             });
         }
-        
+
         $fees->whereHas('studentEnroll.student', function ($query){
             $query->orderBy('student_id', 'asc');
         });
-        
+
         $data['rows'] = $fees->orderBy('updated_at', 'desc')->get();
 
 
@@ -581,7 +581,7 @@ class FeesStudentController extends Controller
      */
     public function quickAssignStore(Request $request)
     {
-       
+
         // Field Validation
         $request->validate([
             'student' => 'required',
@@ -662,8 +662,15 @@ class FeesStudentController extends Controller
      */
     public function quickReceivedStore(Request $request)
     {
-      //   dd($request->all());
-         
+
+        if( $request->fee_amount == 0){
+                Toastr::error(__('Fee payment is zero'), __('msg_error'));
+
+                return redirect()->back();
+        }
+
+       //  dd($request->all());
+
         // Field Validation
         $request->validate([
             'student' => 'required',
@@ -691,7 +698,7 @@ class FeesStudentController extends Controller
             $fee->transaction_id = $trans_id;
             // $fee->student_enroll_id = $request->student;
             // $fee->category_id = $request->category;
-          //  $fee->fee_amount = $request->fee_amount;
+            // $fee->fee_amount = $request->fee_amount;
             $fee->discount_amount = $request->discount_amount;
             $fee->fine_amount = $request->fine_amount;
             $fee->paid_amount = $request->paid_amount;
@@ -704,7 +711,7 @@ class FeesStudentController extends Controller
             $fee->status = '1';
             $fee->updated_by = Auth::guard('web')->user()->id;
             $fee->update();
-        
+
 
             // Transaction
             $transaction = new Transaction;
@@ -755,7 +762,7 @@ class FeesStudentController extends Controller
         //$data['student_fee_data'] = [];
 
         $data['students'] = Student::whereHas('currentEnroll')->where('status', '1')->orderBy('student_id', 'asc')->get();
-        
+
         if(!empty($request->student) && $request->student != Null){
 
             $data['selected_student'] = $request->student;
@@ -774,7 +781,7 @@ class FeesStudentController extends Controller
             $data['sessions'] = Session::with('programs')->whereHas('programs', function ($query) use ($student){
                 $query->where('program_id', $student->program_id);
             })->where('status', '1')->orderBy('id', 'desc')->get();
-            
+
             $data['semesters'] = Semester::with('programs')->whereHas('programs', function ($query) use ($student){
                 $query->where('program_id', $student->program_id);
             })->where('status', '1')->orderBy('id', 'asc')->get();
@@ -800,7 +807,7 @@ class FeesStudentController extends Controller
     public function quickReceivedStoreBulk(Request $request)
     {
        //  dd($request->all());
-         
+
         // Field Validation
         // $request->validate([
         //     'student' => 'required',
@@ -819,8 +826,8 @@ class FeesStudentController extends Controller
         DB::beginTransaction();
 
 
-        foreach($request->fee_ids as $fee_id){           
-      
+        foreach($request->fee_ids as $fee_id){
+
 
         $trans_id = Str::random(16);
 
@@ -855,10 +862,10 @@ class FeesStudentController extends Controller
             }else{
                 $fee->status = '0';
             }
-            
+
             $fee->updated_by = Auth::guard('web')->user()->id;
             $fee->update();
-        
+
 
             // Transaction
             $transaction = new Transaction();

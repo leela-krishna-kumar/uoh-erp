@@ -140,7 +140,7 @@ class TransportReportController extends Controller
 
 
         // Student Filter
-        
+
         if(!empty($request->program) || !empty($request->semester) &&  !empty($request->faculty)  && !empty($request->session)  && !empty($request->section) || !empty($request->status)){
             $students = Student::where('status', '1');
             if($faculty != 0 && $faculty != 'all'){
@@ -148,7 +148,7 @@ class TransportReportController extends Controller
                     $query->where('faculty_id', $faculty);
                 });
             }
-            if(($session != 0 && $session != 'all') || ($semester != 0 && $semester != 'all') || ($section != 0 && $section != 'all')){ 
+            if(($session != 0 && $session != 'all') || ($semester != 0 && $semester != 'all') || ($section != 0 && $section != 'all')){
                  $students->with('currentEnroll')->whereHas('currentEnroll', function ($query) use ($program, $session, $semester, $section){
                     if($program != 0 && $program != 'all'){
                     $query->where('program_id', $program);
@@ -175,9 +175,11 @@ class TransportReportController extends Controller
         }
         $hostelStudentsIds = TransportMember::where('transportable_type',Student::Class)->where('status',1)->pluck('transportable_id')->toArray();
         $students = Student::where('status', '1')->whereIn('id',$hostelStudentsIds);
-        $data['rows'] = $students->orderBy('student_id', 'desc')->get();
+        $data['rows'] = $students->orderBy('student_id', 'desc')->limit(10)->get();
+
 
         if($request->id){
+            dd("ok");
             $students = Student::where('id','LIKE', '%'.$request->id.'%')->orWhere('admission_no','LIKE', '%'.$request->id.'%');
             $data['rows'] = $students->orderBy('student_id', 'desc')->get();
         }
@@ -188,7 +190,7 @@ class TransportReportController extends Controller
         //         }
         //     });
         // }
-        
+
         return view($this->view.'.student-fee-defaulters', $data);
     }
 
@@ -231,7 +233,7 @@ class TransportReportController extends Controller
         $department = Department::where('title','Transportation')->first();
         $data['categories'] = FeesCategory::where('department_id',@$department->id)->get();
         $hostelUserIds = TransportMember::where('transportable_type',User::Class)->where('status',1)->pluck('transportable_id')->toArray();
-        
+
         $users = User::where('id', '!=', '0')->whereIn('id',$hostelUserIds);
         if(!empty($request->department) && $request->department != '0'){
             $users->where('department_id', $department);

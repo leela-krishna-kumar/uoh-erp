@@ -15,6 +15,7 @@ use App\Models\Fee;
 use App\Models\FeesCategory;
 use App\Models\Student;
 use App\Models\Hostel;
+use App\Models\HostelRoom;
 use App\Models\StudentEnroll;
 use Carbon\Carbon;
 use Toastr;
@@ -37,8 +38,6 @@ class HostelStudentController extends Controller
         $this->access = 'hostel-member';
 
 
-        $this->middleware('permission:'.$this->access.'-view|'.$this->access.'-create', ['only' => ['index','show']]);
-        $this->middleware('permission:'.$this->access.'-create', ['only' => ['store','update']]);
     }
 
     /**
@@ -91,6 +90,21 @@ class HostelStudentController extends Controller
             $data['selected_section'] = $section = '0';
         }
 
+        if(!empty($request->hostel) || $request->hostel != null){
+            $data['selected_hostel'] = $hostel = $request->hostel;
+        }
+        else{
+            $data['selected_hostel'] = $hostel = '0';
+        }
+
+        if(!empty($request->rooms) || $request->rooms != null){
+            $data['rooms'] = HostelRoom::where('status', '1')->orderBy('name', 'asc')->get();
+            $data['selected_rooms'] = $rooms = $request->rooms;
+        }
+        else{
+            $data['selected_rooms'] = $rooms = [];
+        }
+
 
         $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
         $data['hostels'] = Hostel::where('type', '!=', '3')->where('status', '1')->orderBy('name', 'asc')->get();
@@ -120,11 +134,38 @@ class HostelStudentController extends Controller
             $query->where('program_id', $program);
             $query->where('semester_id', $semester);
         });
-        $data['sections'] = $sections->orderBy('title', 'asc')->get();}
+        $data['sections'] = $sections->orderBy('title', 'asc')->get();
+    }
 
 
         // Student Filter
+
         $students = Student::where('id', '!=', '0');
+        if ($hostel != 0){
+            $hostel_rooms = HostelRoom::where('hostel_id',$hostel);
+            if (!empty($rooms)){
+                $hostel_rooms =$hostel_rooms->whereIn('id',$rooms);
+            }
+            $hostel_rooms = $hostel_rooms->pluck('id');
+            // return $hostel_rooms;
+            $students = $students->whereHas('hostelRoom', function ($query)  use ($hostel_rooms){
+                $query->whereIn('hostel_room_id', $hostel_rooms);
+            })
+            ->with(['hostelRoom' => function ($query) {
+            }, 'hostelRoom.room']);
+
+            // $students = $students->where('id', '!=', '0')
+            // ->has('hostelRoom')
+            // ->with(['hostelRoom' => function ($query) {
+            //     // Apply any conditions on hostelRoom if needed
+            // }, 'hostelRoom.room' => function ($query) {
+            //     // Apply where condition for room relation
+            //     $query->where('hostel_id', 8); // Example condition: capacity greater than 2
+            // }]);
+        } else {
+            $students = $students->has('hostelRoom')->with('hostelRoom.room');
+        }
+
         if($faculty != 0){
             $students->with('program')->whereHas('program', function ($query) use ($faculty){
                 $query->where('faculty_id', $faculty);
@@ -147,12 +188,49 @@ class HostelStudentController extends Controller
             $query->where('status', '1');
         });
         }
-        $data['rows'] = $students->orderBy('student_id', 'desc')->get();
-        
 
+        if (!empty($request->all())){
+            $data['rows'] = $students->orderBy('student_id', 'desc')->get();
+
+        } else {
+            $data['rows'] =[];
+        }
+
+        // return  $data;
         return view($this->view.'.index', $data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(Request $request)
+    {
+
+        $data['title'] = $this->title;
+        $data['route'] = $this->route;
+        $data['view'] = $this->view;
+        $data['path'] = $this->path;
+        $data['access'] = $this->access;
+
+        if(!empty($request->search_roll) || $request->search_roll != null){
+            $data['selected_search_roll'] = $search_roll = $request->search_roll;
+        }
+        else{
+            $data['selected_search_roll'] = $semester = '';
+        }
+
+        $data['hostels'] = Hostel::where('type', '!=', '3')->where('status', '1')->orderBy('name', 'asc')->get();
+
+        if (!empty($request->all())){
+            $data['row'] = Student::where('roll_no',$request->search_roll)->with('currentEnroll')->with('program')->first();
+            // return $data['row'];
+        }
+
+
+        return view($this->view.'.student-allocation', $data);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -168,7 +246,7 @@ class HostelStudentController extends Controller
             'member_id' => 'required',
         ]);
 
-       // dd($request->all());
+    //    dd($request->all());
 
         $student = Student::findOrFail($request->student_id);
 
@@ -182,14 +260,15 @@ class HostelStudentController extends Controller
         // Insert Data
         $member = HostelMember::firstOrNew(['id' => $request->member_id]);
 
-        $member->faculty_id = $studentEnrollId->faculty_id;
-        $member->program_id = $studentEnrollId->program_id;
-        $member->session_id = $studentEnrollId->session_id;
-        $member->semester_id = $studentEnrollId->semester_id;
-        $member->section_id = $studentEnrollId->section_id;
-        $member->fee_category_id = $feecategory->id;
+        // $member->faculty_id = $studentEnrollId->faculty_id;
+        // $member->program_id = $studentEnrollId->program_id;
+        // $member->session_id = $studentEnrollId->session_id;
+        // $member->semester_id = $studentEnrollId->semester_id;
+        // $member->section_id = $studentEnrollId->section_id;
+        // $member->fee_category_id = $feecategory->id;
 
         $member->hostel_room_id = $request->hostel_room;
+        $member->hostel_id = $request->hostel;
         $member->start_date = Carbon::today();
         $member->status = '1';
         $member->created_by = Auth::guard('web')->user()->id;
@@ -200,7 +279,7 @@ class HostelStudentController extends Controller
 
         $fees = new Fee;
         $fees->fee_master_id = null;
-        $fees->transport_members_id = $member->id;
+        // $fees->transport_members_id = $member->id;
         $fees->student_enroll_id = $studentEnrollId->id;
         $fees->category_id = $feecategory->id;
         $fees->fee_amount = $feecategory->amount;
@@ -246,5 +325,16 @@ class HostelStudentController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function cresteGatepass()
+    {
+        $data['title'] = $this->title;
+        $data['route'] = $this->route;
+        $data['view'] = $this->view;
+        $data['path'] = $this->path;
+        $data['access'] = $this->access;
+
+        return view($this->view.'.create-gate-pass', $data);
     }
 }

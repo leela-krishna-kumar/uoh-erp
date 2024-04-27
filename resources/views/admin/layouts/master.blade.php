@@ -23,7 +23,8 @@
                 @if(isset($setting))
                     @if(is_file('uploads/setting/'.$setting->logo_path))
                     <a href="{{ route('admin.dashboard.index') }}" class="b-brand">
-                        <img src="{{ asset('uploads/setting/'.$setting->logo_path) }}" alt="logo">
+                        {{-- <img src="{{ asset('uploads/setting/'.$setting->logo_path) }}" alt="logo"> --}}
+                        <img src="{{ asset('assets/images/logopsd_blue.jpg') }}" alt="logo">
                     </a>
                     @endif
                 @endif
@@ -184,11 +185,11 @@
                     <div class="dropdown drp-user">
                         <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                             {{-- <i class="far fa-user"></i> --}}
-                            <img src="{{ asset('uploads/user/'.Auth::user()->photo) }}" class="profile_img" alt="User Profile" onerror="this.src='{{ asset('dashboard/images/user/avatar-1.jpg') }}';">
+                            <img src="{{ asset('uploads/student/'.Auth::user()->photo) }}" class="profile_img" alt="User Profile" onerror="this.src='{{ asset('dashboard/images/user/avatar-1.jpg') }}';">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right profile-notification">
                             <div class="pro-head">
-                                <img src="{{ asset('uploads/user/'.Auth::user()->photo) }}" class="img-radius" alt="User Profile" onerror="this.src='{{ asset('dashboard/images/user/avatar-1.jpg') }}';">
+                                <img src="{{ asset('uploads/student/'.Auth::user()->photo) }}" class="img-radius" alt="User Profile" onerror="this.src='{{ asset('dashboard/images/user/avatar-1.jpg') }}';">
                                 <span>{{ Auth::user()->name }}</span>
 
                                 <a href="javascript:void(0);" class="dud-logout" href="{{ route('logout') }}"

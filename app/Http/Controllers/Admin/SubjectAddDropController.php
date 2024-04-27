@@ -3,13 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Faculty;
 use App\Models\StudentEnroll;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Grade;
+use App\Models\Program;
+use App\Models\Section;
+use App\Models\Semester;
+use App\Models\Session;
 use Toastr;
 use Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class SubjectAddDropController extends Controller
 {
@@ -38,45 +45,115 @@ class SubjectAddDropController extends Controller
      */
     public function index(Request $request)
     {
-        //
         $data['title'] = $this->title;
         $data['route'] = $this->route;
         $data['view'] = $this->view;
         $data['path'] = $this->path;
         $data['access'] = $this->access;
+        $data['rows'] = [];
 
 
-        $data['students'] = Student::whereHas('currentEnroll')->where('status', '1')->orderBy('student_id', 'asc')->get();
-        
-        if(!empty($request->student) && $request->student != Null){
+        if(!empty($request->faculty) || $request->faculty != null){
+            $data['selected_faculty'] = $faculty = $request->faculty;
+        }
+        else{
+            $data['selected_faculty'] = '0';
+        }
 
-            $data['selected_student'] = $request->student;
+        if(!empty($request->program) || $request->program != null){
+            $data['selected_program'] = $program = $request->program;
+        }
+        else{
+            $data['selected_program'] = '0';
+        }
 
-            // Student
-            $student = Student::where('student_id', $request->student)->where('status', '1');
-            $student->with('currentEnroll')->whereHas('currentEnroll', function ($query){
-                $query->where('status', '1');
+        if(!empty($request->session) || $request->session != null){
+            $data['selected_session'] = $session = $request->session;
+        }
+        else{
+            $data['selected_session'] = '0';
+        }
+
+        if(!empty($request->semester) || $request->semester != null){
+            $data['selected_semester'] = $semester = $request->semester;
+        }
+        else{
+            $data['selected_semester'] = '0';
+        }
+
+        if(!empty($request->section) || $request->section != null){
+            $data['selected_section'] = $section = $request->section;
+        }
+        else{
+            $data['selected_section'] = '0';
+        }
+
+
+        // Search Filter
+        $data['faculties'] = Faculty::where('status', '1')->orderBy('title', 'asc')->get();
+
+
+        if(!empty($request->faculty) && !empty($request->program) && !empty($request->session) && !empty($request->semester) && !empty($request->section)){
+
+            $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+
+            $sessions = Session::where('status', 1);
+            $sessions->with('programs')->whereHas('programs', function ($query) use ($program){
+                $query->where('program_id', $program);
             });
-            $data['row'] = $row = $student->first();
+            $data['sessions'] = $sessions->orderBy('id', 'desc')->get();
 
+            $semesters = Semester::where('status', 1);
+            $semesters->with('programs')->whereHas('programs', function ($query) use ($program){
+                $query->where('program_id', $program);
+            });
+            $data['semesters'] = $semesters->orderBy('id', 'asc')->get();
 
-            // Subjects
-            $subjects = Subject::where('status', '1');
-            $subjects->with('programs')->whereHas('programs', function ($query) use ($row){
-                $query->where('program_id', $row->program_id);
+            $sections = Section::where('status', 1);
+            $sections->with('semesterPrograms')->whereHas('semesterPrograms', function ($query) use ($program, $semester){
+                $query->where('program_id', $program);
+                $query->where('semester_id', $semester);
+            });
+            $data['sections'] = $sections->orderBy('title', 'asc')->get();
+
+            $subjects = Subject::where('status', 1);
+            $subjects->with('programs')->whereHas('programs', function ($query) use ($program){
+                $query->where('program_id', $program);
             });
             $data['subjects'] = $subjects->orderBy('code', 'asc')->get();
 
-
-            // Current Enroll
-            $data['curr_enr'] = StudentEnroll::where('student_id', $row->id)
-                        ->where('status', '1')
-                        ->orderBy('id', 'desc')->first();
-
             $data['grades'] = Grade::where('status', '1')->orderBy('min_mark', 'desc')->get();
         }
-        else {
-            $data['selected_student'] = Null;
+
+
+        // Student Filter
+        if(!empty($request->faculty) && !empty($request->program) && !empty($request->session) && !empty($request->semester) && !empty($request->section)){
+
+            $students = Student::where('status', '1');
+            if(!empty($request->faculty)){
+                $students->with('program')->whereHas('program', function ($query) use ($faculty){
+                    $query->where('faculty_id', $faculty);
+                });
+            }
+            if(!empty($request->program) && !empty($request->session) && !empty($request->semester) && !empty($request->section)){
+                $students->with('currentEnroll')->whereHas('currentEnroll', function ($query) use ($program, $session, $semester, $section){
+                    $query->where('program_id', $program);
+                    $query->where('session_id', $session);
+                    $query->where('semester_id', $semester);
+                    $query->where('section_id', $section);
+                    $query->where('status', '1');
+                });
+            }
+             $data['rows'] = $students->orderBy('student_id', 'asc')->get();
+
+
+            $subjects = Subject::where('status', 1);
+            // $subjects->with('programs')->whereHas('programs', function ($query) use ($program){
+            //     $query->where('program_id', $program);
+            // });
+            $data['subjects'] = $subjects->orderBy('code', 'asc')->get();
+            // return $data['subjects'];
+
         }
 
         return view($this->view.'.index', $data);
@@ -90,20 +167,24 @@ class SubjectAddDropController extends Controller
      */
     public function store(Request $request)
     {
+        // return $request->all();
+        Log::info($request->all());
+
+
         // Field Validation
         $request->validate([
-            'student' => 'required',
+            'students' => 'required',
             'subjects' => 'required',
         ]);
 
 
         // Enroll Update
-        $enroll = StudentEnroll::where('student_id', $request->student)
-                                ->where('status', '1')
-                                ->orderBy('id', 'desc')->first();
-
-        $enroll->subjects()->sync($request->subjects);
-
+        $enrolls = StudentEnroll::whereIn('student_id', $request->students)->where('status', 1)->get();
+        
+        foreach($enrolls as $enroll)
+        {
+            $enroll->subjects()->attach($request->subjects);
+        }
 
         Toastr::success(__('msg_updated_successfully'), __('msg_success'));
 

@@ -234,7 +234,6 @@
               }).appendTo('.subject');
             });
           }
-
       });
     });
 </script>

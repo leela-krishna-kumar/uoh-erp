@@ -97,8 +97,19 @@ class CounsellingController extends Controller
             $data['statuses'] = StatusType::where('status', '1')->orderBy('title', 'asc')->get();
 
 
-            if(!empty($request->faculty) && $request->faculty != '0'){
-            $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();}
+            if(auth()->user()->hasRole('HoD'))
+        {           
+            $program_ids = json_decode(auth()->user()->program_ids);       
+            $data['programs'] = Program::where('faculty_id', $request->faculty)->whereIn('id', $program_ids)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+        else
+        {
+            $data['programs'] = Program::where('faculty_id', $request->faculty)->where('status', '1')->orderBy('title', 'asc')->get();
+        }
+
+
+            // if(!empty($request->faculty) && $request->faculty != '0'){
+            // $data['programs'] = Program::where('faculty_id', $faculty)->where('status', '1')->orderBy('title', 'asc')->get();}
 
             if(!empty($request->program) && $request->program != '0'){
             $sessions = Session::where('status', 1);

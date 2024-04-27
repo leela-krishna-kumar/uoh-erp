@@ -25,6 +25,15 @@
             </div>
 
             <div class="form-group col-md-4">
+              <label for="email">Email<span>*</span></label>
+              <input type="text" class="form-control" name="email" id="email" value="{{ $row->email }}" required>
+
+              <div class="invalid-feedback">
+                {{ __('required_field') }}
+              </div>
+          </div>
+
+            <div class="form-group col-md-4">
                 <label for="father_name">{{ __('field_father_name') }}</label>
                 <input type="text" class="form-control" name="father_name" id="father_name" value="{{ $row->father_name }}">
 
@@ -56,14 +65,14 @@
                 </div>
             </div>
 
-            <div class="form-group col-md-4">
+            {{-- <div class="form-group col-md-4">
                 <label for="dob">{{ __('field_dob') }} <span>*</span></label>
                 <input type="date" class="form-control date" name="dob" id="dob" value="{{ $row->dob }}" required>
 
                 <div class="invalid-feedback">
                   {{ __('required_field') }} {{ __('field_dob') }}
                 </div>
-            </div>
+            </div> --}}
 
             <div class="form-group col-md-4">
                 <label for="phone">{{ __('field_phone') }} <span>*</span></label>
@@ -75,8 +84,8 @@
             </div>
 
             <div class="form-group col-md-4">
-                <label for="emergency_phone">{{ __('field_emergency_phone') }} <span>*</span></label>
-                <input type="text" required class="form-control" name="emergency_phone" id="emergency_phone" value="{{ $row->emergency_phone }}">
+                <label for="emergency_phone">{{ __('field_emergency_phone') }} <span></span></label>
+                <input type="text" class="form-control" name="emergency_phone" id="emergency_phone" value="{{ $row->emergency_phone }}">
 
                 <div class="invalid-feedback">
                   {{ __('required_field') }} {{ __('field_emergency_phone') }}

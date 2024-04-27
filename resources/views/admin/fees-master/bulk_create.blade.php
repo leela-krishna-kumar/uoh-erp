@@ -144,6 +144,15 @@
                                     @php
                                         $i=0;
                                     @endphp
+
+
+                                    @if (count($fee_type_master) == 0 )
+
+                                        <h3 style="text-align: center;">No fees defined for this batch</h3>
+
+                                        <br /> <p style="text-align: center;">Please define fee in Fee Type Master section</p>
+                                        
+                                    @endif
                                     
                                     @foreach( $fee_type_master as $row )
 
@@ -226,7 +235,7 @@
 
 
 
-                            <p style="color: red">Note: Existing unpaid fee records will be replaced with above data*</p>
+                            <p style="color: red">Note: Existing fee amount will be replaced with above data (if already assigned)*</p>
 
                            
 

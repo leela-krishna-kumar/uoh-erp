@@ -1,7 +1,7 @@
 <div class="form-group col-md-2">
   <label for="department">{{ __('field_department') }}</label>
-  <select class="form-control" name="department" id="department">
-      <option value="">{{ __('all') }}</option>
+  <select class="form-control" name="department" id="department" required>
+      <option value="">{{ __('select') }}</option>
       @foreach( $departments as $department )
       <option value="{{ $department->id }}" @if( $selected_department == $department->id) selected @endif>{{ $department->title }}</option>
       @endforeach

@@ -113,11 +113,12 @@
             @endif
         </p><hr/>
         
-        <p><mark class="text-primary">@if($row->salary_type == 1) {{ __('salary_type_fixed') }} @else {{ __('salary_type_hourly') }} @endif {{ __('field_salary') }}:</mark>
+        {{-- <p><mark class="text-primary">@if($row->salary_type == 1) {{ __('salary_type_fixed') }} @else {{ __('salary_type_hourly') }} @endif {{ __('field_salary') }}:</mark>
             {{ round($row->basic_salary, $setting->decimal_place ?? 2) }} {!! $setting->currency_symbol !!}
-        </p><hr/>
+        </p><hr/> --}}
 
-        <p><mark class="text-primary">{{ __('field_national_id') }}:</mark> {{ $row->national_id }}</p><hr/>
+        <p><mark class="text-primary">AAdhar:</mark> {{ $row->aadhar }}</p><hr/>
+        <p><mark class="text-primary">Pan:</mark> {{ $row->pan }}</p><hr/>
         <p><mark class="text-primary">{{ __('field_passport_no') }}:</mark> {{ $row->passport_no }}</p><hr/>
         </fieldset>
     </div>

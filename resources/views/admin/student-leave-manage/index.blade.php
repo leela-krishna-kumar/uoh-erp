@@ -20,7 +20,7 @@
 
                         <a href="{{ route($route.'.index') }}" class="btn btn-info"><i class="fas fa-sync-alt"></i> {{ __('btn_refresh') }}</a>
                     </div>
-                    
+
                     <div class="card-block">
                         <form class="needs-validation" novalidate method="get" action="{{ route($route.'.index') }}">
                             <div class="row gx-2">
@@ -87,7 +87,7 @@
                                             @endif
                                         </td>
                                         <td>
-                    
+
                                             <span class="badge badge-pill badge-{{@\App\Models\StudentLeave::TYPES[$row->type]['color']}}">{{@\App\Models\StudentLeave::TYPES[$row->type]['label'] }}</span>
                                         </td>
                                         <td>
@@ -156,5 +156,10 @@
     </div>
 </div>
 <!-- End Content-->
+
+@endsection
+@section('page_js')
+
+@yield('sub-script')
 
 @endsection
